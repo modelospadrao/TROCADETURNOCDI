@@ -1338,12 +1338,9 @@ function gerarMensagem(validar = true) {
   msg += `*F RECEBIDOS TURNO ANTERIOR:* ${fr || '0'}\n`;
   msg += `*F REPASSADOS PENDENTES:* ${fp || '0'}\n\n`;
   
-  msg += `-- *INCIDÊNCIAS EM TELA TOTAL* --\n`;
-  msg += `*VALOR:* ${ic || '0'}\n\n`;
-  
   const eq = coletarEquipes();
   if (eq.length > 0) {
-    msg += `------ *EQUIPES ATIVAS (${eq.length})* ------\n`;
+    msg += `---- *EQUIPES ATIVAS (${eq.length})* ----\n`;
     eq.forEach(e => {
       if (e.lead) {
         msg += e.lead;
@@ -1390,6 +1387,7 @@ function gerarMensagem(validar = true) {
     }
   });
   if (sv) msg += `------ *QTD. SERVIÇOS* ------\n${sv}`;
+  msg += `----------------------------\n`;
   msg += `*INCIDÊNCIAS EM TELA:* ${ic || '0'}\n\n`;
   
   let oc = '';
@@ -1413,15 +1411,15 @@ function gerarMensagem(validar = true) {
   
   if (operadorAnterior) {
     msg += `----------------------------\n`;
-    msg += `RELATÓRIO RECEBIDO DE: ${operadorAnterior}\n`;
+    msg += `*OPERADOR ANTERIOR: *${operadorAnterior}\n\n`;
     msg += `----------------------------\n\n`;
   }
   
   if (globalTimerStart) {
     const tempo = formatTime(Math.floor((Date.now() - globalTimerStart) / 1000));
-    msg += `*tempo sessão:* ${tempo.toLowerCase()}\n`;
+    msg += `*Tempo sessão:* ${tempo.toLowerCase()}\n`;
   }
-  msg += `*data:* ${formatFullDateTime(new Date()).toLowerCase()}\n`;
+  msg += `*Data:* ${formatFullDateTime(new Date()).toLowerCase()}\n`;
   
   const linhas = msg.split('\n');
   const ultimasLinhas = linhas.slice(-3);
