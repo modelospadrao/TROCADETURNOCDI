@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TROCA DE TURNO</title>
+  <link rel="icon" href="turno.png" type="image/png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <style>
+    :root {
+      --cor-dados: #1a73e8;
+      --cor-contagem: #009688;
+      --cor-equipes: #4caf50;
+      --cor-pendencias: #ff9800;
+      --cor-servicos: #9c27b0;
+      --cor-ocorrencias: #e91e63;
+      --cor-preview: #607d8b;
+    }
+    html, body { overscroll-behavior-y: none; margin: 0; padding: 0; }
+    body { font-family: Cambria, Cochin, Georgia, Times, sans-serif; background-color: #f5f5f5; font-size: 14px; }
+    .container { width: 95%; margin: 10px auto; background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    
+    #global-clock { position: fixed; top: 8px; left: 8px; font-size: 15px; font-family: 'Courier New', monospace; color: #fff; background: #000; padding: 5px 10px; border-radius: 8px; z-index: 1001; display: none; }
+    
+    #btn-config { position: fixed; top: 8px; right: 8px; background: #333; color: #fff; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; z-index: 1001; }
+    #btn-config:hover { background: #555; }
+    
+    input[type="text"], input[type="date"], input[type="number"], input[type="tel"], select {
+      padding: 8px; margin: 3px 0; font-size: 13px; border: 1px solid #ddd; border-radius: 4px; background-color: #f9f9f9; text-transform: uppercase; box-sizing: border-box;
+    }
+    label { font-weight: bold; display: block; margin-top: 6px; margin-bottom: 2px; font-size: 12px; }
+    
+    .section { border: 2px solid var(--cor-dados); border-radius: 8px; margin: 12px 0; background: #fff; overflow: visible; box-shadow: 0 3px 10px rgba(0,0,0,0.12); position: relative; }
+    .section-header { background: var(--cor-dados); color: #fff; padding: 8px 12px; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+    .section-header:hover { filter: brightness(1.1); }
+    .section-toggle { font-size: 16px; transition: transform 0.3s; }
+    .section-toggle.collapsed { transform: rotate(-90deg); }
+    .section-content { padding: 12px; transition: max-height 0.3s ease; overflow: visible; }
+    .section-content.collapsed { max-height: 0 !important; padding: 0 12px; overflow: hidden; }
+    .section-subtitle { font-size: 10px; font-weight: normal; opacity: 0.9; margin-left: 10px; }
+    
+    .section-contagem { border-color: var(--cor-contagem); }
+    .section-contagem .section-header { background: var(--cor-contagem); }
+    .section-pendencias { border-color: var(--cor-pendencias); }
+    .section-pendencias .section-header { background: var(--cor-pendencias); }
+    .section-ocorrencias { border-color: var(--cor-ocorrencias); }
+    .section-ocorrencias .section-header { background: var(--cor-ocorrencias); }
+    .section-equipes { border-color: var(--cor-equipes); z-index: 50; }
+    .section-equipes .section-header { background: var(--cor-equipes); }
+    .section-servicos { border-color: var(--cor-servicos); }
+    .section-servicos .section-header { background: var(--cor-servicos); }
+    .section-preview { border-color: var(--cor-preview); }
+    .section-preview .section-header { background: var(--cor-preview); }
+    
+    #section-dados { z-index: 60; }
+    
+    .item-box { background: #fafafa; padding: 8px 10px; margin: 6px 0; border-radius: 5px; border: 1px solid #e0e0e0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .item-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .item-title { font-weight: bold; color: #333; font-size: 12px; text-transform: uppercase; flex: 1; min-width: 150px; }
+    
+    .btn-group { display: flex; gap: 8px; align-items: center; }
+    .btn-resposta { padding: 3px 12px; font-size: 12px; border: 2px solid; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: bold; }
+    .btn-sim { background: #fff; border-color: #4CAF50; color: #4CAF50; }
+    .btn-sim:hover { background: #e8f5e9; }
+    .btn-nao { background: #fff; border-color: #f44336; color: #f44336; }
+    .btn-nao:hover { background: #ffebee; }
+    .btn-resposta.selecionado { padding: 4px 14px; }
+    .btn-sim.selecionado { background: #4CAF50; color: #fff; }
+    .btn-nao.selecionado { background: #f44336; color: #fff; }
+    .btn-desfazer { background: #666; color: #fff; border: none; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: 11px; display: none; align-items: center; justify-content: center; }
+    .btn-desfazer.visible { display: flex; }
+    
+    .campos-inline { display: none; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .campos-inline.visible { display: flex; }
+    .campos-inline label { margin: 0; font-size: 11px; white-space: nowrap; }
+    .campos-inline input { width: 50px; margin: 0; }
+    .campos-inline input.obs-input { width: 180px; }
+    
+    .caixas-dinamicas { display: none; margin-top: 8px; padding: 8px; background: #f0f0f0; border-radius: 4px; border-left: 3px solid #9c27b0; }
+    .caixas-dinamicas.visible { display: block; }
+    .caixa-item { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
+    .caixa-item label { margin: 0; font-size: 10px; min-width: 40px; }
+    .caixa-item input.codigo-input { width: 90px; font-family: monospace; font-size: 12px; }
+    .caixa-item input.descricao-input { flex: 1; min-width: 150px; font-size: 12px; }
+    
+    .equipe-linha { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 6px 8px; background: #f9fff9; border: 1px solid #4caf50; border-radius: 4px; margin: 4px 0; position: relative; }
+    .equipe-linha input { margin: 0; font-size: 11px; padding: 5px; }
+    .equipe-linha .lead-input { width: 100px; font-family: monospace; text-transform: uppercase; }
+    .equipe-linha .tel-input { width: 90px; }
+    .equipe-linha .local-input { width: 110px; font-size: 10px; cursor: pointer; }
+    .equipe-linha .equipe-remove { background: #f44336; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+    
+    /* AUTOCOMPLETE - Lista suspensa customizada */
+    .autocomplete-wrapper { position: relative; display: inline-block; }
+    .autocomplete-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 200px;
+      max-height: 200px;
+      overflow-y: auto;
+      background: #fff;
+      border: 2px solid #4caf50;
+      border-radius: 6px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      z-index: 9999;
+      display: none;
+    }
+    .autocomplete-dropdown.visible { display: block; }
+    .autocomplete-dropdown .dropdown-item {
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      text-transform: uppercase;
+      border-bottom: 1px solid #eee;
+      background: #fff;
+      color: #333;
+    }
+    .autocomplete-dropdown .dropdown-item:last-child { border-bottom: none; }
+    .autocomplete-dropdown .dropdown-item:hover { background: #e8f5e9; color: #2e7d32; }
+    .autocomplete-dropdown .dropdown-item.selected { background: #4caf50; color: #fff; }
+    .autocomplete-dropdown .dropdown-empty {
+      padding: 12px;
+      text-align: center;
+      color: #999;
+      font-size: 11px;
+      font-style: italic;
+    }
+    
+    /* Dropdown para Área */
+    .area-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      max-height: 180px;
+      overflow-y: auto;
+      background: #fff;
+      border: 2px solid #1a73e8;
+      border-radius: 6px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      z-index: 9999;
+      display: none;
+    }
+    .area-dropdown.visible { display: block; }
+    .area-dropdown .dropdown-item {
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      text-transform: uppercase;
+      border-bottom: 1px solid #eee;
+      background: #fff;
+      color: #333;
+    }
+    .area-dropdown .dropdown-item:hover { background: #e3f2fd; color: #1565c0; }
+    
+    .btn-acao { border: none; padding: 10px 18px; margin: 3px; font-size: 12px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: all 0.2s; }
+    .btn-finalizar { background: linear-gradient(135deg, #1a73e8, #0d47a1); color: #fff; padding: 12px 30px; font-size: 14px; }
+    .btn-finalizar:hover { transform: scale(1.02); }
+    .btn-whatsapp { background: #25D366; color: #fff; }
+    .btn-limpar { background: #f44336; color: #fff; }
+    .btn-adicionar { background: #4caf50; color: #fff; }
+    .btn-modo { background: #333; color: #fff; font-size: 11px; padding: 6px 12px; }
+    
+    #reset-button { background: #000; color: #fff; border: none; padding: 10px 25px; font-size: 14px; border-radius: 20px; cursor: pointer; display: block; margin: 15px auto; font-family: 'Courier New', monospace; font-style: italic; }
+    
+    .preview-box { background: #fff; color: #000; border: 1px solid #ccc; padding: 12px; border-radius: 6px; white-space: pre-wrap; font-family: monospace; font-size: 11px; min-height: 120px; }
+    .preview-box.modo-noturno { background: #000; color: #fff; border: none; }
+    .preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    
+    .popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; background: rgba(0,0,0,0.95); color: #fff; font-size: 14px; border-radius: 12px; z-index: 10000; box-shadow: 0 5px 30px rgba(0,0,0,0.5); text-align: center; max-width: 90%; }
+    .popup-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 15px; flex-wrap: wrap; }
+    .popup-buttons button { padding: 10px 25px; font-size: 13px; border-radius: 6px; cursor: pointer; border: none; font-weight: bold; }
+    .popup .yes-button { background: #4CAF50; color: #fff; }
+    .popup .no-button { background: #f44336; color: #fff; }
+    .popup .import-button { background: #9C27B0; color: #fff; }
+    .popup .close-button { background: #666; color: #fff; margin-top: 10px; }
+    
+    #config-popup { max-width: 350px; }
+    .config-item { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 5px; }
+    .config-item label { font-size: 12px; }
+    .config-item input[type="color"] { width: 40px; height: 30px; border: none; cursor: pointer; }
+    
+    #clickOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1050; display: none; }
+    #body-popup { display: none; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: #fff; padding: 10px 20px; border-radius: 8px; z-index: 2500; font-size: 13px; cursor: pointer; }
+    
+    .operador-anterior { background: #fff3cd; border: 2px solid #ffc107; padding: 8px 12px; border-radius: 6px; margin: 8px 0; font-weight: bold; font-size: 12px; }
+    .aviso-importacao { background: #ffebee; border: 2px solid #f44336; padding: 10px; border-radius: 6px; margin: 8px 0; text-align: center; }
+    .aviso-importacao h4 { color: #c62828; margin: 0 0 5px 0; font-size: 13px; }
+    .campo-obrigatorio-import { border: 2px solid #f44336 !important; animation: pulsar 1s infinite; }
+    @keyframes pulsar { 0%, 100% { box-shadow: 0 0 3px #f44336; } 50% { box-shadow: 0 0 10px #f44336; } }
+    
+    #importarArquivo { display: none; }
+    .sessao-info { background: #e3f2fd; padding: 6px 10px; border-radius: 5px; margin: 6px 0; font-size: 11px; border-left: 3px solid #2196F3; }
+    .row-inline { display: flex; gap: 10px; flex-wrap: wrap; }
+    .row-inline > div { flex: 1; min-width: 140px; }
+    .obrigatorio::after { content: " *"; color: #f44336; }
+    .footer { text-align: center; font-style: italic; font-family: 'Courier New', monospace; margin-top: 15px; padding: 10px; color: #666; font-size: 10px; }
+    
+    [data-tooltip] { position: relative; }
+    [data-tooltip]:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 5px 10px; border-radius: 4px; font-size: 11px; white-space: nowrap; z-index: 100; margin-bottom: 5px; }
+    .section-header[data-tooltip]:hover::after { bottom: auto; top: 100%; margin-top: 5px; margin-bottom: 0; }
+  </style>
+</head>
+<body>
+  
+    <!-- Popup Confirmar Reset -->
+  <div id="reset-popup" class="popup">
+    <p style="font-size: 18px;">⚠️ <strong>ATENÇÃO!</strong></p>
+    <p>Tem certeza que deseja reiniciar?<br><span style="color: #ff6b6b; font-size: 12px;">Todos os dados serão perdidos!</span></p>
+    <div class="popup-buttons">
+      <button class="yes-button" onclick="confirmarReset()">✓ SIM, REINICIAR</button>
+      <button class="no-button" onclick="fecharPopup('reset-popup')">✕ CANCELAR</button>
+    </div>
+  </div>
+
+  <div id="clickOverlay"></div>
+  <div id="body-popup" onclick="this.style.display='none';">⚠️ Campos bloqueados! Use "REINICIAR TURNO".</div>
+  <div id="global-clock">00:00</div>
+  <button id="btn-config" onclick="abrirConfiguracoes()" data-tooltip="Configurações de cores">⚙️ TEMA CORES</button>
+  
+  <div id="inicio-popup" class="popup">
+    <p style="font-size: 20px;">🔄 <strong>TROCA DE TURNO</strong></p>
+    <p>O que deseja fazer?</p>
+    <div class="popup-buttons">
+      <button class="yes-button" onclick="iniciarDoZero()">🆕 INICIAR DO ZERO</button>
+      <button class="import-button" onclick="abrirImportacao()">📥 IMPORTAR SESSÃO</button>
+    </div>
+  </div>
+  
+  <div id="import-popup" class="popup">
+    <p style="font-size: 16px;">📥 <strong>IMPORTAR SESSÃO</strong></p>
+    <p>Selecione o arquivo:</p>
+    <div class="popup-buttons">
+      <button class="import-button" onclick="document.getElementById('importarArquivo').click()">📁 SELECIONAR</button>
+      <button class="no-button" onclick="voltarInicio()">← VOLTAR</button>
+    </div>
+  </div>
+  
+  <div id="confirmar-popup" class="popup">
+    <p style="font-size: 16px;">⚠️ <strong>ATENÇÃO!</strong></p>
+    <p>Assumindo turno de: <strong id="nome-anterior-popup"></strong></p>
+    <p style="color: #ffc107; font-size: 12px;">Preencha SEU NOME e TURNO DO DIA!</p>
+    <div class="popup-buttons">
+      <button class="yes-button" onclick="confirmarImportacao()">✓ ENTENDI</button>
+    </div>
+  </div>
+  
+  <div id="detalhe-popup" class="popup">
+    <p style="font-size: 14px;">📝 <strong>ESPECIFICAR DETALHES?</strong></p>
+    <p id="detalhe-popup-texto">Deseja detalhar as ocorrências?</p>
+    <div class="popup-buttons">
+      <button class="yes-button" onclick="confirmarDetalhes(true)">SIM</button>
+      <button class="no-button" onclick="confirmarDetalhes(false)">NÃO</button>
+    </div>
+  </div>
+  
+  <div id="notification-popup" class="popup">
+    <p id="notification-text"></p>
+    <button class="close-button" onclick="fecharPopup('notification-popup')">FECHAR</button>
+  </div>
+  
+  <div id="obrigatorio-popup" class="popup">
+    <p id="obrigatorio-text"></p>
+    <button class="close-button" onclick="fecharPopup('obrigatorio-popup')">FECHAR</button>
+  </div>
+  
+  <div id="config-popup" class="popup">
+    <p style="font-size: 16px;">⚙️ <strong>CONFIGURAÇÕES DE CORES</strong></p>
+    <div class="config-item"><label>📅 Dados:</label><input type="color" id="cor-dados" value="#1a73e8" onchange="aplicarCor('dados', this.value)"></div>
+    <div class="config-item"><label>📊 Contagem:</label><input type="color" id="cor-contagem" value="#009688" onchange="aplicarCor('contagem', this.value)"></div>
+    <div class="config-item"><label>👥 Equipes:</label><input type="color" id="cor-equipes" value="#4caf50" onchange="aplicarCor('equipes', this.value)"></div>
+    <div class="config-item"><label>⚠️ Pendências:</label><input type="color" id="cor-pendencias" value="#ff9800" onchange="aplicarCor('pendencias', this.value)"></div>
+    <div class="config-item"><label>📈 Serviços:</label><input type="color" id="cor-servicos" value="#9c27b0" onchange="aplicarCor('servicos', this.value)"></div>
+    <div class="config-item"><label>🚨 Ocorrências:</label><input type="color" id="cor-ocorrencias" value="#e91e63" onchange="aplicarCor('ocorrencias', this.value)"></div>
+    <div class="config-item"><label>👁️ Preview:</label><input type="color" id="cor-preview" value="#607d8b" onchange="aplicarCor('preview', this.value)"></div>
+    <div class="popup-buttons">
+      <button class="yes-button" onclick="salvarConfiguracoes()">💾 SALVAR</button>
+      <button class="no-button" onclick="resetarCores()">🔄 RESETAR</button>
+      <button class="close-button" onclick="fecharPopup('config-popup')">FECHAR</button>
+    </div>
+  </div>
+  
+  <input type="file" id="importarArquivo" accept=".json" onchange="processarImportacao(this.files[0])">
+  
+  <div class="container" id="main-container">
+    <h2 style="text-align: center; color: #1a73e8; margin: 5px 0; font-size: 20px;">🔄 RELÁTORIO DE TROCA DE TURNO</h2>
+    <p style="text-align: center; color: #666; margin: 0 0 10px 0; font-size: 11px;">(Versão 5.3)</p>
+    
+    <div id="sessao-info" class="sessao-info" style="display: none;"><strong>📍 Sessão:</strong> <span id="sessao-operador-info"></span></div>
+    <div id="aviso-importacao" class="aviso-importacao" style="display: none;"><h4>⚠️ SESSÃO IMPORTADA</h4><p style="margin:0; font-size:11px;">De: <strong id="nome-anterior-aviso"></strong> | Preencha seu nome e turno!</p></div>
+    <div id="operador-anterior-box" class="operador-anterior" style="display: none;">📋 <strong>Relatório de:</strong> <span id="operador-anterior-nome"></span></div>
+    
+    <!-- DADOS DO TURNO -->
+    <div class="section" id="section-dados">
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>📅 DADOS DO TURNO</span><span class="section-toggle">▼</span></div>
+      <div class="section-content">
+        <div class="row-inline">
+          <div><label class="obrigatorio">Data:</label><input type="date" id="turno-data" style="width:100%;" onchange="onCampoAlterado()"></div>
+          <div><label class="obrigatorio">Turno do Dia:</label>
+            <select id="turno-entrada" style="width:100%;" onchange="onCampoAlterado()">
+              <option value="">Selecione...</option>
+              <option value="06:00 às 12:00">06:00 às 12:00</option>
+              <option value="12:00 às 18:00">12:00 às 18:00</option>
+              <option value="18:00 às 00:00">18:00 às 00:00</option>
+              <option value="00:00 às 06:00">00:00 às 06:00</option>
+            </select>
+          </div>
+        </div>
+        <label class="obrigatorio">Operador:</label>
+        <input type="text" id="operador" style="width:100%;" placeholder="SEU NOME" oninput="formatarOperador(this); onCampoAlterado()">
+        <div class="row-inline">
+          <div><label class="obrigatorio">Região:</label>
+            <select id="regiao" style="width:100%;" onchange="atualizarAreas(); onCampoAlterado()">
+              <option value="">Selecione...</option>
+              <option value="DEMEM">DEMEM</option>
+              <option value="DEMEF">DEMEF</option>
+            </select>
+          </div>
+          <div class="autocomplete-wrapper" style="flex:1; min-width:140px;">
+            <label class="obrigatorio">Área:</label>
+            <input type="text" id="area" style="width:100%;" placeholder="Clique para selecionar..." 
+                   onclick="toggleAreaDropdown()" 
+                   oninput="filtrarAreas(this.value)" 
+                   autocomplete="off">
+            <div class="area-dropdown" id="area-dropdown"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- CONTAGEM -->
+    <div class="section section-contagem" id="section-contagem">
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>📊 CONTAGEM DE "F" + INCIDÊNCIAS</span><span class="section-toggle">▼</span></div>
+      <div class="section-content">
+        <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+          <div><label class="obrigatorio">F Recebidos:</label><input type="number" id="f-recebidos" min="0" placeholder="0" style="width:70px;" onchange="onCampoAlterado()"></div>
+          <div><label class="obrigatorio">F Pendentes:</label><input type="number" id="f-pendentes" min="0" placeholder="0" style="width:70px;" onchange="onCampoAlterado()"></div>
+          <div><label class="obrigatorio">📺 Incidências:</label><input type="number" id="incidencias-tela-qtd" min="0" placeholder="0" style="width:70px;" onchange="onCampoAlterado()"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- EQUIPES ATIVAS -->
+    <div class="section section-equipes" id="section-equipes">
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>👥 EQUIPES ATIVAS (<span id="equipes-count">0</span>)</span><span class="section-toggle">▼</span></div>
+      <div class="section-content">
+        <div id="equipes-container"></div>
+        <div style="text-align: center; margin-top: 8px;">
+          <button class="btn-acao btn-adicionar" onclick="adicionarEquipe()" data-tooltip="Adicionar nova equipe">➕ Adicionar</button>
+          <button class="btn-acao btn-limpar" onclick="removerUltimaEquipe()" data-tooltip="Remover última equipe">➖ Remover</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PENDÊNCIAS -->
+    <div class="section section-pendencias" id="section-pendencias">
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>⚠️ PENDÊNCIAS</span><span class="section-toggle">▼</span></div>
+      <div class="section-content">
+        <div class="item-box" id="box-manobra">
+          <div class="item-header">
+            <span class="item-title">Pendências de Manobra</span>
+            <div class="btn-group" id="btns-manobra">
+              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('manobra', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('manobra', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-manobra" onclick="desfazerItem('manobra')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-manobra">
+              <label>Qtd:</label><input type="number" id="manobra-qtd" min="0" placeholder="0" onchange="verificarQuantidade('manobra'); onCampoAlterado()">
+              <label>Obs:</label><input type="text" id="manobra-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+            </div>
+          </div>
+          <div class="caixas-dinamicas" id="caixas-manobra"></div>
+        </div>
+        <div class="item-box" id="box-pesada">
+          <div class="item-header">
+            <span class="item-title">Pendências de Pesada</span>
+            <div class="btn-group" id="btns-pesada">
+              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('pesada', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('pesada', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-pesada" onclick="desfazerItem('pesada')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-pesada">
+              <label>Qtd:</label><input type="number" id="pesada-qtd" min="0" placeholder="0" onchange="verificarQuantidade('pesada'); onCampoAlterado()">
+              <label>Obs:</label><input type="text" id="pesada-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+            </div>
+          </div>
+          <div class="caixas-dinamicas" id="caixas-pesada"></div>
+        </div>
+        <div class="item-box" id="box-pesada-afetacao">
+          <div class="item-header">
+            <span class="item-title">Pesada c/ Afetação</span>
+            <div class="btn-group" id="btns-pesada-afetacao">
+              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('pesada-afetacao', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('pesada-afetacao', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-pesada-afetacao" onclick="desfazerItem('pesada-afetacao')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-pesada-afetacao">
+              <label>Qtd:</label><input type="number" id="pesada-afetacao-qtd" min="0" placeholder="0" onchange="verificarQuantidade('pesada-afetacao'); onCampoAlterado()">
+              <label>Obs:</label><input type="text" id="pesada-afetacao-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+            </div>
+          </div>
+          <div class="caixas-dinamicas" id="caixas-pesada-afetacao"></div>
+        </div>
+        <div class="item-box" id="box-linha-viva">
+          <div class="item-header">
+            <span class="item-title">Pendências Linha Viva</span>
+            <div class="btn-group" id="btns-linha-viva">
+              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('linha-viva', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('linha-viva', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-linha-viva" onclick="desfazerItem('linha-viva')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-linha-viva">
+              <label>Qtd:</label><input type="number" id="linha-viva-qtd" min="0" placeholder="0" onchange="verificarQuantidade('linha-viva'); onCampoAlterado()">
+              <label>Obs:</label><input type="text" id="linha-viva-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+            </div>
+          </div>
+          <div class="caixas-dinamicas" id="caixas-linha-viva"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- SERVIÇOS -->
+    <div class="section section-servicos" id="section-servicos">
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>📈 QUANTIDADE DE SERVIÇOS</span><span class="section-toggle">▼</span></div>
+      <div class="section-content">
+        <div class="item-box" id="box-clientes-vitais">
+          <div class="item-header">
+            <span class="item-title">Clientes Vitais</span>
+            <div class="btn-group" id="btns-clientes-vitais">
+              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('clientes-vitais', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('clientes-vitais', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-clientes-vitais" onclick="desfazerItem('clientes-vitais')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-clientes-vitais">
+              <label>Qtd:</label><input type="number" id="clientes-vitais-qtd" min="0" max="20" placeholder="0" onchange="verificarQuantidade('clientes-vitais'); onCampoAlterado()">
+            </div>
+          </div>
+          <div class="caixas-dinamicas" id="caixas-clientes-vitais"></div>
+        </div>
+        <div class="item-box" id="box-cabo-partido">
+          <div class="item-header">
+            <span class="item-title">Cabo Partido</span>
+            <div class="btn-group" id="btns-cabo-partido">
+              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('cabo-partido', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('cabo-partido', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-cabo-partido" onclick="desfazerItem('cabo-partido')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-cabo-partido">
+              <label>Qtd:</label><input type="number" id="cabo-partido-qtd" min="0" max="20" placeholder="0" onchange="verificarQuantidade('cabo-partido'); onCampoAlterado()">
+            </div>
+          </div>
+          <div class="caixas-dinamicas" id="caixas-cabo-partido"></div>
+        </div>
+        <div class="item-box" id="box-falta-varios">
+          <div class="item-header">
+            <span class="item-title">Falta em Vários</span>
+            <div class="btn-group" id="btns-falta-varios">
+              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('falta-varios', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('falta-varios', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-falta-varios" onclick="desfazerItem('falta-varios')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-falta-varios">
+              <label>Qtd:</label><input type="number" id="falta-varios-qtd" min="0" max="20" placeholder="0" onchange="verificarQuantidade('falta-varios'); onCampoAlterado()">
+            </div>
+          </div>
+          <div class="caixas-dinamicas" id="caixas-falta-varios"></div>
+        </div>
+        <div class="item-box" id="box-clientes-m1">
+          <div class="item-header">
+            <span class="item-title">Clientes M.1</span>
+            <div class="btn-group" id="btns-clientes-m1">
+              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('clientes-m1', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('clientes-m1', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-clientes-m1" onclick="desfazerItem('clientes-m1')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-clientes-m1">
+              <label>Qtd:</label><input type="number" id="clientes-m1-qtd" min="0" max="20" placeholder="0" onchange="verificarQuantidade('clientes-m1'); onCampoAlterado()">
+            </div>
+          </div>
+          <div class="caixas-dinamicas" id="caixas-clientes-m1"></div>
+        </div>
+        <div class="item-box" id="box-incidencias-antigas">
+          <div class="item-header">
+            <span class="item-title">Incidências Antigas</span>
+            <div class="btn-group" id="btns-incidencias-antigas">
+              <button class="btn-resposta btn-sim" onclick="selecionarSimples('incidencias-antigas', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarSimples('incidencias-antigas', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-incidencias-antigas" onclick="desfazerSimples('incidencias-antigas')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-incidencias-antigas">
+              <label>Qtd:</label><input type="number" id="incidencias-antigas-qtd" min="0" placeholder="0" onchange="onCampoAlterado()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- OCORRÊNCIAS MT -->
+    <div class="section section-ocorrencias" id="section-ocorrencias">
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>🚨 OCORRÊNCIAS MT</span><span class="section-toggle">▼</span></div>
+      <div class="section-content">
+        <div class="item-box" id="box-religador">
+          <div class="item-header">
+            <span class="item-title">Religador Fora</span>
+            <div class="btn-group" id="btns-religador">
+              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('religador', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('religador', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-religador" onclick="desfazerItem('religador')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-religador">
+              <label>Qtd:</label><input type="number" id="religador-qtd" min="0" placeholder="0" onchange="verificarQuantidade('religador'); onCampoAlterado()">
+              <label>Obs:</label><input type="text" id="religador-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+            </div>
+          </div>
+          <div class="caixas-dinamicas" id="caixas-religador"></div>
+        </div>
+        <div class="item-box" id="box-poste-mt">
+          <div class="item-header">
+            <span class="item-title">Poste MT Abalroado</span>
+            <div class="btn-group" id="btns-poste-mt">
+              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('poste-mt', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('poste-mt', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-poste-mt" onclick="desfazerItem('poste-mt')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-poste-mt">
+              <label>Qtd:</label><input type="number" id="poste-mt-qtd" min="0" placeholder="0" onchange="verificarQuantidade('poste-mt'); onCampoAlterado()">
+              <label>Obs:</label><input type="text" id="poste-mt-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+            </div>
+          </div>
+          <div class="caixas-dinamicas" id="caixas-poste-mt"></div>
+        </div>
+        <div class="item-box" id="box-poste-bt">
+          <div class="item-header">
+            <span class="item-title">Poste BT Abalroado</span>
+            <div class="btn-group" id="btns-poste-bt">
+              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('poste-bt', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('poste-bt', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-poste-bt" onclick="desfazerItem('poste-bt')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-poste-bt">
+              <label>Qtd:</label><input type="number" id="poste-bt-qtd" min="0" placeholder="0" onchange="verificarQuantidade('poste-bt'); onCampoAlterado()">
+              <label>Obs:</label><input type="text" id="poste-bt-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+            </div>
+          </div>
+          <div class="caixas-dinamicas" id="caixas-poste-bt"></div>
+        </div>
+        <div class="item-box" id="box-sobreaviso">
+          <div class="item-header">
+            <span class="item-title">Sobreaviso</span>
+            <div class="btn-group" id="btns-sobreaviso">
+              <button class="btn-resposta btn-sim" onclick="selecionarSimples('sobreaviso', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarSimples('sobreaviso', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-sobreaviso" onclick="desfazerSimples('sobreaviso')">✕</button>
+            </div>
+            <div class="campos-inline" id="campos-sobreaviso">
+              <label>Obs:</label><input type="text" id="sobreaviso-obs" class="obs-input" placeholder="Detalhes" onchange="onCampoAlterado()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PRÉ-VISUALIZAÇÃO -->
+    <div class="section section-preview" id="section-preview">
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>👁️ PRÉ-VISUALIZAÇÃO</span><span class="section-toggle">▼</span></div>
+      <div class="section-content">
+        <div class="preview-header">
+          <span style="font-size:12px; color:#666;">Atualiza automaticamente</span>
+          <button class="btn-acao btn-modo" onclick="toggleModoNoturno()" data-tooltip="Fundo preto / letra branca">🌙 Modo Noturno</button>
+        </div>
+        <div id="previewBox" class="preview-box"></div>
+      </div>
+    </div>
+    
+    <div style="text-align: center; margin: 15px 0;">
+      <button class="btn-acao btn-finalizar" onclick="finalizarTurno()" data-tooltip="Gera mensagem, salva PDF e exporta sessão">REALIZAR TROCA DE TURNO</button>
+      <br><br>
+      <button class="btn-acao btn-whatsapp" onclick="enviarWhatsApp()" data-tooltip="Enviar pelo WhatsApp">📱 WHATSAPP</button>
+      <button class="btn-acao btn-limpar" onclick="limparPreview()" data-tooltip="Limpar preview">🗑️ LIMPAR</button>
+    </div>
+    
+    <button id="reset-button" onclick="resetarTurno()" data-tooltip="Reiniciar formulário">🔄 REINICIAR PÁGINA!</button>
+    
+  
+  <p style="text-align: center; font-style: italic; font-family: 'Courier New', Courier, monospace; margin-top: 80px;">
+    © 2025 Emanuel Aguiar<br>
+    Todos os direitos reservados.
+  </p>
+
+
+<script>
+// ============================================
+// DADOS - Estrutura: REGIÃO > ÁREA > LOCALIDADES
+// ============================================
+let DADOS_REGIOES = {
+  "DEMEM": {
+    "BATURITÉ": ["BATURITÉ"],
+    "HORIZONTE": ["Centro",
+    "Gameleira",
+    "Catu",
+    "Alto da Estrela",
+    "Jenipapeiro",
+    "Cajueiro da Malhada",
+    "Catolé",
+    "Lagoinha",
+    "Olho d'água",
+    "Zumbi",
+    "Mangueiral",
+    "Mal Cozinhado",
+    "São José",
+    "Vertente",
+    "Diadema",
+    "Buenos Aires",
+    "Distrito Industrial",
+    "Cachoeira e Planalto Horizonte",
+    "além de localidades rurais como Lagoa dos Ramos",
+    "Canavieira",
+    "Mangabeira",
+    "Dourados",
+    "Tanques e Caponga."
+  ],
+    "MARACANAÚ": ["MARACANAÚ"],
+    "CASCAVEL": ["CASCAVEL"],
+    "CAUCAIA": ["CAUCAIA"]
+  },
+  "DEMEF": {
+    "DF-001": ["ALDEOTA","BENFICA","CAIS DO PORTO","CENTRO","CIDADE 2000","COCÓ","DE LOURDES","DIONÍSIO TORRES","EDSON QUEIROZ","ENGENHEIRO LUCIANO CAVALCANTE","FARIAS BRITO","FÁTIMA","GUARARAPES","JACARECANGA","JOAQUIM TÁVORA","JOSÉ BONIFÁCIO","MAGUARY","MANOEL DIAS BRANCO","MEIRELES","MOURA BRASIL","MUCURIPE","PAPICU","PRAIA DE IRACEMA","PRAIA DO FUTURO","SABIAGUABA","SALINAS","SÃO GERARDO","SÃO JOÃO DO TAUAPÉ","VARJOTA","VICENTE PINZON"],
+    "DF-002": ["ÁLVARO WEYNE","AMADEU FURTADO","ANTÔNIO BEZERRA","AUTRAN NUNES","BARRA DO CEARÁ","BELA VISTA","CARLITO PAMPLONA","CRISTO REDENTOR","DEMÓCRITO ROCHA","DOM LUSTOSA","FLORESTA","GENIBAÚ","JACARECANGA","JARDIM CEARENSE","JARDIM GUANABARA","JARDIM IRACEMA","JOÃO XXIII","JÓQUEI CLUBE","JUREMA","MAGUARY","MONTE CASTELO","MONTESE","OLAVO OLIVEIRA","PADRE ANDRADE","PANAMERICANO","PARQUE ARAXÁ","PARQUELÂNDIA","PARREÃO","PICI","PIRAMBU","PRESIDENTE KENNEDY","QUINTINO CUNHA","RODOLFO TEÓFILO","SÃO GERARDO","VILA ELLERY","VILA VELHA"],
+    "DF-003": ["AEROPORTO","ALTO DA BALANÇA","ÁLVARO WEYNE","AMADEU FURTADO","ANTÔNIO BEZERRA","AUTRAN NUNES","BELA VISTA","BOM FUTURO","BOM JARDIM","BONSUCESSO","CANINDEZINHO","CONJUNTO CEARÁ","CONJUNTO ESPERANÇA","DAMAS","DEMÓCRITO ROCHA","DENDÊ","DIAS MACEDO","DOM LUSTOSA","GENIBAÚ","GRANJA LISBOA","GRANJA PORTUGAL","HENRIQUE JORGE","ITAOCA","ITAPERI","JARDIM AMÉRICA","JOÃO XXIII","JÓQUEI CLUBE","JUREMA","MANOEL SÁTIRO","MARAPONGA","MATA GALINHA","MONDUBIM","MONTESE","PANAMERICANO","PARANGABA","PARQUE DOIS IRMÃOS","PARREÃO","PASSARÉ","PICI","PLANALTO AYRTON SENNA","PREFEITO JOSÉ WALTER","PRESIDENTE VARGAS","RODOLFO TEÓFILO","SANTA ROSA","SERRINHA","SIQUEIRA","VILA PERI","VILA UNIÃO"],
+    "DF-004": ["AEROLÂNDIA","ÁGUA FRIA","ANCURI","BARROSO","CAJAZEIRAS","CAMBEBA","CIDADE DOS FUNCIONÁRIOS","COAÇU","CONJUNTO PALMEIRAS","CURIÓ","EDSON QUEIROZ","ENGENHEIRO LUCIANO CAVALCANTE","GUAJERU","GUARARAPES","JANGURUSSU","JARDIM DAS OLIVEIRAS","PARQUE IRACEMA","PARQUE MANIBURA","PAUPINA","PEDRAS","SABIAGUABA","SALINAS","SANTA MARIA","SÃO BENTO","SAPIRANGA/COITÉ"]
+  }
+};
+
+// Carregar dados externos se disponível
+async function carregarDadosExternos() {
+  try {
+    const r = await fetch('dados_regioes.json');
+    if (r.ok) {
+      const data = await r.json();
+      DADOS_REGIOES = data;
+      console.log('Dados carregados do arquivo externo');
+    }
+  } catch(e) {
+    console.log('Usando dados internos');
+  }
+}
+
+// ============================================
+// VARIÁVEIS GLOBAIS
+// ============================================
+let globalTimerStart=null, globalTimerInterval=null, equipeCount=0, operadorAnterior=null;
+let estados={}, modoNoturno=false, sessaoImportada=false, dadosImportados=null;
+let detalhesPendentes={}, itemAtualDetalhe=null, configCores={};
+let areaSelecionada = '';
+
+// ============================================
+// INICIALIZAÇÃO
+// ============================================
+window.onload = async function() {
+  await carregarDadosExternos();
+  carregarConfiguracoes();
+  disableAllInteractive();
+  document.getElementById('clickOverlay').style.display = 'block';
+  document.getElementById('inicio-popup').style.display = 'block';
+  
+  // Fechar dropdowns ao clicar fora
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.autocomplete-wrapper') && !e.target.closest('.equipe-linha')) {
+      fecharTodosDropdowns();
+    }
+  });
+};
+
+function fecharTodosDropdowns() {
+  document.querySelectorAll('.area-dropdown, .autocomplete-dropdown').forEach(d => d.classList.remove('visible'));
+}
+
+function disableAllInteractive() {
+  document.querySelectorAll('input, button, select, textarea').forEach(e => {
+    if (e.closest('.popup') || e.id === 'reset-button' || e.id === 'importarArquivo' || e.id === 'btn-config') return;
+    e.disabled = true;
+  });
+}
+
+function enableAllInteractive() {
+  document.querySelectorAll('input, button, select, textarea').forEach(e => {
+    if (e.closest('.popup')) return;
+    e.disabled = false;
+  });
+}
+
+function iniciarDoZero() {
+  document.getElementById('inicio-popup').style.display = 'none';
+  document.getElementById('clickOverlay').style.display = 'none';
+  enableAllInteractive();
+  document.getElementById('global-clock').style.display = 'block';
+  globalTimerStart = Date.now();
+  globalTimerInterval = setInterval(atualizarRelogio, 1000);
+  const h = new Date();
+  document.getElementById('turno-data').value = new Date(h.getTime() - (h.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+  sessaoImportada = false;
+  salvarSessaoAuto();
+  mostrarNotificacao('✅ Sessão iniciada!');
+}
+
+function abrirImportacao() {
+  document.getElementById('inicio-popup').style.display = 'none';
+  document.getElementById('import-popup').style.display = 'block';
+}
+
+function voltarInicio() {
+  document.getElementById('import-popup').style.display = 'none';
+  document.getElementById('inicio-popup').style.display = 'block';
+}
+
+function processarImportacao(a) {
+  if (!a) return;
+  const r = new FileReader();
+  r.onload = function(e) {
+    try {
+      dadosImportados = JSON.parse(e.target.result);
+      if (dadosImportados.operador) operadorAnterior = dadosImportados.operador;
+      if (dadosImportados.configCores) { configCores = dadosImportados.configCores; aplicarTodasCores(); }
+      document.getElementById('import-popup').style.display = 'none';
+      document.getElementById('nome-anterior-popup').textContent = operadorAnterior || '?';
+      document.getElementById('confirmar-popup').style.display = 'block';
+    } catch(er) {
+      mostrarNotificacao('❌ Erro ao ler arquivo.');
+    }
+  };
+  r.readAsText(a);
+}
+
+function confirmarImportacao() {
+  document.getElementById('confirmar-popup').style.display = 'none';
+  document.getElementById('clickOverlay').style.display = 'none';
+  enableAllInteractive();
+  document.getElementById('global-clock').style.display = 'block';
+  globalTimerStart = Date.now();
+  globalTimerInterval = setInterval(atualizarRelogio, 1000);
+  carregarDadosImportados(dadosImportados);
+  sessaoImportada = true;
+  document.getElementById('aviso-importacao').style.display = 'block';
+  document.getElementById('nome-anterior-aviso').textContent = operadorAnterior;
+  document.getElementById('operador-anterior-box').style.display = 'block';
+  document.getElementById('operador-anterior-nome').textContent = operadorAnterior;
+  document.getElementById('operador').classList.add('campo-obrigatorio-import');
+  document.getElementById('turno-entrada').classList.add('campo-obrigatorio-import');
+  const h = new Date();
+  document.getElementById('turno-data').value = new Date(h.getTime() - (h.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+  mostrarNotificacao('📥 Importado!');
+}
+
+function carregarDadosImportados(d) {
+  document.getElementById('regiao').value = d.regiao || '';
+  document.getElementById('area').value = d.area || '';
+  areaSelecionada = d.area || '';
+  document.getElementById('f-recebidos').value = d.fRecebidos || '';
+  document.getElementById('f-pendentes').value = d.fPendentes || '';
+  document.getElementById('incidencias-tela-qtd').value = d.incidenciasTelaQtd || '';
+  if (d.estados) { estados = d.estados; restaurarEstadosBotoes(); }
+  if (d.equipes) d.equipes.forEach(eq => adicionarEquipeComDados(eq));
+  if (d.detalhesPendentes) detalhesPendentes = d.detalhesPendentes;
+  ['manobra','pesada','pesada-afetacao','linha-viva','religador','poste-mt','poste-bt'].forEach(id => {
+    const q = document.getElementById(id + '-qtd'), o = document.getElementById(id + '-obs');
+    if (q && d[id + 'Qtd']) q.value = d[id + 'Qtd'];
+    if (o && d[id + 'Obs']) o.value = d[id + 'Obs'];
+  });
+  ['clientes-vitais','cabo-partido','falta-varios','clientes-m1'].forEach(id => {
+    const q = document.getElementById(id + '-qtd');
+    if (q && d[id.replace(/-/g, '') + 'Qtd']) q.value = d[id.replace(/-/g, '') + 'Qtd'];
+  });
+  if (d.incidenciasAntigasQtd) document.getElementById('incidencias-antigas-qtd').value = d.incidenciasAntigasQtd;
+  if (d.sobreavisoObs) document.getElementById('sobreaviso-obs').value = d.sobreavisoObs;
+  setTimeout(() => { if (d.caixasDinamicas) restaurarCaixas(d.caixasDinamicas); }, 100);
+}
+
+// ============================================
+// DROPDOWN DE ÁREA
+// ============================================
+function atualizarAreas() {
+  const regiao = document.getElementById('regiao').value;
+  document.getElementById('area').value = '';
+  areaSelecionada = '';
+  fecharTodosDropdowns();
+}
+
+function toggleAreaDropdown() {
+  const regiao = document.getElementById('regiao').value;
+  if (!regiao) {
+    mostrarNotificacao('⚠️ Selecione a região primeiro!');
+    return;
+  }
+  
+  const dropdown = document.getElementById('area-dropdown');
+  if (dropdown.classList.contains('visible')) {
+    dropdown.classList.remove('visible');
+  } else {
+    renderizarAreasDropdown('');
+    dropdown.classList.add('visible');
+  }
+}
+
+function filtrarAreas(termo) {
+  const regiao = document.getElementById('regiao').value;
+  if (!regiao) return;
+  renderizarAreasDropdown(termo);
+  document.getElementById('area-dropdown').classList.add('visible');
+}
+
+function renderizarAreasDropdown(filtro) {
+  const regiao = document.getElementById('regiao').value;
+  const dropdown = document.getElementById('area-dropdown');
+  const areas = DADOS_REGIOES[regiao] ? Object.keys(DADOS_REGIOES[regiao]) : [];
+  const filtradas = areas.filter(a => a.toUpperCase().includes(filtro.toUpperCase()));
+  
+  dropdown.innerHTML = '';
+  if (filtradas.length === 0) {
+    dropdown.innerHTML = '<div class="dropdown-empty">Nenhuma área encontrada</div>';
+    return;
+  }
+  
+  filtradas.forEach(area => {
+    const div = document.createElement('div');
+    div.className = 'dropdown-item';
+    div.textContent = area;
+    div.onclick = function(e) {
+      e.stopPropagation();
+      document.getElementById('area').value = area;
+      areaSelecionada = area;
+      dropdown.classList.remove('visible');
+      onCampoAlterado();
+    };
+    dropdown.appendChild(div);
+  });
+}
+
+// ============================================
+// DROPDOWN DE LOCALIDADES (para equipes)
+// ============================================
+function getLocalidadesDisponiveis() {
+  const regiao = document.getElementById('regiao').value;
+  const area = areaSelecionada || document.getElementById('area').value;
+  
+  if (!regiao || !area) return [];
+  if (!DADOS_REGIOES[regiao] || !DADOS_REGIOES[regiao][area]) return [];
+  
+  return DADOS_REGIOES[regiao][area];
+}
+
+function toggleLocalDropdown(inputId, dropdownId) {
+  const localidades = getLocalidadesDisponiveis();
+  if (localidades.length === 0) {
+    mostrarNotificacao('⚠️ Selecione Região e Área primeiro!');
+    return;
+  }
+  
+  const dropdown = document.getElementById(dropdownId);
+  fecharTodosDropdowns();
+  
+  if (!dropdown.classList.contains('visible')) {
+    renderizarLocalDropdown(inputId, dropdownId, '');
+    dropdown.classList.add('visible');
+  }
+}
+
+function filtrarLocal(inputId, dropdownId) {
+  const input = document.getElementById(inputId);
+  const termo = input.value;
+  renderizarLocalDropdown(inputId, dropdownId, termo);
+  document.getElementById(dropdownId).classList.add('visible');
+}
+
+function renderizarLocalDropdown(inputId, dropdownId, filtro) {
+  const dropdown = document.getElementById(dropdownId);
+  const localidades = getLocalidadesDisponiveis();
+  const filtradas = localidades.filter(l => l.toUpperCase().includes(filtro.toUpperCase()));
+  
+  dropdown.innerHTML = '';
+  if (filtradas.length === 0) {
+    dropdown.innerHTML = '<div class="dropdown-empty">Nenhuma localidade</div>';
+    return;
+  }
+  
+  filtradas.forEach(local => {
+    const div = document.createElement('div');
+    div.className = 'dropdown-item';
+    div.textContent = local;
+    div.onclick = function(e) {
+      e.stopPropagation();
+      document.getElementById(inputId).value = local;
+      dropdown.classList.remove('visible');
+      onCampoAlterado();
+    };
+    dropdown.appendChild(div);
+  });
+}
+
+// ============================================
+// CONFIGURAÇÕES
+// ============================================
+function abrirConfiguracoes() { document.getElementById('config-popup').style.display = 'block'; }
+function aplicarCor(t, c) {
+  document.documentElement.style.setProperty('--cor-' + t, c);
+  configCores[t] = c;
+  const s = document.getElementById('section-' + t);
+  if (s) { s.style.borderColor = c; const h = s.querySelector('.section-header'); if (h) h.style.background = c; }
+}
+function aplicarTodasCores() { for (let t in configCores) { document.getElementById('cor-' + t).value = configCores[t]; aplicarCor(t, configCores[t]); } }
+function salvarConfiguracoes() { localStorage.setItem('troca_turno_cores', JSON.stringify(configCores)); mostrarNotificacao('✅ Cores salvas!'); fecharPopup('config-popup'); }
+function carregarConfiguracoes() { const s = localStorage.getItem('troca_turno_cores'); if (s) { configCores = JSON.parse(s); aplicarTodasCores(); } }
+function resetarCores() {
+  configCores = {};
+  const c = { dados: '#1a73e8', contagem: '#009688', equipes: '#4caf50', pendencias: '#ff9800', servicos: '#9c27b0', ocorrencias: '#e91e63', preview: '#607d8b' };
+  for (let t in c) { document.getElementById('cor-' + t).value = c[t]; aplicarCor(t, c[t]); }
+  localStorage.removeItem('troca_turno_cores');
+  mostrarNotificacao('🔄 Resetado!');
+}
+
+// ============================================
+// FUNÇÕES AUXILIARES
+// ============================================
+function toggleSection(h) { const c = h.nextElementSibling, t = h.querySelector('.section-toggle'); c.classList.toggle('collapsed'); t.classList.toggle('collapsed'); }
+function atualizarRelogio() { if (!globalTimerStart) return; document.getElementById('global-clock').textContent = formatTime(Math.floor((Date.now() - globalTimerStart) / 1000)); }
+function formatTime(s) { let h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60; return (h > 0 ? h + 'h ' : '') + m.toString().padStart(2, '0') + 'm ' + ss.toString().padStart(2, '0') + 's'; }
+function formatFullDateTime(d) { const m = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"]; return `${d.getDate()} de ${m[d.getMonth()]} de ${d.getFullYear()} às ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; }
+function formatarOperador(i) { i.value = i.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').toUpperCase(); if (i.value.trim()) { i.classList.remove('campo-obrigatorio-import'); verificarImportacao(); } }
+function aplicarMascaraLead(i) { let v = i.value.toUpperCase().replace(/[^A-Z0-9]/g, ''), r = ''; for (let x = 0; x < v.length && x < 9; x++) { if (x === 3 || x === 5) r += '-'; r += v[x]; } i.value = r; }
+function formatarTelefone(i) { let v = i.value.replace(/\D/g, ''); if (v.length > 9) v = v.slice(0, 9); if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5); i.value = v; }
+function formatarCodigo(i) { i.value = i.value.replace(/\D/g, '').slice(0, 8); }
+function verificarImportacao() { if (!sessaoImportada) return; const o = document.getElementById('operador').value.trim(), e = document.getElementById('turno-entrada').value; if (o && e) { document.getElementById('aviso-importacao').style.display = 'none'; document.getElementById('turno-entrada').classList.remove('campo-obrigatorio-import'); sessaoImportada = false; mostrarNotificacao('✅ Liberado!'); } }
+function onCampoAlterado() { const e = document.getElementById('turno-entrada'); if (e.value) e.classList.remove('campo-obrigatorio-import'); verificarImportacao(); salvarSessaoAuto(); atualizarPreview(); }
+function toggleModoNoturno() { modoNoturno = !modoNoturno; document.getElementById('previewBox').classList.toggle('modo-noturno', modoNoturno); }
+
+// ============================================
+// SELEÇÃO DE ITENS
+// ============================================
+function selecionarComDetalhes(id, v, b) { const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta'), c = document.getElementById('campos-' + id), d = document.getElementById('desfazer-' + id); bs.forEach(x => { if (x !== b) x.style.display = 'none'; else x.classList.add('selecionado'); }); d.classList.add('visible'); if (v === 'sim') c.classList.add('visible'); else { c.classList.remove('visible'); const cx = document.getElementById('caixas-' + id); if (cx) cx.classList.remove('visible'); } estados[id] = v; onCampoAlterado(); }
+function verificarQuantidade(id) { const q = parseInt(document.getElementById(id + '-qtd').value) || 0; if (q > 0 && !detalhesPendentes[id]) { itemAtualDetalhe = id; document.getElementById('detalhe-popup-texto').textContent = `Especificar as ${q} ocorrência(s)?`; document.getElementById('detalhe-popup').style.display = 'block'; } }
+function confirmarDetalhes(s) { document.getElementById('detalhe-popup').style.display = 'none'; if (itemAtualDetalhe) { detalhesPendentes[itemAtualDetalhe] = true; if (s) gerarCaixasDinamicas(itemAtualDetalhe); itemAtualDetalhe = null; } onCampoAlterado(); }
+function gerarCaixasDinamicas(id) { const q = parseInt(document.getElementById(id + '-qtd').value) || 0, c = document.getElementById('caixas-' + id); if (!c) return; c.innerHTML = ''; if (q <= 0) { c.classList.remove('visible'); return; } for (let i = 1; i <= q; i++) { const d = document.createElement('div'); d.className = 'caixa-item'; d.innerHTML = `<label>#${i}:</label><input type="text" class="codigo-input" id="${id}-codigo-${i}" placeholder="Código" maxlength="8" oninput="formatarCodigo(this)" onchange="onCampoAlterado()"><input type="text" class="descricao-input" id="${id}-desc-${i}" placeholder="Descrição" onchange="onCampoAlterado()">`; c.appendChild(d); } c.classList.add('visible'); }
+function desfazerItem(id) { const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta'), c = document.getElementById('campos-' + id), d = document.getElementById('desfazer-' + id), cx = document.getElementById('caixas-' + id); bs.forEach(x => { x.style.display = ''; x.classList.remove('selecionado'); }); d.classList.remove('visible'); c.classList.remove('visible'); if (cx) { cx.innerHTML = ''; cx.classList.remove('visible'); } const q = document.getElementById(id + '-qtd'), o = document.getElementById(id + '-obs'); if (q) q.value = ''; if (o) o.value = ''; delete estados[id]; delete detalhesPendentes[id]; onCampoAlterado(); }
+function selecionarSimples(id, v, b) { const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta'), c = document.getElementById('campos-' + id), d = document.getElementById('desfazer-' + id); bs.forEach(x => { if (x !== b) x.style.display = 'none'; else x.classList.add('selecionado'); }); d.classList.add('visible'); if (v === 'sim') c.classList.add('visible'); else c.classList.remove('visible'); estados[id] = v; onCampoAlterado(); }
+function desfazerSimples(id) { const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta'), c = document.getElementById('campos-' + id), d = document.getElementById('desfazer-' + id); bs.forEach(x => { x.style.display = ''; x.classList.remove('selecionado'); }); d.classList.remove('visible'); c.classList.remove('visible'); delete estados[id]; onCampoAlterado(); }
+function restaurarEstadosBotoes() { for (let id in estados) { const v = estados[id], bc = document.getElementById('btns-' + id), c = document.getElementById('campos-' + id), d = document.getElementById('desfazer-' + id); if (!bc) continue; bc.querySelectorAll('.btn-resposta').forEach(b => { if ((b.classList.contains('btn-sim') && v === 'sim') || (b.classList.contains('btn-nao') && v === 'nao')) b.classList.add('selecionado'); else b.style.display = 'none'; }); if (d) d.classList.add('visible'); if (c && v === 'sim') c.classList.add('visible'); } }
+function restaurarCaixas(data) { ['manobra','pesada','pesada-afetacao','linha-viva','clientes-vitais','cabo-partido','falta-varios','clientes-m1','religador','poste-mt','poste-bt'].forEach(id => { const q = parseInt(document.getElementById(id + '-qtd')?.value) || 0; if (q > 0 && data[id]) { gerarCaixasDinamicas(id); data[id].forEach((it, i) => { const cd = document.getElementById(id + '-codigo-' + (i + 1)), ds = document.getElementById(id + '-desc-' + (i + 1)); if (cd) cd.value = it.codigo || ''; if (ds) ds.value = it.desc || ''; }); } }); }
+
+// ============================================
+// EQUIPES
+// ============================================
+function adicionarEquipe() {
+  equipeCount++;
+  const c = document.getElementById('equipes-container');
+  const d = document.createElement('div');
+  d.className = 'equipe-linha';
+  d.id = 'equipe-' + equipeCount;
+  d.innerHTML = `
+    <input type="text" class="lead-input" id="equipe-${equipeCount}-lead" placeholder="XXX-XX-XXX" maxlength="11" oninput="aplicarMascaraLead(this)" onchange="onCampoAlterado()">
+    <input type="tel" class="tel-input" id="equipe-${equipeCount}-telefone" placeholder="00000-0000" maxlength="10" oninput="formatarTelefone(this)" onchange="onCampoAlterado()">
+    <div class="autocomplete-wrapper">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local1" placeholder="Local 1" 
+             onclick="toggleLocalDropdown('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')"
+             oninput="filtrarLocal('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')" 
+             autocomplete="off">
+      <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-1"></div>
+    </div>
+    <div class="autocomplete-wrapper">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local2" placeholder="Local 2" 
+             onclick="toggleLocalDropdown('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')"
+             oninput="filtrarLocal('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')" 
+             autocomplete="off">
+      <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-2"></div>
+    </div>
+    <div class="autocomplete-wrapper">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local3" placeholder="Local 3" 
+             onclick="toggleLocalDropdown('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')"
+             oninput="filtrarLocal('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')" 
+             autocomplete="off">
+      <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-3"></div>
+    </div>
+    <button class="equipe-remove" onclick="removerEquipe(${equipeCount})">✕</button>
+  `;
+  c.appendChild(d);
+  atualizarContadorEquipes();
+  onCampoAlterado();
+}
+
+function adicionarEquipeComDados(dados) {
+  equipeCount++;
+  const c = document.getElementById('equipes-container');
+  const d = document.createElement('div');
+  d.className = 'equipe-linha';
+  d.id = 'equipe-' + equipeCount;
+  d.innerHTML = `
+    <input type="text" class="lead-input" id="equipe-${equipeCount}-lead" value="${dados.lead || ''}" placeholder="XXX-XX-XXX" maxlength="11" oninput="aplicarMascaraLead(this)" onchange="onCampoAlterado()">
+    <input type="tel" class="tel-input" id="equipe-${equipeCount}-telefone" value="${dados.telefone || ''}" placeholder="00000-0000" maxlength="10" oninput="formatarTelefone(this)" onchange="onCampoAlterado()">
+    <div class="autocomplete-wrapper">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local1" value="${dados.local1 || dados.localidade || ''}" placeholder="Local 1" 
+             onclick="toggleLocalDropdown('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')"
+             oninput="filtrarLocal('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')" 
+             autocomplete="off">
+      <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-1"></div>
+    </div>
+    <div class="autocomplete-wrapper">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local2" value="${dados.local2 || ''}" placeholder="Local 2" 
+             onclick="toggleLocalDropdown('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')"
+             oninput="filtrarLocal('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')" 
+             autocomplete="off">
+      <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-2"></div>
+    </div>
+    <div class="autocomplete-wrapper">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local3" value="${dados.local3 || ''}" placeholder="Local 3" 
+             onclick="toggleLocalDropdown('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')"
+             oninput="filtrarLocal('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')" 
+             autocomplete="off">
+      <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-3"></div>
+    </div>
+    <button class="equipe-remove" onclick="removerEquipe(${equipeCount})">✕</button>
+  `;
+  c.appendChild(d);
+  atualizarContadorEquipes();
+}
+
+function removerEquipe(id) { const e = document.getElementById('equipe-' + id); if (e) { e.remove(); atualizarContadorEquipes(); onCampoAlterado(); } }
+function removerUltimaEquipe() { const c = document.getElementById('equipes-container'); if (c.lastChild) { c.removeChild(c.lastChild); atualizarContadorEquipes(); onCampoAlterado(); } }
+function atualizarContadorEquipes() { document.getElementById('equipes-count').textContent = document.getElementById('equipes-container').children.length; }
+function coletarEquipes() { const e = []; document.querySelectorAll('.equipe-linha').forEach(el => { const id = el.id.replace('equipe-', ''); e.push({ lead: document.getElementById('equipe-' + id + '-lead')?.value || '', telefone: document.getElementById('equipe-' + id + '-telefone')?.value || '', local1: document.getElementById('equipe-' + id + '-local1')?.value || '', local2: document.getElementById('equipe-' + id + '-local2')?.value || '', local3: document.getElementById('equipe-' + id + '-local3')?.value || '' }); }); return e; }
+
+// ============================================
+// SESSÃO E DADOS
+// ============================================
+function salvarSessaoAuto() { const d = coletarTodosDados(); d.timerStart = globalTimerStart; d.equipeCount = equipeCount; d.operadorAnterior = operadorAnterior; d.estados = estados; d.detalhesPendentes = detalhesPendentes; d.configCores = configCores; localStorage.setItem('troca_turno_v5', JSON.stringify(d)); const o = document.getElementById('operador').value.trim(); if (o) { document.getElementById('sessao-info').style.display = 'block'; document.getElementById('sessao-operador-info').textContent = o; } }
+function coletarTodosDados() { const d = { turnoData: document.getElementById('turno-data').value, turnoEntrada: document.getElementById('turno-entrada').value, operador: document.getElementById('operador').value, regiao: document.getElementById('regiao').value, area: document.getElementById('area').value, fRecebidos: document.getElementById('f-recebidos').value, fPendentes: document.getElementById('f-pendentes').value, incidenciasTelaQtd: document.getElementById('incidencias-tela-qtd').value, incidenciasAntigasQtd: document.getElementById('incidencias-antigas-qtd')?.value || '', sobreavisoObs: document.getElementById('sobreaviso-obs')?.value || '', equipes: coletarEquipes(), caixasDinamicas: coletarCaixas() }; ['manobra','pesada','pesada-afetacao','linha-viva','religador','poste-mt','poste-bt'].forEach(id => { d[id + 'Qtd'] = document.getElementById(id + '-qtd')?.value || ''; d[id + 'Obs'] = document.getElementById(id + '-obs')?.value || ''; }); ['clientes-vitais','cabo-partido','falta-varios','clientes-m1'].forEach(id => { d[id.replace(/-/g, '') + 'Qtd'] = document.getElementById(id + '-qtd')?.value || ''; }); return d; }
+function coletarCaixas() { const r = {}; ['manobra','pesada','pesada-afetacao','linha-viva','clientes-vitais','cabo-partido','falta-varios','clientes-m1','religador','poste-mt','poste-bt'].forEach(id => { const q = parseInt(document.getElementById(id + '-qtd')?.value) || 0; r[id] = []; for (let i = 1; i <= q; i++) { r[id].push({ codigo: document.getElementById(id + '-codigo-' + i)?.value || '', desc: document.getElementById(id + '-desc-' + i)?.value || '' }); } }); return r; }
+
+// ============================================
+// VALIDAÇÃO
+// ============================================
+function verificarCamposObrigatorios() { const m = []; if (!document.getElementById('turno-data').value) m.push('📅 Data'); if (!document.getElementById('turno-entrada').value) m.push('🕐 Turno do Dia'); if (!document.getElementById('operador').value.trim()) m.push('👤 Operador'); if (!document.getElementById('regiao').value) m.push('🗺️ Região'); if (!document.getElementById('area').value) m.push('📍 Área'); if (!document.getElementById('f-recebidos').value) m.push('📊 F Recebidos'); if (!document.getElementById('f-pendentes').value) m.push('📊 F Pendentes'); if (!document.getElementById('incidencias-tela-qtd').value) m.push('📺 Incidências'); for (let id in estados) { if (estados[id] === 'sim') { const q = document.getElementById(id + '-qtd'); if (q && !q.value && id !== 'sobreaviso') m.push('⚠️ ' + id.toUpperCase() + ' (qtd)'); } } if (m.length > 0) { document.getElementById('obrigatorio-text').innerHTML = '🚨 OBRIGATÓRIO:<br><br>' + m.join('<br>'); document.getElementById('obrigatorio-popup').style.display = 'block'; return false; } return true; }
+
+// ============================================
+// GERAR MENSAGEM
+// ============================================
+function atualizarPreview() { gerarMensagem(false); }
+function gerarMensagem(v = true) {
+  const dt = document.getElementById('turno-data').value;
+  const td = document.getElementById('turno-entrada').value;
+  const op = document.getElementById('operador').value;
+  const rg = document.getElementById('regiao').value;
+  const ar = document.getElementById('area').value;
+  const fr = document.getElementById('f-recebidos').value;
+  const fp = document.getElementById('f-pendentes').value;
+  const ic = document.getElementById('incidencias-tela-qtd').value;
+  
+  let df = '';
+  if (dt) { const p = dt.split('-'); df = `${p[2]}/${p[1]}/${p[0]}`; }
+  
+  let msg = '';
+  if (ar) msg += `----------- *${ar}* -------------\n\n`;
+  msg += `*DATA:* ${df}\n*TURNO DO DIA:* ${td}\n*OPERADOR:* ${op}\n*F RECEBIDOS:* ${fr || '0'}\n*F PENDENTES:* ${fp || '0'}\n*REGIÃO:* ${rg}\n*ÁREA:* ${ar}\n\n`;
+  if (operadorAnterior) msg += `📋 *RELATÓRIO DE:* ${operadorAnterior}\n\n`;
+  
+  const eq = coletarEquipes();
+  if (eq.length > 0) {
+    msg += `-------- *EQUIPES (${eq.length})* --------\n`;
+    eq.forEach(e => {
+      if (e.lead) {
+        msg += e.lead;
+        if (e.telefone) msg += ` - 85 ${e.telefone}`;
+        const ls = [e.local1, e.local2, e.local3].filter(l => l);
+        if (ls.length > 0) msg += ` | ${ls.join(' / ')}`;
+        msg += '\n';
+      }
+    });
+    msg += '\n';
+  }
+  
+  let pn = '';
+  ['manobra','pesada','pesada-afetacao','linha-viva'].forEach(id => {
+    if (estados[id] === 'sim') {
+      const q = document.getElementById(id + '-qtd').value || '0';
+      const o = document.getElementById(id + '-obs').value || '-';
+      pn += `• ${id.toUpperCase()}: ${q} — ${o}\n`;
+      for (let i = 1; i <= parseInt(q); i++) {
+        const cd = document.getElementById(id + '-codigo-' + i)?.value;
+        const ds = document.getElementById(id + '-desc-' + i)?.value;
+        if (cd || ds) pn += `  → ${cd || ''} - ${ds || ''}\n`;
+      }
+    }
+  });
+  if (pn) msg += `---------- *PENDÊNCIAS* ----------\n${pn}\n`;
+  
+  let sv = '';
+  ['clientes-vitais','cabo-partido','falta-varios','clientes-m1'].forEach(id => {
+    if (estados[id] === 'sim') {
+      const q = document.getElementById(id + '-qtd').value || '0';
+      sv += `• ${id.toUpperCase()}: ${q}\n`;
+      for (let i = 1; i <= parseInt(q); i++) {
+        const cd = document.getElementById(id + '-codigo-' + i)?.value;
+        const ds = document.getElementById(id + '-desc-' + i)?.value;
+        if (cd || ds) sv += `  → ${cd || ''} - ${ds || ''}\n`;
+      }
+    }
+  });
+  if (estados['incidencias-antigas'] === 'sim') sv += `• INCIDÊNCIAS ANTIGAS: ${document.getElementById('incidencias-antigas-qtd').value || '0'}\n`;
+  msg += `📈 *SERVIÇOS*\n${sv}📺 *INCIDÊNCIAS EM TELA:* ${ic || '0'}\n\n`;
+  
+  let oc = '';
+  ['religador','poste-mt','poste-bt'].forEach(id => {
+    if (estados[id] === 'sim') {
+      const q = document.getElementById(id + '-qtd').value || '0';
+      const o = document.getElementById(id + '-obs').value || '-';
+      oc += `• ${id.toUpperCase()}: ${q} — ${o}\n`;
+      for (let i = 1; i <= parseInt(q); i++) {
+        const cd = document.getElementById(id + '-codigo-' + i)?.value;
+        const ds = document.getElementById(id + '-desc-' + i)?.value;
+        if (cd || ds) oc += `  → ${cd || ''} - ${ds || ''}\n`;
+      }
+    }
+  });
+  if (estados['sobreaviso'] === 'sim') oc += `• SOBREAVISO: ${document.getElementById('sobreaviso-obs').value || '-'}\n`;
+  if (oc) msg += `🚨 *OCORRÊNCIAS MT*\n${oc}\n`;
+  
+  if (globalTimerStart) msg += `*TEMPO:* ${formatTime(Math.floor((Date.now() - globalTimerStart) / 1000))}\n`;
+  msg += formatFullDateTime(new Date()) + '\n';
+  
+  document.getElementById('previewBox').textContent = msg.toUpperCase();
+  return msg.toUpperCase();
+}
+
+// ============================================
+// AÇÕES FINAIS
+// ============================================
+function finalizarTurno() {
+  document.querySelectorAll('.section-content.collapsed').forEach(e => e.classList.remove('collapsed'));
+  document.querySelectorAll('.section-toggle.collapsed').forEach(e => e.classList.remove('collapsed'));
+  if (!verificarCamposObrigatorios()) return;
+  const msg = gerarMensagem(true);
+  mostrarNotificacao('⏳ Gerando...');
+  const c = document.getElementById('main-container');
+  const op = document.getElementById('operador').value.trim() || 'OP';
+  const rg = document.getElementById('regiao').value || 'REG';
+  const ar = document.getElementById('area').value || 'AREA';
+  const ds = document.getElementById('turno-data').value.replace(/-/g, '_');
+  const ag = new Date();
+  const hr = `${ag.getHours().toString().padStart(2,'0')}h${ag.getMinutes().toString().padStart(2,'0')}m`;
+  const bn = `TROCA_TURNO_${op.replace(/\s+/g,'_')}_${rg}_${ar}_${ds}_${hr}`;
+  
+  html2pdf().set({
+    margin: 3,
+    filename: bn + '.pdf',
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: { scale: 2, scrollY: 0, windowHeight: c.scrollHeight },
+    jsPDF: { unit: 'px', format: [c.scrollWidth + 20, c.scrollHeight + 20], orientation: 'portrait' },
+    pagebreak: { mode: 'avoid-all' }
+  }).from(c).save();
+  
+  setTimeout(() => {
+    const d = coletarTodosDados();
+    d.configCores = configCores;
+    const b = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
+    const u = URL.createObjectURL(b);
+    const a = document.createElement('a');
+    a.href = u;
+    a.download = bn + '.json';
+    a.click();
+    URL.revokeObjectURL(u);
+    mostrarNotificacao('✅ Finalizado!');
+  }, 1000);
+}
+
+function enviarWhatsApp() { if (!verificarCamposObrigatorios()) return; const m = gerarMensagem(true); window.open(`https://wa.me/?text=${encodeURIComponent(m)}`, '_blank'); }
+function limparPreview() { document.getElementById('previewBox').textContent = ''; }
+function resetarTurno() {
+  document.getElementById('reset-popup').style.display = 'block';
+}
+
+function confirmarReset() {
+  localStorage.removeItem('troca_turno_v5');
+  location.reload();
+}
+function mostrarNotificacao(t) { document.getElementById('notification-text').innerHTML = t; document.getElementById('notification-popup').style.display = 'block'; setTimeout(() => document.getElementById('notification-popup').style.display = 'none', 3500); }
+function fecharPopup(id) { document.getElementById(id).style.display = 'none'; }
+document.getElementById('clickOverlay').addEventListener('click', function(e) { document.getElementById('body-popup').style.display = 'block'; e.stopPropagation(); });
+</script>
+</body>
+</html>
