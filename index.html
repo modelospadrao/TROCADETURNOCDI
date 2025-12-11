@@ -21,6 +21,7 @@
     .container { width: 95%; margin: 10px auto; background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
     
     #global-clock { position: fixed; top: 8px; left: 8px; font-size: 15px; font-family: 'Courier New', monospace; color: #fff; background: #000; padding: 5px 10px; border-radius: 8px; z-index: 1001; display: none; }
+    #auto-save-indicator { position: fixed; top: 40px; left: 8px; font-size: 10px; color: #4caf50; background: rgba(0,0,0,0.8); padding: 3px 8px; border-radius: 4px; z-index: 1001; display: none; }
     
     #btn-config { position: fixed; top: 8px; right: 8px; background: #333; color: #fff; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; z-index: 1001; }
     #btn-config:hover { background: #555; }
@@ -37,7 +38,6 @@
     .section-toggle.collapsed { transform: rotate(-90deg); }
     .section-content { padding: 12px; transition: max-height 0.3s ease; overflow: visible; }
     .section-content.collapsed { max-height: 0 !important; padding: 0 12px; overflow: hidden; }
-    .section-subtitle { font-size: 10px; font-weight: normal; opacity: 0.9; margin-left: 10px; }
     
     .section-contagem { border-color: var(--cor-contagem); }
     .section-contagem .section-header { background: var(--cor-contagem); }
@@ -80,78 +80,39 @@
     .caixas-dinamicas.visible { display: block; }
     .caixa-item { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
     .caixa-item label { margin: 0; font-size: 10px; min-width: 40px; }
-    .caixa-item input.codigo-input { width: 90px; font-family: monospace; font-size: 12px; }
+    .caixa-item input.codigo-input { width: 100px; font-family: monospace; font-size: 12px; }
     .caixa-item input.descricao-input { flex: 1; min-width: 150px; font-size: 12px; }
+    .caixa-item .btn-remove-item { background: #f44336; color: #fff; border: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; font-size: 10px; }
     
     .equipe-linha { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 6px 8px; background: #f9fff9; border: 1px solid #4caf50; border-radius: 4px; margin: 4px 0; position: relative; }
     .equipe-linha input { margin: 0; font-size: 11px; padding: 5px; }
     .equipe-linha .lead-input { width: 100px; font-family: monospace; text-transform: uppercase; }
-    .equipe-linha .tel-input { width: 90px; }
+    .equipe-linha .tel-input { width: 110px; }
     .equipe-linha .local-input { width: 110px; font-size: 10px; cursor: pointer; }
     .equipe-linha .equipe-remove { background: #f44336; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; }
     
-    /* AUTOCOMPLETE - Lista suspensa customizada */
     .autocomplete-wrapper { position: relative; display: inline-block; }
     .autocomplete-dropdown {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 200px;
-      max-height: 200px;
-      overflow-y: auto;
-      background: #fff;
-      border: 2px solid #4caf50;
-      border-radius: 6px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-      z-index: 9999;
-      display: none;
+      position: absolute; top: 100%; left: 0; width: 200px; max-height: 200px;
+      overflow-y: auto; background: #fff; border: 2px solid #4caf50; border-radius: 6px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3); z-index: 9999; display: none;
     }
     .autocomplete-dropdown.visible { display: block; }
     .autocomplete-dropdown .dropdown-item {
-      padding: 10px 12px;
-      cursor: pointer;
-      font-size: 12px;
-      text-transform: uppercase;
-      border-bottom: 1px solid #eee;
-      background: #fff;
-      color: #333;
+      padding: 10px 12px; cursor: pointer; font-size: 12px; text-transform: uppercase;
+      border-bottom: 1px solid #eee; background: #fff; color: #333;
     }
     .autocomplete-dropdown .dropdown-item:last-child { border-bottom: none; }
     .autocomplete-dropdown .dropdown-item:hover { background: #e8f5e9; color: #2e7d32; }
-    .autocomplete-dropdown .dropdown-item.selected { background: #4caf50; color: #fff; }
-    .autocomplete-dropdown .dropdown-empty {
-      padding: 12px;
-      text-align: center;
-      color: #999;
-      font-size: 11px;
-      font-style: italic;
-    }
+    .autocomplete-dropdown .dropdown-empty { padding: 12px; text-align: center; color: #999; font-size: 11px; font-style: italic; }
     
-    /* Dropdown para Área */
     .area-dropdown {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      max-height: 180px;
-      overflow-y: auto;
-      background: #fff;
-      border: 2px solid #1a73e8;
-      border-radius: 6px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-      z-index: 9999;
-      display: none;
+      position: absolute; top: 100%; left: 0; width: 100%; max-height: 180px;
+      overflow-y: auto; background: #fff; border: 2px solid #1a73e8; border-radius: 6px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3); z-index: 9999; display: none;
     }
     .area-dropdown.visible { display: block; }
-    .area-dropdown .dropdown-item {
-      padding: 10px 12px;
-      cursor: pointer;
-      font-size: 12px;
-      text-transform: uppercase;
-      border-bottom: 1px solid #eee;
-      background: #fff;
-      color: #333;
-    }
+    .area-dropdown .dropdown-item { padding: 10px 12px; cursor: pointer; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #eee; background: #fff; color: #333; }
     .area-dropdown .dropdown-item:hover { background: #e3f2fd; color: #1565c0; }
     
     .btn-acao { border: none; padding: 10px 18px; margin: 3px; font-size: 12px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: all 0.2s; }
@@ -161,12 +122,14 @@
     .btn-limpar { background: #f44336; color: #fff; }
     .btn-adicionar { background: #4caf50; color: #fff; }
     .btn-modo { background: #333; color: #fff; font-size: 11px; padding: 6px 12px; }
+    .btn-copiar { background: #2196F3; color: #fff; font-size: 11px; padding: 6px 12px; }
     
     #reset-button { background: #000; color: #fff; border: none; padding: 10px 25px; font-size: 14px; border-radius: 20px; cursor: pointer; display: block; margin: 15px auto; font-family: 'Courier New', monospace; font-style: italic; }
     
-    .preview-box { background: #fff; color: #000; border: 1px solid #ccc; padding: 12px; border-radius: 6px; white-space: pre-wrap; font-family: monospace; font-size: 11px; min-height: 120px; }
+    .preview-box { background: #fff; color: #000; border: 1px solid #ccc; padding: 12px; border-radius: 6px; white-space: pre-wrap; font-family: monospace; font-size: 11px; min-height: 120px; cursor: default; }
     .preview-box.modo-noturno { background: #000; color: #fff; border: none; }
-    .preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .preview-box.navegavel { cursor: pointer; }
+    .preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
     
     .popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; background: rgba(0,0,0,0.95); color: #fff; font-size: 14px; border-radius: 12px; z-index: 10000; box-shadow: 0 5px 30px rgba(0,0,0,0.5); text-align: center; max-width: 90%; }
     .popup-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 15px; flex-wrap: wrap; }
@@ -174,12 +137,15 @@
     .popup .yes-button { background: #4CAF50; color: #fff; }
     .popup .no-button { background: #f44336; color: #fff; }
     .popup .import-button { background: #9C27B0; color: #fff; }
+    .popup .restore-button { background: #2196F3; color: #fff; }
     .popup .close-button { background: #666; color: #fff; margin-top: 10px; }
     
     #config-popup { max-width: 350px; }
     .config-item { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 5px; }
     .config-item label { font-size: 12px; }
     .config-item input[type="color"] { width: 40px; height: 30px; border: none; cursor: pointer; }
+    .config-toggle { display: flex; align-items: center; gap: 8px; }
+    .config-toggle input[type="checkbox"] { width: 18px; height: 18px; }
     
     #clickOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1050; display: none; }
     #body-popup { display: none; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: #fff; padding: 10px 20px; border-radius: 8px; z-index: 2500; font-size: 13px; cursor: pointer; }
@@ -200,11 +166,13 @@
     [data-tooltip] { position: relative; }
     [data-tooltip]:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 5px 10px; border-radius: 4px; font-size: 11px; white-space: nowrap; z-index: 100; margin-bottom: 5px; }
     .section-header[data-tooltip]:hover::after { bottom: auto; top: 100%; margin-top: 5px; margin-bottom: 0; }
+    
+    .highlight-section { animation: highlightPulse 1.5s ease; }
+    @keyframes highlightPulse { 0%, 100% { box-shadow: 0 3px 10px rgba(0,0,0,0.12); } 50% { box-shadow: 0 0 25px rgba(33, 150, 243, 0.8); } }
   </style>
 </head>
 <body>
   
-    <!-- Popup Confirmar Reset -->
   <div id="reset-popup" class="popup">
     <p style="font-size: 18px;">⚠️ <strong>ATENÇÃO!</strong></p>
     <p>Tem certeza que deseja reiniciar?<br><span style="color: #ff6b6b; font-size: 12px;">Todos os dados serão perdidos!</span></p>
@@ -214,10 +182,21 @@
     </div>
   </div>
 
+  <div id="restore-popup" class="popup">
+    <p style="font-size: 18px;">💾 <strong>SESSÃO ENCONTRADA!</strong></p>
+    <p>Existe uma sessão salva. O que deseja fazer?</p>
+    <div class="popup-buttons">
+      <button class="restore-button" onclick="restaurarSessaoCache()">🔄 CONTINUAR SESSÃO</button>
+      <button class="yes-button" onclick="iniciarDoZeroNovo()">🆕 INICIAR NOVA</button>
+      <button class="import-button" onclick="abrirImportacaoRestore()">📥 IMPORTAR</button>
+    </div>
+  </div>
+
   <div id="clickOverlay"></div>
   <div id="body-popup" onclick="this.style.display='none';">⚠️ Campos bloqueados! Use "REINICIAR TURNO".</div>
   <div id="global-clock">00:00</div>
-  <button id="btn-config" onclick="abrirConfiguracoes()" data-tooltip="Configurações de cores">⚙️ TEMA CORES</button>
+  <div id="auto-save-indicator">💾 Salvo</div>
+  <button id="btn-config" onclick="abrirConfiguracoes()" data-tooltip="Configurações">⚙️ TEMA</button>
   
   <div id="inicio-popup" class="popup">
     <p style="font-size: 20px;">🔄 <strong>TROCA DE TURNO</strong></p>
@@ -240,14 +219,14 @@
   <div id="confirmar-popup" class="popup">
     <p style="font-size: 16px;">⚠️ <strong>ATENÇÃO!</strong></p>
     <p>Assumindo turno de: <strong id="nome-anterior-popup"></strong></p>
-    <p style="color: #ffc107; font-size: 12px;">Preencha SEU NOME e TURNO DO DIA!</p>
+    <p style="color: #ffc107; font-size: 12px;">Preencha: OPERADOR, TURNO, F PENDENTES e INCIDÊNCIAS!</p>
     <div class="popup-buttons">
       <button class="yes-button" onclick="confirmarImportacao()">✓ ENTENDI</button>
     </div>
   </div>
   
   <div id="detalhe-popup" class="popup">
-    <p style="font-size: 14px;">📝 <strong>ESPECIFICAR DETALHES?</strong></p>
+    <p style="font-size: 14px;">📝 <strong>DESEJA OBSERVAR?</strong></p>
     <p id="detalhe-popup-texto">Deseja detalhar as ocorrências?</p>
     <div class="popup-buttons">
       <button class="yes-button" onclick="confirmarDetalhes(true)">SIM</button>
@@ -266,7 +245,7 @@
   </div>
   
   <div id="config-popup" class="popup">
-    <p style="font-size: 16px;">⚙️ <strong>CONFIGURAÇÕES DE CORES</strong></p>
+    <p style="font-size: 16px;">⚙️ <strong>CONFIGURAÇÕES</strong></p>
     <div class="config-item"><label>📅 Dados:</label><input type="color" id="cor-dados" value="#1a73e8" onchange="aplicarCor('dados', this.value)"></div>
     <div class="config-item"><label>📊 Contagem:</label><input type="color" id="cor-contagem" value="#009688" onchange="aplicarCor('contagem', this.value)"></div>
     <div class="config-item"><label>👥 Equipes:</label><input type="color" id="cor-equipes" value="#4caf50" onchange="aplicarCor('equipes', this.value)"></div>
@@ -274,6 +253,11 @@
     <div class="config-item"><label>📈 Serviços:</label><input type="color" id="cor-servicos" value="#9c27b0" onchange="aplicarCor('servicos', this.value)"></div>
     <div class="config-item"><label>🚨 Ocorrências:</label><input type="color" id="cor-ocorrencias" value="#e91e63" onchange="aplicarCor('ocorrencias', this.value)"></div>
     <div class="config-item"><label>👁️ Preview:</label><input type="color" id="cor-preview" value="#607d8b" onchange="aplicarCor('preview', this.value)"></div>
+    <hr style="border-color: #444; margin: 15px 0;">
+    <div class="config-item config-toggle">
+      <label>🖱️ Navegação por clique:</label>
+      <input type="checkbox" id="config-navegacao" checked onchange="toggleNavegacao()">
+    </div>
     <div class="popup-buttons">
       <button class="yes-button" onclick="salvarConfiguracoes()">💾 SALVAR</button>
       <button class="no-button" onclick="resetarCores()">🔄 RESETAR</button>
@@ -284,12 +268,12 @@
   <input type="file" id="importarArquivo" accept=".json" onchange="processarImportacao(this.files[0])">
   
   <div class="container" id="main-container">
-    <h2 style="text-align: center; color: #1a73e8; margin: 5px 0; font-size: 20px;">🔄 RELÁTORIO DE TROCA DE TURNO</h2>
-    <p style="text-align: center; color: #666; margin: 0 0 10px 0; font-size: 11px;">(Versão 5.3)</p>
+    <h2 style="text-align: center; color: #1a73e8; margin: 5px 0; font-size: 20px;">🔄 RELATÓRIO DE TROCA DE TURNO</h2>
+    <p style="text-align: center; color: #666; margin: 0 0 10px 0; font-size: 11px;">(Versão 5.4)</p>
     
     <div id="sessao-info" class="sessao-info" style="display: none;"><strong>📍 Sessão:</strong> <span id="sessao-operador-info"></span></div>
-    <div id="aviso-importacao" class="aviso-importacao" style="display: none;"><h4>⚠️ SESSÃO IMPORTADA</h4><p style="margin:0; font-size:11px;">De: <strong id="nome-anterior-aviso"></strong> | Preencha seu nome e turno!</p></div>
-    <div id="operador-anterior-box" class="operador-anterior" style="display: none;">📋 <strong>Relatório de:</strong> <span id="operador-anterior-nome"></span></div>
+    <div id="aviso-importacao" class="aviso-importacao" style="display: none;"><h4>⚠️ SESSÃO IMPORTADA</h4><p style="margin:0; font-size:11px;">De: <strong id="nome-anterior-aviso"></strong> | Atualize os campos obrigatórios!</p></div>
+    <div id="operador-anterior-box" class="operador-anterior" style="display: none;">📋 <strong>Relatório recebido de:</strong> <span id="operador-anterior-nome"></span></div>
     
     <!-- DADOS DO TURNO -->
     <div class="section" id="section-dados">
@@ -300,14 +284,14 @@
           <div><label class="obrigatorio">Turno do Dia:</label>
             <select id="turno-entrada" style="width:100%;" onchange="onCampoAlterado()">
               <option value="">Selecione...</option>
-              <option value="06:00 às 12:00">06:00 às 12:00</option>
-              <option value="12:00 às 18:00">12:00 às 18:00</option>
-              <option value="18:00 às 00:00">18:00 às 00:00</option>
-              <option value="00:00 às 06:00">00:00 às 06:00</option>
+              <option value="06:00 ÀS 12:00">06:00 ÀS 12:00</option>
+              <option value="12:00 ÀS 18:00">12:00 ÀS 18:00</option>
+              <option value="18:00 ÀS 00:00">18:00 ÀS 00:00</option>
+              <option value="00:00 ÀS 06:00">00:00 ÀS 06:00</option>
             </select>
           </div>
         </div>
-        <label class="obrigatorio">Operador:</label>
+        <label class="obrigatorio">Operador Atual:</label>
         <input type="text" id="operador" style="width:100%;" placeholder="SEU NOME" oninput="formatarOperador(this); onCampoAlterado()">
         <div class="row-inline">
           <div><label class="obrigatorio">Região:</label>
@@ -334,9 +318,9 @@
       <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>📊 CONTAGEM DE "F" + INCIDÊNCIAS</span><span class="section-toggle">▼</span></div>
       <div class="section-content">
         <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-          <div><label class="obrigatorio">F Recebidos:</label><input type="number" id="f-recebidos" min="0" placeholder="0" style="width:70px;" onchange="onCampoAlterado()"></div>
-          <div><label class="obrigatorio">F Pendentes:</label><input type="number" id="f-pendentes" min="0" placeholder="0" style="width:70px;" onchange="onCampoAlterado()"></div>
-          <div><label class="obrigatorio">📺 Incidências:</label><input type="number" id="incidencias-tela-qtd" min="0" placeholder="0" style="width:70px;" onchange="onCampoAlterado()"></div>
+          <div><label class="obrigatorio">F Recebidos:</label><input type="number" id="f-recebidos" min="0" placeholder="0" style="width:80px;" onchange="onCampoAlterado()"></div>
+          <div><label class="obrigatorio">F Pendentes:</label><input type="number" id="f-pendentes" min="0" placeholder="0" style="width:80px;" onchange="onCampoAlterado()"></div>
+          <div><label class="obrigatorio">📺 Incidências:</label><input type="number" id="incidencias-tela-qtd" min="0" placeholder="0" style="width:80px;" onchange="onCampoAlterado()"></div>
         </div>
       </div>
     </div>
@@ -422,7 +406,7 @@
     
     <!-- SERVIÇOS -->
     <div class="section section-servicos" id="section-servicos">
-      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>📈 QUANTIDADE DE SERVIÇOS</span><span class="section-toggle">▼</span></div>
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>📈 QTD. SERVIÇOS</span><span class="section-toggle">▼</span></div>
       <div class="section-content">
         <div class="item-box" id="box-clientes-vitais">
           <div class="item-header">
@@ -433,7 +417,7 @@
               <button class="btn-desfazer" id="desfazer-clientes-vitais" onclick="desfazerItem('clientes-vitais')">✕</button>
             </div>
             <div class="campos-inline" id="campos-clientes-vitais">
-              <label>Qtd:</label><input type="number" id="clientes-vitais-qtd" min="0" max="20" placeholder="0" onchange="verificarQuantidade('clientes-vitais'); onCampoAlterado()">
+              <label>Qtd:</label><input type="number" id="clientes-vitais-qtd" min="0" placeholder="0" onchange="verificarQuantidade('clientes-vitais'); onCampoAlterado()">
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-clientes-vitais"></div>
@@ -447,7 +431,7 @@
               <button class="btn-desfazer" id="desfazer-cabo-partido" onclick="desfazerItem('cabo-partido')">✕</button>
             </div>
             <div class="campos-inline" id="campos-cabo-partido">
-              <label>Qtd:</label><input type="number" id="cabo-partido-qtd" min="0" max="20" placeholder="0" onchange="verificarQuantidade('cabo-partido'); onCampoAlterado()">
+              <label>Qtd:</label><input type="number" id="cabo-partido-qtd" min="0" placeholder="0" onchange="verificarQuantidade('cabo-partido'); onCampoAlterado()">
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-cabo-partido"></div>
@@ -461,7 +445,7 @@
               <button class="btn-desfazer" id="desfazer-falta-varios" onclick="desfazerItem('falta-varios')">✕</button>
             </div>
             <div class="campos-inline" id="campos-falta-varios">
-              <label>Qtd:</label><input type="number" id="falta-varios-qtd" min="0" max="20" placeholder="0" onchange="verificarQuantidade('falta-varios'); onCampoAlterado()">
+              <label>Qtd:</label><input type="number" id="falta-varios-qtd" min="0" placeholder="0" onchange="verificarQuantidade('falta-varios'); onCampoAlterado()">
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-falta-varios"></div>
@@ -475,7 +459,7 @@
               <button class="btn-desfazer" id="desfazer-clientes-m1" onclick="desfazerItem('clientes-m1')">✕</button>
             </div>
             <div class="campos-inline" id="campos-clientes-m1">
-              <label>Qtd:</label><input type="number" id="clientes-m1-qtd" min="0" max="20" placeholder="0" onchange="verificarQuantidade('clientes-m1'); onCampoAlterado()">
+              <label>Qtd:</label><input type="number" id="clientes-m1-qtd" min="0" placeholder="0" onchange="verificarQuantidade('clientes-m1'); onCampoAlterado()">
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-clientes-m1"></div>
@@ -484,21 +468,22 @@
           <div class="item-header">
             <span class="item-title">Incidências Antigas</span>
             <div class="btn-group" id="btns-incidencias-antigas">
-              <button class="btn-resposta btn-sim" onclick="selecionarSimples('incidencias-antigas', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarSimples('incidencias-antigas', 'nao', this)">NÃO</button>
-              <button class="btn-desfazer" id="desfazer-incidencias-antigas" onclick="desfazerSimples('incidencias-antigas')">✕</button>
+              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('incidencias-antigas', 'sim', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('incidencias-antigas', 'nao', this)">NÃO</button>
+              <button class="btn-desfazer" id="desfazer-incidencias-antigas" onclick="desfazerItem('incidencias-antigas')">✕</button>
             </div>
             <div class="campos-inline" id="campos-incidencias-antigas">
-              <label>Qtd:</label><input type="number" id="incidencias-antigas-qtd" min="0" placeholder="0" onchange="onCampoAlterado()">
+              <label>Qtd:</label><input type="number" id="incidencias-antigas-qtd" min="0" placeholder="0" onchange="verificarQuantidade('incidencias-antigas'); onCampoAlterado()">
             </div>
           </div>
+          <div class="caixas-dinamicas" id="caixas-incidencias-antigas"></div>
         </div>
       </div>
     </div>
     
-    <!-- OCORRÊNCIAS MT -->
+    <!-- OCORRÊNCIAS BT/MT -->
     <div class="section section-ocorrencias" id="section-ocorrencias">
-      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>🚨 OCORRÊNCIAS MT</span><span class="section-toggle">▼</span></div>
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>🚨 OCORRÊNCIAS BT/MT</span><span class="section-toggle">▼</span></div>
       <div class="section-content">
         <div class="item-box" id="box-religador">
           <div class="item-header">
@@ -566,28 +551,29 @@
       <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>👁️ PRÉ-VISUALIZAÇÃO</span><span class="section-toggle">▼</span></div>
       <div class="section-content">
         <div class="preview-header">
-          <span style="font-size:12px; color:#666;">Atualiza automaticamente</span>
-          <button class="btn-acao btn-modo" onclick="toggleModoNoturno()" data-tooltip="Fundo preto / letra branca">🌙 Modo Noturno</button>
+          <span style="font-size:11px; color:#666;">Clique na mensagem para navegar</span>
+          <div>
+            <button class="btn-acao btn-copiar" onclick="copiarMensagem()" data-tooltip="Copiar mensagem">📋 COPIAR</button>
+            <button class="btn-acao btn-modo" onclick="toggleModoNoturno()" data-tooltip="Alternar tema">🌙 Noturno</button>
+          </div>
         </div>
-        <div id="previewBox" class="preview-box"></div>
+        <div id="previewBox" class="preview-box navegavel" onclick="navegarPorClique(event)"></div>
       </div>
     </div>
     
     <div style="text-align: center; margin: 15px 0;">
-      <button class="btn-acao btn-finalizar" onclick="finalizarTurno()" data-tooltip="Gera mensagem, salva PDF e exporta sessão">REALIZAR TROCA DE TURNO</button>
+      <button class="btn-acao btn-finalizar" onclick="finalizarTurno()" data-tooltip="Gera PDF e exporta sessão">REALIZAR TROCA DE TURNO</button>
       <br><br>
       <button class="btn-acao btn-whatsapp" onclick="enviarWhatsApp()" data-tooltip="Enviar pelo WhatsApp">📱 WHATSAPP</button>
       <button class="btn-acao btn-limpar" onclick="limparPreview()" data-tooltip="Limpar preview">🗑️ LIMPAR</button>
     </div>
     
     <button id="reset-button" onclick="resetarTurno()" data-tooltip="Reiniciar formulário">🔄 REINICIAR PÁGINA!</button>
-    
+  </div>
   
   <p style="text-align: center; font-style: italic; font-family: 'Courier New', Courier, monospace; margin-top: 80px;">
-    © 2025 Emanuel Aguiar<br>
-    Todos os direitos reservados.
+    © 2025 Emanuel Aguiar<br>Todos os direitos reservados.
   </p>
-
 
 <script>
 // ============================================
@@ -596,30 +582,7 @@
 let DADOS_REGIOES = {
   "DEMEM": {
     "BATURITÉ": ["BATURITÉ"],
-    "HORIZONTE": ["Centro",
-    "Gameleira",
-    "Catu",
-    "Alto da Estrela",
-    "Jenipapeiro",
-    "Cajueiro da Malhada",
-    "Catolé",
-    "Lagoinha",
-    "Olho d'água",
-    "Zumbi",
-    "Mangueiral",
-    "Mal Cozinhado",
-    "São José",
-    "Vertente",
-    "Diadema",
-    "Buenos Aires",
-    "Distrito Industrial",
-    "Cachoeira e Planalto Horizonte",
-    "além de localidades rurais como Lagoa dos Ramos",
-    "Canavieira",
-    "Mangabeira",
-    "Dourados",
-    "Tanques e Caponga."
-  ],
+    "HORIZONTE": ["CENTRO","GAMELEIRA","CATU","ALTO DA ESTRELA","JENIPAPEIRO","CAJUEIRO DA MALHADA","CATOLÉ","LAGOINHA","OLHO D'ÁGUA","ZUMBI","MANGUEIRAL","MAL COZINHADO","SÃO JOSÉ","VERTENTE","DIADEMA","BUENOS AIRES","DISTRITO INDUSTRIAL","CACHOEIRA","PLANALTO HORIZONTE"],
     "MARACANAÚ": ["MARACANAÚ"],
     "CASCAVEL": ["CASCAVEL"],
     "CAUCAIA": ["CAUCAIA"]
@@ -632,27 +595,18 @@ let DADOS_REGIOES = {
   }
 };
 
-// Carregar dados externos se disponível
 async function carregarDadosExternos() {
-  try {
-    const r = await fetch('dados_regioes.json');
-    if (r.ok) {
-      const data = await r.json();
-      DADOS_REGIOES = data;
-      console.log('Dados carregados do arquivo externo');
-    }
-  } catch(e) {
-    console.log('Usando dados internos');
-  }
+  try { const r = await fetch('dados_regioes.json'); if (r.ok) { DADOS_REGIOES = await r.json(); } } catch(e) { console.log('Usando dados internos'); }
 }
 
 // ============================================
 // VARIÁVEIS GLOBAIS
 // ============================================
-let globalTimerStart=null, globalTimerInterval=null, equipeCount=0, operadorAnterior=null;
-let estados={}, modoNoturno=false, sessaoImportada=false, dadosImportados=null;
-let detalhesPendentes={}, itemAtualDetalhe=null, configCores={};
-let areaSelecionada = '';
+let globalTimerStart = null, globalTimerInterval = null, autoSaveInterval = null;
+let equipeCount = 0, operadorAnterior = null;
+let estados = {}, modoNoturno = false, sessaoImportada = false, dadosImportados = null;
+let detalhesPendentes = {}, itemAtualDetalhe = null, configCores = {};
+let areaSelecionada = '', navegacaoAtiva = true;
 
 // ============================================
 // INICIALIZAÇÃO
@@ -660,11 +614,18 @@ let areaSelecionada = '';
 window.onload = async function() {
   await carregarDadosExternos();
   carregarConfiguracoes();
-  disableAllInteractive();
-  document.getElementById('clickOverlay').style.display = 'block';
-  document.getElementById('inicio-popup').style.display = 'block';
   
-  // Fechar dropdowns ao clicar fora
+  const sessaoSalva = localStorage.getItem('troca_turno_sessao');
+  if (sessaoSalva) {
+    disableAllInteractive();
+    document.getElementById('clickOverlay').style.display = 'block';
+    document.getElementById('restore-popup').style.display = 'block';
+  } else {
+    disableAllInteractive();
+    document.getElementById('clickOverlay').style.display = 'block';
+    document.getElementById('inicio-popup').style.display = 'block';
+  }
+  
   document.addEventListener('click', function(e) {
     if (!e.target.closest('.autocomplete-wrapper') && !e.target.closest('.equipe-linha')) {
       fecharTodosDropdowns();
@@ -690,6 +651,57 @@ function enableAllInteractive() {
   });
 }
 
+// ============================================
+// AUTO-SAVE (A cada 1 minuto)
+// ============================================
+function iniciarAutoSave() {
+  if (autoSaveInterval) clearInterval(autoSaveInterval);
+  autoSaveInterval = setInterval(() => {
+    salvarSessaoAuto();
+    mostrarAutoSaveIndicator();
+  }, 60000);
+}
+
+function mostrarAutoSaveIndicator() {
+  const ind = document.getElementById('auto-save-indicator');
+  ind.style.display = 'block';
+  setTimeout(() => ind.style.display = 'none', 2000);
+}
+
+// ============================================
+// RESTAURAR SESSÃO DO CACHE
+// ============================================
+function restaurarSessaoCache() {
+  document.getElementById('restore-popup').style.display = 'none';
+  document.getElementById('clickOverlay').style.display = 'none';
+  enableAllInteractive();
+  
+  const sessao = JSON.parse(localStorage.getItem('troca_turno_sessao'));
+  if (sessao) {
+    carregarDadosCompletos(sessao);
+    globalTimerStart = sessao.timerStart || Date.now();
+  } else {
+    globalTimerStart = Date.now();
+  }
+  
+  document.getElementById('global-clock').style.display = 'block';
+  globalTimerInterval = setInterval(atualizarRelogio, 1000);
+  iniciarAutoSave();
+  atualizarPreview();
+  mostrarNotificacao('✅ Sessão restaurada!');
+}
+
+function iniciarDoZeroNovo() {
+  localStorage.removeItem('troca_turno_sessao');
+  document.getElementById('restore-popup').style.display = 'none';
+  iniciarDoZero();
+}
+
+function abrirImportacaoRestore() {
+  document.getElementById('restore-popup').style.display = 'none';
+  document.getElementById('import-popup').style.display = 'block';
+}
+
 function iniciarDoZero() {
   document.getElementById('inicio-popup').style.display = 'none';
   document.getElementById('clickOverlay').style.display = 'none';
@@ -700,6 +712,7 @@ function iniciarDoZero() {
   const h = new Date();
   document.getElementById('turno-data').value = new Date(h.getTime() - (h.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
   sessaoImportada = false;
+  iniciarAutoSave();
   salvarSessaoAuto();
   mostrarNotificacao('✅ Sessão iniciada!');
 }
@@ -711,7 +724,12 @@ function abrirImportacao() {
 
 function voltarInicio() {
   document.getElementById('import-popup').style.display = 'none';
-  document.getElementById('inicio-popup').style.display = 'block';
+  const sessaoSalva = localStorage.getItem('troca_turno_sessao');
+  if (sessaoSalva) {
+    document.getElementById('restore-popup').style.display = 'block';
+  } else {
+    document.getElementById('inicio-popup').style.display = 'block';
+  }
 }
 
 function processarImportacao(a) {
@@ -721,7 +739,6 @@ function processarImportacao(a) {
     try {
       dadosImportados = JSON.parse(e.target.result);
       if (dadosImportados.operador) operadorAnterior = dadosImportados.operador;
-      if (dadosImportados.configCores) { configCores = dadosImportados.configCores; aplicarTodasCores(); }
       document.getElementById('import-popup').style.display = 'none';
       document.getElementById('nome-anterior-popup').textContent = operadorAnterior || '?';
       document.getElementById('confirmar-popup').style.display = 'block';
@@ -739,48 +756,100 @@ function confirmarImportacao() {
   document.getElementById('global-clock').style.display = 'block';
   globalTimerStart = Date.now();
   globalTimerInterval = setInterval(atualizarRelogio, 1000);
+  
   carregarDadosImportados(dadosImportados);
   sessaoImportada = true;
+  
   document.getElementById('aviso-importacao').style.display = 'block';
   document.getElementById('nome-anterior-aviso').textContent = operadorAnterior;
   document.getElementById('operador-anterior-box').style.display = 'block';
   document.getElementById('operador-anterior-nome').textContent = operadorAnterior;
+  
   document.getElementById('operador').classList.add('campo-obrigatorio-import');
   document.getElementById('turno-entrada').classList.add('campo-obrigatorio-import');
+  document.getElementById('f-pendentes').classList.add('campo-obrigatorio-import');
+  document.getElementById('incidencias-tela-qtd').classList.add('campo-obrigatorio-import');
+  
+  document.getElementById('f-pendentes').value = '';
+  document.getElementById('incidencias-tela-qtd').value = '';
+  
   const h = new Date();
   document.getElementById('turno-data').value = new Date(h.getTime() - (h.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-  mostrarNotificacao('📥 Importado!');
+  
+  iniciarAutoSave();
+  salvarSessaoAuto();
+  mostrarNotificacao('📥 Importado! Atualize os campos obrigatórios.');
 }
 
 function carregarDadosImportados(d) {
   document.getElementById('regiao').value = d.regiao || '';
   document.getElementById('area').value = d.area || '';
   areaSelecionada = d.area || '';
-  document.getElementById('f-recebidos').value = d.fRecebidos || '';
-  document.getElementById('f-pendentes').value = d.fPendentes || '';
-  document.getElementById('incidencias-tela-qtd').value = d.incidenciasTelaQtd || '';
+  document.getElementById('f-recebidos').value = d.fPendentes || d.fRecebidos || '';
   if (d.estados) { estados = d.estados; restaurarEstadosBotoes(); }
   if (d.equipes) d.equipes.forEach(eq => adicionarEquipeComDados(eq));
   if (d.detalhesPendentes) detalhesPendentes = d.detalhesPendentes;
+  
   ['manobra','pesada','pesada-afetacao','linha-viva','religador','poste-mt','poste-bt'].forEach(id => {
     const q = document.getElementById(id + '-qtd'), o = document.getElementById(id + '-obs');
     if (q && d[id + 'Qtd']) q.value = d[id + 'Qtd'];
     if (o && d[id + 'Obs']) o.value = d[id + 'Obs'];
   });
-  ['clientes-vitais','cabo-partido','falta-varios','clientes-m1'].forEach(id => {
+  ['clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas'].forEach(id => {
     const q = document.getElementById(id + '-qtd');
     if (q && d[id.replace(/-/g, '') + 'Qtd']) q.value = d[id.replace(/-/g, '') + 'Qtd'];
   });
-  if (d.incidenciasAntigasQtd) document.getElementById('incidencias-antigas-qtd').value = d.incidenciasAntigasQtd;
   if (d.sobreavisoObs) document.getElementById('sobreaviso-obs').value = d.sobreavisoObs;
   setTimeout(() => { if (d.caixasDinamicas) restaurarCaixas(d.caixasDinamicas); }, 100);
 }
 
+function carregarDadosCompletos(d) {
+  document.getElementById('turno-data').value = d.turnoData || '';
+  document.getElementById('turno-entrada').value = d.turnoEntrada || '';
+  document.getElementById('operador').value = d.operador || '';
+  document.getElementById('regiao').value = d.regiao || '';
+  document.getElementById('area').value = d.area || '';
+  areaSelecionada = d.area || '';
+  document.getElementById('f-recebidos').value = d.fRecebidos || '';
+  document.getElementById('f-pendentes').value = d.fPendentes || '';
+  document.getElementById('incidencias-tela-qtd').value = d.incidenciasTelaQtd || '';
+  
+  if (d.operadorAnterior) {
+    operadorAnterior = d.operadorAnterior;
+    document.getElementById('operador-anterior-box').style.display = 'block';
+    document.getElementById('operador-anterior-nome').textContent = operadorAnterior;
+  }
+  
+  if (d.estados) { estados = d.estados; restaurarEstadosBotoes(); }
+  if (d.equipes) d.equipes.forEach(eq => adicionarEquipeComDados(eq));
+  if (d.detalhesPendentes) detalhesPendentes = d.detalhesPendentes;
+  
+  ['manobra','pesada','pesada-afetacao','linha-viva','religador','poste-mt','poste-bt'].forEach(id => {
+    const q = document.getElementById(id + '-qtd'), o = document.getElementById(id + '-obs');
+    if (q && d[id + 'Qtd']) q.value = d[id + 'Qtd'];
+    if (o && d[id + 'Obs']) o.value = d[id + 'Obs'];
+  });
+  ['clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas'].forEach(id => {
+    const q = document.getElementById(id + '-qtd');
+    const key = id.replace(/-/g, '') + 'Qtd';
+    if (q && d[key]) q.value = d[key];
+  });
+  if (d.sobreavisoObs) document.getElementById('sobreaviso-obs').value = d.sobreavisoObs;
+  
+  equipeCount = d.equipeCount || 0;
+  setTimeout(() => { if (d.caixasDinamicas) restaurarCaixas(d.caixasDinamicas); }, 100);
+  
+  const o = document.getElementById('operador').value.trim();
+  if (o) {
+    document.getElementById('sessao-info').style.display = 'block';
+    document.getElementById('sessao-operador-info').textContent = o;
+  }
+}
+
 // ============================================
-// DROPDOWN DE ÁREA
+// DROPDOWNS
 // ============================================
 function atualizarAreas() {
-  const regiao = document.getElementById('regiao').value;
   document.getElementById('area').value = '';
   areaSelecionada = '';
   fecharTodosDropdowns();
@@ -788,18 +857,10 @@ function atualizarAreas() {
 
 function toggleAreaDropdown() {
   const regiao = document.getElementById('regiao').value;
-  if (!regiao) {
-    mostrarNotificacao('⚠️ Selecione a região primeiro!');
-    return;
-  }
-  
+  if (!regiao) { mostrarNotificacao('⚠️ Selecione a região primeiro!'); return; }
   const dropdown = document.getElementById('area-dropdown');
-  if (dropdown.classList.contains('visible')) {
-    dropdown.classList.remove('visible');
-  } else {
-    renderizarAreasDropdown('');
-    dropdown.classList.add('visible');
-  }
+  if (dropdown.classList.contains('visible')) { dropdown.classList.remove('visible'); }
+  else { renderizarAreasDropdown(''); dropdown.classList.add('visible'); }
 }
 
 function filtrarAreas(termo) {
@@ -814,61 +875,36 @@ function renderizarAreasDropdown(filtro) {
   const dropdown = document.getElementById('area-dropdown');
   const areas = DADOS_REGIOES[regiao] ? Object.keys(DADOS_REGIOES[regiao]) : [];
   const filtradas = areas.filter(a => a.toUpperCase().includes(filtro.toUpperCase()));
-  
   dropdown.innerHTML = '';
-  if (filtradas.length === 0) {
-    dropdown.innerHTML = '<div class="dropdown-empty">Nenhuma área encontrada</div>';
-    return;
-  }
-  
+  if (filtradas.length === 0) { dropdown.innerHTML = '<div class="dropdown-empty">Nenhuma área</div>'; return; }
   filtradas.forEach(area => {
     const div = document.createElement('div');
     div.className = 'dropdown-item';
     div.textContent = area;
-    div.onclick = function(e) {
-      e.stopPropagation();
-      document.getElementById('area').value = area;
-      areaSelecionada = area;
-      dropdown.classList.remove('visible');
-      onCampoAlterado();
-    };
+    div.onclick = function(e) { e.stopPropagation(); document.getElementById('area').value = area; areaSelecionada = area; dropdown.classList.remove('visible'); onCampoAlterado(); };
     dropdown.appendChild(div);
   });
 }
 
-// ============================================
-// DROPDOWN DE LOCALIDADES (para equipes)
-// ============================================
 function getLocalidadesDisponiveis() {
   const regiao = document.getElementById('regiao').value;
   const area = areaSelecionada || document.getElementById('area').value;
-  
   if (!regiao || !area) return [];
   if (!DADOS_REGIOES[regiao] || !DADOS_REGIOES[regiao][area]) return [];
-  
   return DADOS_REGIOES[regiao][area];
 }
 
 function toggleLocalDropdown(inputId, dropdownId) {
   const localidades = getLocalidadesDisponiveis();
-  if (localidades.length === 0) {
-    mostrarNotificacao('⚠️ Selecione Região e Área primeiro!');
-    return;
-  }
-  
+  if (localidades.length === 0) { mostrarNotificacao('⚠️ Selecione Região e Área primeiro!'); return; }
   const dropdown = document.getElementById(dropdownId);
   fecharTodosDropdowns();
-  
-  if (!dropdown.classList.contains('visible')) {
-    renderizarLocalDropdown(inputId, dropdownId, '');
-    dropdown.classList.add('visible');
-  }
+  if (!dropdown.classList.contains('visible')) { renderizarLocalDropdown(inputId, dropdownId, ''); dropdown.classList.add('visible'); }
 }
 
 function filtrarLocal(inputId, dropdownId) {
   const input = document.getElementById(inputId);
-  const termo = input.value;
-  renderizarLocalDropdown(inputId, dropdownId, termo);
+  renderizarLocalDropdown(inputId, dropdownId, input.value);
   document.getElementById(dropdownId).classList.add('visible');
 }
 
@@ -876,75 +912,237 @@ function renderizarLocalDropdown(inputId, dropdownId, filtro) {
   const dropdown = document.getElementById(dropdownId);
   const localidades = getLocalidadesDisponiveis();
   const filtradas = localidades.filter(l => l.toUpperCase().includes(filtro.toUpperCase()));
-  
   dropdown.innerHTML = '';
-  if (filtradas.length === 0) {
-    dropdown.innerHTML = '<div class="dropdown-empty">Nenhuma localidade</div>';
-    return;
-  }
-  
+  if (filtradas.length === 0) { dropdown.innerHTML = '<div class="dropdown-empty">Nenhuma localidade</div>'; return; }
   filtradas.forEach(local => {
     const div = document.createElement('div');
     div.className = 'dropdown-item';
     div.textContent = local;
-    div.onclick = function(e) {
-      e.stopPropagation();
-      document.getElementById(inputId).value = local;
-      dropdown.classList.remove('visible');
-      onCampoAlterado();
-    };
+    div.onclick = function(e) { e.stopPropagation(); document.getElementById(inputId).value = local; dropdown.classList.remove('visible'); onCampoAlterado(); };
     dropdown.appendChild(div);
   });
 }
 
 // ============================================
-// CONFIGURAÇÕES
+// CONFIGURAÇÕES (NÃO EXPORTADAS)
 // ============================================
-function abrirConfiguracoes() { document.getElementById('config-popup').style.display = 'block'; }
+function abrirConfiguracoes() { 
+  document.getElementById('config-navegacao').checked = navegacaoAtiva;
+  document.getElementById('config-popup').style.display = 'block'; 
+}
+
 function aplicarCor(t, c) {
   document.documentElement.style.setProperty('--cor-' + t, c);
   configCores[t] = c;
   const s = document.getElementById('section-' + t);
   if (s) { s.style.borderColor = c; const h = s.querySelector('.section-header'); if (h) h.style.background = c; }
 }
-function aplicarTodasCores() { for (let t in configCores) { document.getElementById('cor-' + t).value = configCores[t]; aplicarCor(t, configCores[t]); } }
-function salvarConfiguracoes() { localStorage.setItem('troca_turno_cores', JSON.stringify(configCores)); mostrarNotificacao('✅ Cores salvas!'); fecharPopup('config-popup'); }
-function carregarConfiguracoes() { const s = localStorage.getItem('troca_turno_cores'); if (s) { configCores = JSON.parse(s); aplicarTodasCores(); } }
+
+function aplicarTodasCores() { 
+  for (let t in configCores) { 
+    const el = document.getElementById('cor-' + t);
+    if (el) { el.value = configCores[t]; aplicarCor(t, configCores[t]); }
+  } 
+}
+
+function salvarConfiguracoes() { 
+  localStorage.setItem('troca_turno_cores', JSON.stringify(configCores)); 
+  localStorage.setItem('troca_turno_navegacao', navegacaoAtiva ? '1' : '0');
+  mostrarNotificacao('✅ Configurações salvas!'); 
+  fecharPopup('config-popup'); 
+}
+
+function carregarConfiguracoes() { 
+  const s = localStorage.getItem('troca_turno_cores'); 
+  if (s) { configCores = JSON.parse(s); aplicarTodasCores(); }
+  const nav = localStorage.getItem('troca_turno_navegacao');
+  navegacaoAtiva = nav !== '0';
+}
+
 function resetarCores() {
   configCores = {};
   const c = { dados: '#1a73e8', contagem: '#009688', equipes: '#4caf50', pendencias: '#ff9800', servicos: '#9c27b0', ocorrencias: '#e91e63', preview: '#607d8b' };
   for (let t in c) { document.getElementById('cor-' + t).value = c[t]; aplicarCor(t, c[t]); }
   localStorage.removeItem('troca_turno_cores');
-  mostrarNotificacao('🔄 Resetado!');
+  mostrarNotificacao('🔄 Cores resetadas!');
+}
+
+function toggleNavegacao() {
+  navegacaoAtiva = document.getElementById('config-navegacao').checked;
+  const preview = document.getElementById('previewBox');
+  preview.classList.toggle('navegavel', navegacaoAtiva);
 }
 
 // ============================================
 // FUNÇÕES AUXILIARES
 // ============================================
-function toggleSection(h) { const c = h.nextElementSibling, t = h.querySelector('.section-toggle'); c.classList.toggle('collapsed'); t.classList.toggle('collapsed'); }
-function atualizarRelogio() { if (!globalTimerStart) return; document.getElementById('global-clock').textContent = formatTime(Math.floor((Date.now() - globalTimerStart) / 1000)); }
-function formatTime(s) { let h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60; return (h > 0 ? h + 'h ' : '') + m.toString().padStart(2, '0') + 'm ' + ss.toString().padStart(2, '0') + 's'; }
+function toggleSection(h) { const c = h.nextElementSibling, t = h.querySelector('.section-toggle'); c.classList.toggle('collapsed'); t.classList.toggle('collapsed'); salvarSessaoAuto(); }
+function atualizarRelogio() { if (!globalTimerStart) return; document.getElementById('global-clock').textContent = formatTimeShort(Math.floor((Date.now() - globalTimerStart) / 1000)); }
+function formatTime(s) { let h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60; return (h > 0 ? h + ' horas ' : '') + m + ' minutos e ' + ss + ' segundos'; }
+function formatTimeShort(s) { let h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60; return (h > 0 ? h + 'h ' : '') + m.toString().padStart(2, '0') + 'm ' + ss.toString().padStart(2, '0') + 's'; }
 function formatFullDateTime(d) { const m = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"]; return `${d.getDate()} de ${m[d.getMonth()]} de ${d.getFullYear()} às ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; }
 function formatarOperador(i) { i.value = i.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').toUpperCase(); if (i.value.trim()) { i.classList.remove('campo-obrigatorio-import'); verificarImportacao(); } }
 function aplicarMascaraLead(i) { let v = i.value.toUpperCase().replace(/[^A-Z0-9]/g, ''), r = ''; for (let x = 0; x < v.length && x < 9; x++) { if (x === 3 || x === 5) r += '-'; r += v[x]; } i.value = r; }
-function formatarTelefone(i) { let v = i.value.replace(/\D/g, ''); if (v.length > 9) v = v.slice(0, 9); if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5); i.value = v; }
-function formatarCodigo(i) { i.value = i.value.replace(/\D/g, '').slice(0, 8); }
-function verificarImportacao() { if (!sessaoImportada) return; const o = document.getElementById('operador').value.trim(), e = document.getElementById('turno-entrada').value; if (o && e) { document.getElementById('aviso-importacao').style.display = 'none'; document.getElementById('turno-entrada').classList.remove('campo-obrigatorio-import'); sessaoImportada = false; mostrarNotificacao('✅ Liberado!'); } }
-function onCampoAlterado() { const e = document.getElementById('turno-entrada'); if (e.value) e.classList.remove('campo-obrigatorio-import'); verificarImportacao(); salvarSessaoAuto(); atualizarPreview(); }
+
+function formatarTelefone(i) { 
+  let v = i.value.replace(/\D/g, ''); 
+  if (v.length > 11) v = v.slice(0, 11);
+  if (v.length > 7) v = v.slice(0, 2) + ' ' + v.slice(2, 7) + '-' + v.slice(7);
+  else if (v.length > 2) v = v.slice(0, 2) + ' ' + v.slice(2);
+  i.value = v; 
+}
+
+function formatarCodigo(i) { i.value = i.value.replace(/\D/g, '').slice(0, 10); }
+
+function verificarImportacao() { 
+  if (!sessaoImportada) return; 
+  const o = document.getElementById('operador').value.trim();
+  const e = document.getElementById('turno-entrada').value;
+  const fp = document.getElementById('f-pendentes').value;
+  const ic = document.getElementById('incidencias-tela-qtd').value;
+  
+  if (o) document.getElementById('operador').classList.remove('campo-obrigatorio-import');
+  if (e) document.getElementById('turno-entrada').classList.remove('campo-obrigatorio-import');
+  if (fp) document.getElementById('f-pendentes').classList.remove('campo-obrigatorio-import');
+  if (ic) document.getElementById('incidencias-tela-qtd').classList.remove('campo-obrigatorio-import');
+  
+  if (o && e && fp && ic) { 
+    document.getElementById('aviso-importacao').style.display = 'none'; 
+    sessaoImportada = false; 
+    mostrarNotificacao('✅ Campos atualizados!'); 
+  } 
+}
+
+function onCampoAlterado() { 
+  verificarImportacao(); 
+  salvarSessaoAuto(); 
+  atualizarPreview(); 
+}
+
 function toggleModoNoturno() { modoNoturno = !modoNoturno; document.getElementById('previewBox').classList.toggle('modo-noturno', modoNoturno); }
 
 // ============================================
 // SELEÇÃO DE ITENS
 // ============================================
-function selecionarComDetalhes(id, v, b) { const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta'), c = document.getElementById('campos-' + id), d = document.getElementById('desfazer-' + id); bs.forEach(x => { if (x !== b) x.style.display = 'none'; else x.classList.add('selecionado'); }); d.classList.add('visible'); if (v === 'sim') c.classList.add('visible'); else { c.classList.remove('visible'); const cx = document.getElementById('caixas-' + id); if (cx) cx.classList.remove('visible'); } estados[id] = v; onCampoAlterado(); }
-function verificarQuantidade(id) { const q = parseInt(document.getElementById(id + '-qtd').value) || 0; if (q > 0 && !detalhesPendentes[id]) { itemAtualDetalhe = id; document.getElementById('detalhe-popup-texto').textContent = `Especificar as ${q} ocorrência(s)?`; document.getElementById('detalhe-popup').style.display = 'block'; } }
-function confirmarDetalhes(s) { document.getElementById('detalhe-popup').style.display = 'none'; if (itemAtualDetalhe) { detalhesPendentes[itemAtualDetalhe] = true; if (s) gerarCaixasDinamicas(itemAtualDetalhe); itemAtualDetalhe = null; } onCampoAlterado(); }
-function gerarCaixasDinamicas(id) { const q = parseInt(document.getElementById(id + '-qtd').value) || 0, c = document.getElementById('caixas-' + id); if (!c) return; c.innerHTML = ''; if (q <= 0) { c.classList.remove('visible'); return; } for (let i = 1; i <= q; i++) { const d = document.createElement('div'); d.className = 'caixa-item'; d.innerHTML = `<label>#${i}:</label><input type="text" class="codigo-input" id="${id}-codigo-${i}" placeholder="Código" maxlength="8" oninput="formatarCodigo(this)" onchange="onCampoAlterado()"><input type="text" class="descricao-input" id="${id}-desc-${i}" placeholder="Descrição" onchange="onCampoAlterado()">`; c.appendChild(d); } c.classList.add('visible'); }
-function desfazerItem(id) { const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta'), c = document.getElementById('campos-' + id), d = document.getElementById('desfazer-' + id), cx = document.getElementById('caixas-' + id); bs.forEach(x => { x.style.display = ''; x.classList.remove('selecionado'); }); d.classList.remove('visible'); c.classList.remove('visible'); if (cx) { cx.innerHTML = ''; cx.classList.remove('visible'); } const q = document.getElementById(id + '-qtd'), o = document.getElementById(id + '-obs'); if (q) q.value = ''; if (o) o.value = ''; delete estados[id]; delete detalhesPendentes[id]; onCampoAlterado(); }
-function selecionarSimples(id, v, b) { const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta'), c = document.getElementById('campos-' + id), d = document.getElementById('desfazer-' + id); bs.forEach(x => { if (x !== b) x.style.display = 'none'; else x.classList.add('selecionado'); }); d.classList.add('visible'); if (v === 'sim') c.classList.add('visible'); else c.classList.remove('visible'); estados[id] = v; onCampoAlterado(); }
-function desfazerSimples(id) { const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta'), c = document.getElementById('campos-' + id), d = document.getElementById('desfazer-' + id); bs.forEach(x => { x.style.display = ''; x.classList.remove('selecionado'); }); d.classList.remove('visible'); c.classList.remove('visible'); delete estados[id]; onCampoAlterado(); }
-function restaurarEstadosBotoes() { for (let id in estados) { const v = estados[id], bc = document.getElementById('btns-' + id), c = document.getElementById('campos-' + id), d = document.getElementById('desfazer-' + id); if (!bc) continue; bc.querySelectorAll('.btn-resposta').forEach(b => { if ((b.classList.contains('btn-sim') && v === 'sim') || (b.classList.contains('btn-nao') && v === 'nao')) b.classList.add('selecionado'); else b.style.display = 'none'; }); if (d) d.classList.add('visible'); if (c && v === 'sim') c.classList.add('visible'); } }
-function restaurarCaixas(data) { ['manobra','pesada','pesada-afetacao','linha-viva','clientes-vitais','cabo-partido','falta-varios','clientes-m1','religador','poste-mt','poste-bt'].forEach(id => { const q = parseInt(document.getElementById(id + '-qtd')?.value) || 0; if (q > 0 && data[id]) { gerarCaixasDinamicas(id); data[id].forEach((it, i) => { const cd = document.getElementById(id + '-codigo-' + (i + 1)), ds = document.getElementById(id + '-desc-' + (i + 1)); if (cd) cd.value = it.codigo || ''; if (ds) ds.value = it.desc || ''; }); } }); }
+function selecionarComDetalhes(id, v, b) {
+  const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta');
+  const c = document.getElementById('campos-' + id);
+  const d = document.getElementById('desfazer-' + id);
+  bs.forEach(x => { if (x !== b) x.style.display = 'none'; else x.classList.add('selecionado'); });
+  d.classList.add('visible');
+  if (v === 'sim') c.classList.add('visible');
+  else { c.classList.remove('visible'); const cx = document.getElementById('caixas-' + id); if (cx) cx.classList.remove('visible'); }
+  estados[id] = v;
+  onCampoAlterado();
+}
+
+function verificarQuantidade(id) {
+  const q = parseInt(document.getElementById(id + '-qtd').value) || 0;
+  if (q > 0 && !detalhesPendentes[id]) {
+    itemAtualDetalhe = id;
+    document.getElementById('detalhe-popup-texto').textContent = `Deseja observar as ${q} ocorrência(s)?`;
+    document.getElementById('detalhe-popup').style.display = 'block';
+  }
+}
+
+function confirmarDetalhes(s) {
+  document.getElementById('detalhe-popup').style.display = 'none';
+  if (itemAtualDetalhe) {
+    detalhesPendentes[itemAtualDetalhe] = true;
+    if (s) gerarCaixasDinamicas(itemAtualDetalhe);
+    itemAtualDetalhe = null;
+  }
+  onCampoAlterado();
+}
+
+function gerarCaixasDinamicas(id) {
+  const q = parseInt(document.getElementById(id + '-qtd').value) || 0;
+  const c = document.getElementById('caixas-' + id);
+  if (!c) return;
+  c.innerHTML = '';
+  if (q <= 0) { c.classList.remove('visible'); return; }
+  for (let i = 1; i <= q; i++) {
+    const d = document.createElement('div');
+    d.className = 'caixa-item';
+    d.id = `${id}-item-${i}`;
+    d.innerHTML = `<label>#${i}:</label><input type="text" class="codigo-input" id="${id}-codigo-${i}" placeholder="Código (10 dig)" maxlength="10" oninput="formatarCodigo(this)" onchange="onCampoAlterado()"><input type="text" class="descricao-input" id="${id}-desc-${i}" placeholder="Observação" onchange="onCampoAlterado()"><button class="btn-remove-item" onclick="removerItemCaixa('${id}', ${i})">✕</button>`;
+    c.appendChild(d);
+  }
+  c.classList.add('visible');
+}
+
+function removerItemCaixa(id, num) {
+  const item = document.getElementById(`${id}-item-${num}`);
+  if (item) item.remove();
+  onCampoAlterado();
+}
+
+function desfazerItem(id) {
+  const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta');
+  const c = document.getElementById('campos-' + id);
+  const d = document.getElementById('desfazer-' + id);
+  const cx = document.getElementById('caixas-' + id);
+  bs.forEach(x => { x.style.display = ''; x.classList.remove('selecionado'); });
+  d.classList.remove('visible');
+  c.classList.remove('visible');
+  if (cx) { cx.innerHTML = ''; cx.classList.remove('visible'); }
+  const q = document.getElementById(id + '-qtd'), o = document.getElementById(id + '-obs');
+  if (q) q.value = '';
+  if (o) o.value = '';
+  delete estados[id];
+  delete detalhesPendentes[id];
+  onCampoAlterado();
+}
+
+function selecionarSimples(id, v, b) {
+  const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta');
+  const c = document.getElementById('campos-' + id);
+  const d = document.getElementById('desfazer-' + id);
+  bs.forEach(x => { if (x !== b) x.style.display = 'none'; else x.classList.add('selecionado'); });
+  d.classList.add('visible');
+  if (v === 'sim') c.classList.add('visible');
+  else c.classList.remove('visible');
+  estados[id] = v;
+  onCampoAlterado();
+}
+
+function desfazerSimples(id) {
+  const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta');
+  const c = document.getElementById('campos-' + id);
+  const d = document.getElementById('desfazer-' + id);
+  bs.forEach(x => { x.style.display = ''; x.classList.remove('selecionado'); });
+  d.classList.remove('visible');
+  c.classList.remove('visible');
+  delete estados[id];
+  onCampoAlterado();
+}
+
+function restaurarEstadosBotoes() {
+  for (let id in estados) {
+    const v = estados[id], bc = document.getElementById('btns-' + id), c = document.getElementById('campos-' + id), d = document.getElementById('desfazer-' + id);
+    if (!bc) continue;
+    bc.querySelectorAll('.btn-resposta').forEach(b => {
+      if ((b.classList.contains('btn-sim') && v === 'sim') || (b.classList.contains('btn-nao') && v === 'nao')) b.classList.add('selecionado');
+      else b.style.display = 'none';
+    });
+    if (d) d.classList.add('visible');
+    if (c && v === 'sim') c.classList.add('visible');
+  }
+}
+
+function restaurarCaixas(data) {
+  ['manobra','pesada','pesada-afetacao','linha-viva','clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas','religador','poste-mt','poste-bt'].forEach(id => {
+    const q = parseInt(document.getElementById(id + '-qtd')?.value) || 0;
+    if (q > 0 && data[id] && data[id].length > 0) {
+      gerarCaixasDinamicas(id);
+      data[id].forEach((it, i) => {
+        const cd = document.getElementById(id + '-codigo-' + (i + 1)), ds = document.getElementById(id + '-desc-' + (i + 1));
+        if (cd) cd.value = it.codigo || '';
+        if (ds) ds.value = it.desc || '';
+      });
+    }
+  });
+}
 
 // ============================================
 // EQUIPES
@@ -957,26 +1155,17 @@ function adicionarEquipe() {
   d.id = 'equipe-' + equipeCount;
   d.innerHTML = `
     <input type="text" class="lead-input" id="equipe-${equipeCount}-lead" placeholder="XXX-XX-XXX" maxlength="11" oninput="aplicarMascaraLead(this)" onchange="onCampoAlterado()">
-    <input type="tel" class="tel-input" id="equipe-${equipeCount}-telefone" placeholder="00000-0000" maxlength="10" oninput="formatarTelefone(this)" onchange="onCampoAlterado()">
+    <input type="tel" class="tel-input" id="equipe-${equipeCount}-telefone" placeholder="85 00000-0000" maxlength="13" oninput="formatarTelefone(this)" onchange="onCampoAlterado()">
     <div class="autocomplete-wrapper">
-      <input type="text" class="local-input" id="equipe-${equipeCount}-local1" placeholder="Local 1" 
-             onclick="toggleLocalDropdown('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')"
-             oninput="filtrarLocal('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')" 
-             autocomplete="off">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local1" placeholder="Local 1" onclick="toggleLocalDropdown('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')" oninput="filtrarLocal('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')" autocomplete="off">
       <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-1"></div>
     </div>
     <div class="autocomplete-wrapper">
-      <input type="text" class="local-input" id="equipe-${equipeCount}-local2" placeholder="Local 2" 
-             onclick="toggleLocalDropdown('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')"
-             oninput="filtrarLocal('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')" 
-             autocomplete="off">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local2" placeholder="Local 2" onclick="toggleLocalDropdown('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')" oninput="filtrarLocal('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')" autocomplete="off">
       <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-2"></div>
     </div>
     <div class="autocomplete-wrapper">
-      <input type="text" class="local-input" id="equipe-${equipeCount}-local3" placeholder="Local 3" 
-             onclick="toggleLocalDropdown('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')"
-             oninput="filtrarLocal('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')" 
-             autocomplete="off">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local3" placeholder="Local 3" onclick="toggleLocalDropdown('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')" oninput="filtrarLocal('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')" autocomplete="off">
       <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-3"></div>
     </div>
     <button class="equipe-remove" onclick="removerEquipe(${equipeCount})">✕</button>
@@ -994,26 +1183,17 @@ function adicionarEquipeComDados(dados) {
   d.id = 'equipe-' + equipeCount;
   d.innerHTML = `
     <input type="text" class="lead-input" id="equipe-${equipeCount}-lead" value="${dados.lead || ''}" placeholder="XXX-XX-XXX" maxlength="11" oninput="aplicarMascaraLead(this)" onchange="onCampoAlterado()">
-    <input type="tel" class="tel-input" id="equipe-${equipeCount}-telefone" value="${dados.telefone || ''}" placeholder="00000-0000" maxlength="10" oninput="formatarTelefone(this)" onchange="onCampoAlterado()">
+    <input type="tel" class="tel-input" id="equipe-${equipeCount}-telefone" value="${dados.telefone || ''}" placeholder="85 00000-0000" maxlength="13" oninput="formatarTelefone(this)" onchange="onCampoAlterado()">
     <div class="autocomplete-wrapper">
-      <input type="text" class="local-input" id="equipe-${equipeCount}-local1" value="${dados.local1 || dados.localidade || ''}" placeholder="Local 1" 
-             onclick="toggleLocalDropdown('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')"
-             oninput="filtrarLocal('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')" 
-             autocomplete="off">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local1" value="${dados.local1 || dados.localidade || ''}" placeholder="Local 1" onclick="toggleLocalDropdown('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')" oninput="filtrarLocal('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')" autocomplete="off">
       <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-1"></div>
     </div>
     <div class="autocomplete-wrapper">
-      <input type="text" class="local-input" id="equipe-${equipeCount}-local2" value="${dados.local2 || ''}" placeholder="Local 2" 
-             onclick="toggleLocalDropdown('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')"
-             oninput="filtrarLocal('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')" 
-             autocomplete="off">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local2" value="${dados.local2 || ''}" placeholder="Local 2" onclick="toggleLocalDropdown('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')" oninput="filtrarLocal('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')" autocomplete="off">
       <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-2"></div>
     </div>
     <div class="autocomplete-wrapper">
-      <input type="text" class="local-input" id="equipe-${equipeCount}-local3" value="${dados.local3 || ''}" placeholder="Local 3" 
-             onclick="toggleLocalDropdown('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')"
-             oninput="filtrarLocal('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')" 
-             autocomplete="off">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local3" value="${dados.local3 || ''}" placeholder="Local 3" onclick="toggleLocalDropdown('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')" oninput="filtrarLocal('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')" autocomplete="off">
       <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-3"></div>
     </div>
     <button class="equipe-remove" onclick="removerEquipe(${equipeCount})">✕</button>
@@ -1025,25 +1205,114 @@ function adicionarEquipeComDados(dados) {
 function removerEquipe(id) { const e = document.getElementById('equipe-' + id); if (e) { e.remove(); atualizarContadorEquipes(); onCampoAlterado(); } }
 function removerUltimaEquipe() { const c = document.getElementById('equipes-container'); if (c.lastChild) { c.removeChild(c.lastChild); atualizarContadorEquipes(); onCampoAlterado(); } }
 function atualizarContadorEquipes() { document.getElementById('equipes-count').textContent = document.getElementById('equipes-container').children.length; }
-function coletarEquipes() { const e = []; document.querySelectorAll('.equipe-linha').forEach(el => { const id = el.id.replace('equipe-', ''); e.push({ lead: document.getElementById('equipe-' + id + '-lead')?.value || '', telefone: document.getElementById('equipe-' + id + '-telefone')?.value || '', local1: document.getElementById('equipe-' + id + '-local1')?.value || '', local2: document.getElementById('equipe-' + id + '-local2')?.value || '', local3: document.getElementById('equipe-' + id + '-local3')?.value || '' }); }); return e; }
+function coletarEquipes() {
+  const e = [];
+  document.querySelectorAll('.equipe-linha').forEach(el => {
+    const id = el.id.replace('equipe-', '');
+    e.push({
+      lead: document.getElementById('equipe-' + id + '-lead')?.value || '',
+      telefone: document.getElementById('equipe-' + id + '-telefone')?.value || '',
+      local1: document.getElementById('equipe-' + id + '-local1')?.value || '',
+      local2: document.getElementById('equipe-' + id + '-local2')?.value || '',
+      local3: document.getElementById('equipe-' + id + '-local3')?.value || ''
+    });
+  });
+  return e;
+}
 
 // ============================================
 // SESSÃO E DADOS
 // ============================================
-function salvarSessaoAuto() { const d = coletarTodosDados(); d.timerStart = globalTimerStart; d.equipeCount = equipeCount; d.operadorAnterior = operadorAnterior; d.estados = estados; d.detalhesPendentes = detalhesPendentes; d.configCores = configCores; localStorage.setItem('troca_turno_v5', JSON.stringify(d)); const o = document.getElementById('operador').value.trim(); if (o) { document.getElementById('sessao-info').style.display = 'block'; document.getElementById('sessao-operador-info').textContent = o; } }
-function coletarTodosDados() { const d = { turnoData: document.getElementById('turno-data').value, turnoEntrada: document.getElementById('turno-entrada').value, operador: document.getElementById('operador').value, regiao: document.getElementById('regiao').value, area: document.getElementById('area').value, fRecebidos: document.getElementById('f-recebidos').value, fPendentes: document.getElementById('f-pendentes').value, incidenciasTelaQtd: document.getElementById('incidencias-tela-qtd').value, incidenciasAntigasQtd: document.getElementById('incidencias-antigas-qtd')?.value || '', sobreavisoObs: document.getElementById('sobreaviso-obs')?.value || '', equipes: coletarEquipes(), caixasDinamicas: coletarCaixas() }; ['manobra','pesada','pesada-afetacao','linha-viva','religador','poste-mt','poste-bt'].forEach(id => { d[id + 'Qtd'] = document.getElementById(id + '-qtd')?.value || ''; d[id + 'Obs'] = document.getElementById(id + '-obs')?.value || ''; }); ['clientes-vitais','cabo-partido','falta-varios','clientes-m1'].forEach(id => { d[id.replace(/-/g, '') + 'Qtd'] = document.getElementById(id + '-qtd')?.value || ''; }); return d; }
-function coletarCaixas() { const r = {}; ['manobra','pesada','pesada-afetacao','linha-viva','clientes-vitais','cabo-partido','falta-varios','clientes-m1','religador','poste-mt','poste-bt'].forEach(id => { const q = parseInt(document.getElementById(id + '-qtd')?.value) || 0; r[id] = []; for (let i = 1; i <= q; i++) { r[id].push({ codigo: document.getElementById(id + '-codigo-' + i)?.value || '', desc: document.getElementById(id + '-desc-' + i)?.value || '' }); } }); return r; }
+function salvarSessaoAuto() {
+  const d = coletarTodosDados();
+  d.timerStart = globalTimerStart;
+  d.equipeCount = equipeCount;
+  d.operadorAnterior = operadorAnterior;
+  d.estados = estados;
+  d.detalhesPendentes = detalhesPendentes;
+  localStorage.setItem('troca_turno_sessao', JSON.stringify(d));
+  
+  const o = document.getElementById('operador').value.trim();
+  if (o) {
+    document.getElementById('sessao-info').style.display = 'block';
+    document.getElementById('sessao-operador-info').textContent = o;
+  }
+}
+
+function coletarTodosDados() {
+  const d = {
+    turnoData: document.getElementById('turno-data').value,
+    turnoEntrada: document.getElementById('turno-entrada').value,
+    operador: document.getElementById('operador').value,
+    regiao: document.getElementById('regiao').value,
+    area: document.getElementById('area').value,
+    fRecebidos: document.getElementById('f-recebidos').value,
+    fPendentes: document.getElementById('f-pendentes').value,
+    incidenciasTelaQtd: document.getElementById('incidencias-tela-qtd').value,
+    incidenciasantigasQtd: document.getElementById('incidencias-antigas-qtd')?.value || '',
+    sobreavisoObs: document.getElementById('sobreaviso-obs')?.value || '',
+    equipes: coletarEquipes(),
+    caixasDinamicas: coletarCaixas()
+  };
+  ['manobra','pesada','pesada-afetacao','linha-viva','religador','poste-mt','poste-bt'].forEach(id => {
+    d[id + 'Qtd'] = document.getElementById(id + '-qtd')?.value || '';
+    d[id + 'Obs'] = document.getElementById(id + '-obs')?.value || '';
+  });
+  ['clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas'].forEach(id => {
+    d[id.replace(/-/g, '') + 'Qtd'] = document.getElementById(id + '-qtd')?.value || '';
+  });
+  return d;
+}
+
+function coletarCaixas() {
+  const r = {};
+  ['manobra','pesada','pesada-afetacao','linha-viva','clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas','religador','poste-mt','poste-bt'].forEach(id => {
+    r[id] = [];
+    const container = document.getElementById('caixas-' + id);
+    if (container) {
+      container.querySelectorAll('.caixa-item').forEach(item => {
+        const cod = item.querySelector('.codigo-input')?.value || '';
+        const desc = item.querySelector('.descricao-input')?.value || '';
+        if (cod || desc) r[id].push({ codigo: cod, desc: desc });
+      });
+    }
+  });
+  return r;
+}
 
 // ============================================
 // VALIDAÇÃO
 // ============================================
-function verificarCamposObrigatorios() { const m = []; if (!document.getElementById('turno-data').value) m.push('📅 Data'); if (!document.getElementById('turno-entrada').value) m.push('🕐 Turno do Dia'); if (!document.getElementById('operador').value.trim()) m.push('👤 Operador'); if (!document.getElementById('regiao').value) m.push('🗺️ Região'); if (!document.getElementById('area').value) m.push('📍 Área'); if (!document.getElementById('f-recebidos').value) m.push('📊 F Recebidos'); if (!document.getElementById('f-pendentes').value) m.push('📊 F Pendentes'); if (!document.getElementById('incidencias-tela-qtd').value) m.push('📺 Incidências'); for (let id in estados) { if (estados[id] === 'sim') { const q = document.getElementById(id + '-qtd'); if (q && !q.value && id !== 'sobreaviso') m.push('⚠️ ' + id.toUpperCase() + ' (qtd)'); } } if (m.length > 0) { document.getElementById('obrigatorio-text').innerHTML = '🚨 OBRIGATÓRIO:<br><br>' + m.join('<br>'); document.getElementById('obrigatorio-popup').style.display = 'block'; return false; } return true; }
+function verificarCamposObrigatorios() {
+  const m = [];
+  if (!document.getElementById('turno-data').value) m.push('📅 Data');
+  if (!document.getElementById('turno-entrada').value) m.push('🕐 Turno do Dia');
+  if (!document.getElementById('operador').value.trim()) m.push('👤 Operador');
+  if (!document.getElementById('regiao').value) m.push('🗺️ Região');
+  if (!document.getElementById('area').value) m.push('📍 Área');
+  if (!document.getElementById('f-recebidos').value) m.push('📊 F Recebidos');
+  if (!document.getElementById('f-pendentes').value) m.push('📊 F Pendentes');
+  if (!document.getElementById('incidencias-tela-qtd').value) m.push('📺 Incidências');
+  for (let id in estados) {
+    if (estados[id] === 'sim') {
+      const q = document.getElementById(id + '-qtd');
+      if (q && !q.value && id !== 'sobreaviso') m.push('⚠️ ' + id.toUpperCase() + ' (qtd)');
+    }
+  }
+  if (m.length > 0) {
+    document.getElementById('obrigatorio-text').innerHTML = '🚨 CAMPOS OBRIGATÓRIOS:<br><br>' + m.join('<br>');
+    document.getElementById('obrigatorio-popup').style.display = 'block';
+    return false;
+  }
+  return true;
+}
 
 // ============================================
-// GERAR MENSAGEM
+// GERAR MENSAGEM (NOVO FORMATO)
 // ============================================
 function atualizarPreview() { gerarMensagem(false); }
-function gerarMensagem(v = true) {
+
+function gerarMensagem(validar = true) {
   const dt = document.getElementById('turno-data').value;
   const td = document.getElementById('turno-entrada').value;
   const op = document.getElementById('operador').value;
@@ -1057,17 +1326,28 @@ function gerarMensagem(v = true) {
   if (dt) { const p = dt.split('-'); df = `${p[2]}/${p[1]}/${p[0]}`; }
   
   let msg = '';
-  if (ar) msg += `----------- *${ar}* -------------\n\n`;
-  msg += `*DATA:* ${df}\n*TURNO DO DIA:* ${td}\n*OPERADOR:* ${op}\n*F RECEBIDOS:* ${fr || '0'}\n*F PENDENTES:* ${fp || '0'}\n*REGIÃO:* ${rg}\n*ÁREA:* ${ar}\n\n`;
-  if (operadorAnterior) msg += `📋 *RELATÓRIO DE:* ${operadorAnterior}\n\n`;
+  
+  msg += `------ *DADOS DO TURNO* ------\n\n`;
+  msg += `*DATA:* ${df}\n`;
+  msg += `*TURNO DO DIA:* ${td}\n`;
+  msg += `*OPERADOR ATUAL:* ${op}\n`;
+  msg += `*REGIÃO:* ${rg}\n`;
+  msg += `*ÁREA:* ${ar}\n\n`;
+  
+  msg += `---- *CONTAGEM DE "F" BAIXAS* ----\n`;
+  msg += `*F RECEBIDOS TURNO ANTERIOR:* ${fr || '0'}\n`;
+  msg += `*F REPASSADOS PENDENTES:* ${fp || '0'}\n\n`;
+  
+  msg += `-- *INCIDÊNCIAS EM TELA TOTAL* --\n`;
+  msg += `*VALOR:* ${ic || '0'}\n\n`;
   
   const eq = coletarEquipes();
   if (eq.length > 0) {
-    msg += `-------- *EQUIPES (${eq.length})* --------\n`;
+    msg += `------ *EQUIPES ATIVAS (${eq.length})* ------\n`;
     eq.forEach(e => {
       if (e.lead) {
         msg += e.lead;
-        if (e.telefone) msg += ` - 85 ${e.telefone}`;
+        if (e.telefone) msg += ` - ${e.telefone}`;
         const ls = [e.local1, e.local2, e.local3].filter(l => l);
         if (ls.length > 0) msg += ` | ${ls.join(' / ')}`;
         msg += '\n';
@@ -1082,29 +1362,35 @@ function gerarMensagem(v = true) {
       const q = document.getElementById(id + '-qtd').value || '0';
       const o = document.getElementById(id + '-obs').value || '-';
       pn += `• ${id.toUpperCase()}: ${q} — ${o}\n`;
-      for (let i = 1; i <= parseInt(q); i++) {
-        const cd = document.getElementById(id + '-codigo-' + i)?.value;
-        const ds = document.getElementById(id + '-desc-' + i)?.value;
-        if (cd || ds) pn += `  → ${cd || ''} - ${ds || ''}\n`;
+      const caixas = document.getElementById('caixas-' + id);
+      if (caixas) {
+        caixas.querySelectorAll('.caixa-item').forEach(item => {
+          const cod = item.querySelector('.codigo-input')?.value;
+          const desc = item.querySelector('.descricao-input')?.value;
+          if (cod || desc) pn += `  → ${cod || ''} - ${desc || ''}\n`;
+        });
       }
     }
   });
-  if (pn) msg += `---------- *PENDÊNCIAS* ----------\n${pn}\n`;
+  if (pn) msg += `------ *PENDÊNCIAS* ------\n${pn}\n`;
   
   let sv = '';
-  ['clientes-vitais','cabo-partido','falta-varios','clientes-m1'].forEach(id => {
+  ['clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas'].forEach(id => {
     if (estados[id] === 'sim') {
       const q = document.getElementById(id + '-qtd').value || '0';
       sv += `• ${id.toUpperCase()}: ${q}\n`;
-      for (let i = 1; i <= parseInt(q); i++) {
-        const cd = document.getElementById(id + '-codigo-' + i)?.value;
-        const ds = document.getElementById(id + '-desc-' + i)?.value;
-        if (cd || ds) sv += `  → ${cd || ''} - ${ds || ''}\n`;
+      const caixas = document.getElementById('caixas-' + id);
+      if (caixas) {
+        caixas.querySelectorAll('.caixa-item').forEach(item => {
+          const cod = item.querySelector('.codigo-input')?.value;
+          const desc = item.querySelector('.descricao-input')?.value;
+          if (cod || desc) sv += `  → ${cod || ''} - ${desc || ''}\n`;
+        });
       }
     }
   });
-  if (estados['incidencias-antigas'] === 'sim') sv += `• INCIDÊNCIAS ANTIGAS: ${document.getElementById('incidencias-antigas-qtd').value || '0'}\n`;
-  msg += `📈 *SERVIÇOS*\n${sv}📺 *INCIDÊNCIAS EM TELA:* ${ic || '0'}\n\n`;
+  if (sv) msg += `------ *QTD. SERVIÇOS* ------\n${sv}`;
+  msg += `*INCIDÊNCIAS EM TELA:* ${ic || '0'}\n\n`;
   
   let oc = '';
   ['religador','poste-mt','poste-bt'].forEach(id => {
@@ -1112,21 +1398,94 @@ function gerarMensagem(v = true) {
       const q = document.getElementById(id + '-qtd').value || '0';
       const o = document.getElementById(id + '-obs').value || '-';
       oc += `• ${id.toUpperCase()}: ${q} — ${o}\n`;
-      for (let i = 1; i <= parseInt(q); i++) {
-        const cd = document.getElementById(id + '-codigo-' + i)?.value;
-        const ds = document.getElementById(id + '-desc-' + i)?.value;
-        if (cd || ds) oc += `  → ${cd || ''} - ${ds || ''}\n`;
+      const caixas = document.getElementById('caixas-' + id);
+      if (caixas) {
+        caixas.querySelectorAll('.caixa-item').forEach(item => {
+          const cod = item.querySelector('.codigo-input')?.value;
+          const desc = item.querySelector('.descricao-input')?.value;
+          if (cod || desc) oc += `  → ${cod || ''} - ${desc || ''}\n`;
+        });
       }
     }
   });
   if (estados['sobreaviso'] === 'sim') oc += `• SOBREAVISO: ${document.getElementById('sobreaviso-obs').value || '-'}\n`;
-  if (oc) msg += `🚨 *OCORRÊNCIAS MT*\n${oc}\n`;
+  if (oc) msg += `----- *OCORRÊNCIAS BT/MT* -----\n${oc}\n`;
   
-  if (globalTimerStart) msg += `*TEMPO:* ${formatTime(Math.floor((Date.now() - globalTimerStart) / 1000))}\n`;
-  msg += formatFullDateTime(new Date()) + '\n';
+  if (operadorAnterior) {
+    msg += `----------------------------\n`;
+    msg += `RELATÓRIO RECEBIDO DE: ${operadorAnterior}\n`;
+    msg += `----------------------------\n\n`;
+  }
   
-  document.getElementById('previewBox').textContent = msg.toUpperCase();
-  return msg.toUpperCase();
+  if (globalTimerStart) {
+    const tempo = formatTime(Math.floor((Date.now() - globalTimerStart) / 1000));
+    msg += `*tempo sessão:* ${tempo.toLowerCase()}\n`;
+  }
+  msg += `*data:* ${formatFullDateTime(new Date()).toLowerCase()}\n`;
+  
+  const linhas = msg.split('\n');
+  const ultimasLinhas = linhas.slice(-3);
+  const resto = linhas.slice(0, -3).join('\n').toUpperCase();
+  document.getElementById('previewBox').textContent = resto + '\n' + ultimasLinhas.join('\n');
+  
+  return msg;
+}
+
+// ============================================
+// NAVEGAÇÃO POR CLIQUE NO PREVIEW
+// ============================================
+function navegarPorClique(event) {
+  if (!navegacaoAtiva) return;
+  
+  const selection = window.getSelection();
+  const clickedText = selection.toString() || event.target.textContent.substring(
+    Math.max(0, selection.anchorOffset - 50),
+    Math.min(event.target.textContent.length, selection.anchorOffset + 50)
+  );
+  
+  const t = clickedText.toUpperCase();
+  let section = null;
+  
+  if (t.includes('DADOS DO TURNO') || t.includes('DATA:') || t.includes('OPERADOR') || t.includes('REGIÃO') || t.includes('ÁREA')) {
+    section = 'section-dados';
+  } else if (t.includes('CONTAGEM') || t.includes('F RECEBIDOS') || t.includes('F PENDENTES') || t.includes('F REPASSADOS')) {
+    section = 'section-contagem';
+  } else if (t.includes('EQUIPES')) {
+    section = 'section-equipes';
+  } else if (t.includes('PENDÊNCIAS') || t.includes('MANOBRA') || t.includes('PESADA') || t.includes('LINHA VIVA')) {
+    section = 'section-pendencias';
+  } else if (t.includes('SERVIÇOS') || t.includes('CLIENTES') || t.includes('CABO PARTIDO') || t.includes('FALTA') || t.includes('INCIDÊNCIAS ANTIGAS')) {
+    section = 'section-servicos';
+  } else if (t.includes('OCORRÊNCIAS') || t.includes('RELIGADOR') || t.includes('POSTE') || t.includes('SOBREAVISO')) {
+    section = 'section-ocorrencias';
+  }
+  
+  if (section) {
+    const el = document.getElementById(section);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el.classList.add('highlight-section');
+      setTimeout(() => el.classList.remove('highlight-section'), 1500);
+    }
+  }
+}
+
+// ============================================
+// COPIAR MENSAGEM
+// ============================================
+function copiarMensagem() {
+  const texto = document.getElementById('previewBox').textContent;
+  navigator.clipboard.writeText(texto).then(() => {
+    mostrarNotificacao('📋 Mensagem copiada!');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = texto;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    mostrarNotificacao('📋 Mensagem copiada!');
+  });
 }
 
 // ============================================
@@ -1136,8 +1495,10 @@ function finalizarTurno() {
   document.querySelectorAll('.section-content.collapsed').forEach(e => e.classList.remove('collapsed'));
   document.querySelectorAll('.section-toggle.collapsed').forEach(e => e.classList.remove('collapsed'));
   if (!verificarCamposObrigatorios()) return;
+  
   const msg = gerarMensagem(true);
-  mostrarNotificacao('⏳ Gerando...');
+  mostrarNotificacao('⏳ Gerando arquivos...');
+  
   const c = document.getElementById('main-container');
   const op = document.getElementById('operador').value.trim() || 'OP';
   const rg = document.getElementById('regiao').value || 'REG';
@@ -1158,7 +1519,6 @@ function finalizarTurno() {
   
   setTimeout(() => {
     const d = coletarTodosDados();
-    d.configCores = configCores;
     const b = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
     const u = URL.createObjectURL(b);
     const a = document.createElement('a');
@@ -1166,23 +1526,39 @@ function finalizarTurno() {
     a.download = bn + '.json';
     a.click();
     URL.revokeObjectURL(u);
-    mostrarNotificacao('✅ Finalizado!');
+    mostrarNotificacao('✅ Turno finalizado!');
   }, 1000);
 }
 
-function enviarWhatsApp() { if (!verificarCamposObrigatorios()) return; const m = gerarMensagem(true); window.open(`https://wa.me/?text=${encodeURIComponent(m)}`, '_blank'); }
+function enviarWhatsApp() {
+  if (!verificarCamposObrigatorios()) return;
+  const m = gerarMensagem(true);
+  window.open(`https://wa.me/?text=${encodeURIComponent(m)}`, '_blank');
+}
+
 function limparPreview() { document.getElementById('previewBox').textContent = ''; }
+
 function resetarTurno() {
   document.getElementById('reset-popup').style.display = 'block';
 }
 
 function confirmarReset() {
-  localStorage.removeItem('troca_turno_v5');
+  localStorage.removeItem('troca_turno_sessao');
   location.reload();
 }
-function mostrarNotificacao(t) { document.getElementById('notification-text').innerHTML = t; document.getElementById('notification-popup').style.display = 'block'; setTimeout(() => document.getElementById('notification-popup').style.display = 'none', 3500); }
+
+function mostrarNotificacao(t) {
+  document.getElementById('notification-text').innerHTML = t;
+  document.getElementById('notification-popup').style.display = 'block';
+  setTimeout(() => document.getElementById('notification-popup').style.display = 'none', 3500);
+}
+
 function fecharPopup(id) { document.getElementById(id).style.display = 'none'; }
-document.getElementById('clickOverlay').addEventListener('click', function(e) { document.getElementById('body-popup').style.display = 'block'; e.stopPropagation(); });
+
+document.getElementById('clickOverlay').addEventListener('click', function(e) {
+  document.getElementById('body-popup').style.display = 'block';
+  e.stopPropagation();
+});
 </script>
 </body>
 </html>
