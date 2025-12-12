@@ -1340,8 +1340,8 @@ function adicionarEquipe() {
        class="lead-input"
        id="equipe-${equipeCount}-lead"
        placeholder="XXX-XX-XXX"
-       minlength="11"
-       maxlength="11"
+       minlength="10"
+       maxlength="10"
        oninput="aplicarMascaraLead(this)"
        onchange="onCampoAlterado()">
     <input type="tel" class="tel-input" id="equipe-${equipeCount}-telefone" placeholder="85 00000-0000" maxlength="13" oninput="formatarTelefone(this)" onchange="onCampoAlterado()">
@@ -1376,8 +1376,8 @@ function adicionarEquipeComDados(dados) {
            id="equipe-${equipeCount}-lead"
            value="${dados.lead || ''}"
            placeholder="XXX-XX-XXX"
-           minlength="11"
-           maxlength="11"
+           minlength="10"
+           maxlength="10"
            oninput="aplicarMascaraLead(this)"
            onchange="onCampoAlterado()">
            
