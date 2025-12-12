@@ -8,13 +8,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
   <style>
     :root {
-      --cor-dados: #1a73e8;
-      --cor-contagem: #009688;
-      --cor-equipes: #4caf50;
-      --cor-pendencias: #ff9800;
-      --cor-servicos: #9c27b0;
+      --cor-dados: #0053bf;
+      --cor-contagem: #0053bf;
+      --cor-equipes: #0053bf;
+      --cor-pendencias: #f46336;
+      --cor-servicos: #607d8b;
       --cor-ocorrencias: #e91e63;
-      --cor-preview: #607d8b;
+      --cor-preview: #000000;
     }
     html, body { overscroll-behavior-y: none; margin: 0; padding: 0; }
     body { font-family: Cambria, Cochin, Georgia, Times, sans-serif; background-color: #f5f5f5; font-size: 14px; }
@@ -272,62 +272,211 @@
     <p style="text-align: center; color: #666; margin: 0 0 10px 0; font-size: 11px;">(Versão 5.4)</p>
     
     <div id="sessao-info" class="sessao-info" style="display: none;"><strong>📍 Sessão:</strong> <span id="sessao-operador-info"></span></div>
-    <div id="aviso-importacao" class="aviso-importacao" style="display: none;"><h4>⚠️ SESSÃO IMPORTADA</h4><p style="margin:0; font-size:11px;">De: <strong id="nome-anterior-aviso"></strong> | Atualize os campos obrigatórios!</p></div>
-    <div id="operador-anterior-box" class="operador-anterior" style="display: none;">📋 <strong>Relatório recebido de:</strong> <span id="operador-anterior-nome"></span></div>
     
-    <!-- DADOS DO TURNO -->
-    <div class="section" id="section-dados">
-      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>📅 DADOS DO TURNO</span><span class="section-toggle">▼</span></div>
-      <div class="section-content">
-        <div class="row-inline">
-          <div><label class="obrigatorio">Data:</label><input type="date" id="turno-data" style="width:100%;" onchange="onCampoAlterado()"></div>
-          <div><label class="obrigatorio">Turno do Dia:</label>
-            <select id="turno-entrada" style="width:100%;" onchange="onCampoAlterado()">
-              <option value="">Selecione...</option>
-              <option value="06:00 ÀS 12:00">06:00 ÀS 12:00</option>
-              <option value="12:00 ÀS 18:00">12:00 ÀS 18:00</option>
-              <option value="18:00 ÀS 00:00">18:00 ÀS 00:00</option>
-              <option value="00:00 ÀS 06:00">00:00 ÀS 06:00</option>
-            </select>
-          </div>
+    
+<!-- CONTAINER LADO A LADO -->
+<div style="display:flex; gap:20px; align-items:center;">
+
+  <!-- ========================= -->
+  <!--   BLOCO DADOS DO TURNO    -->
+  <!-- ========================= -->
+  <div class="section" id="section-dados" style="flex:1;">
+    <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar">
+      <span>📅 DADOS DO TURNO</span><span class="section-toggle">▼</span>
+    </div>
+
+    <div class="section-content">
+
+      <div class="row-inline">
+        <div>
+          <label class="obrigatorio">Data:</label>
+          <input type="date" id="turno-data" style="width:100%;" onchange="onCampoAlterado()">
         </div>
-        <label class="obrigatorio">Operador Atual:</label>
-        <input type="text" id="operador" style="width:100%;" placeholder="SEU NOME" oninput="formatarOperador(this); onCampoAlterado()">
-        <div class="row-inline">
-          <div><label class="obrigatorio">Região:</label>
-            <select id="regiao" style="width:100%;" onchange="atualizarAreas(); onCampoAlterado()">
-              <option value="">Selecione...</option>
-              <option value="DEMEM">DEMEM</option>
-              <option value="DEMEF">DEMEF</option>
-            </select>
-          </div>
-          <div class="autocomplete-wrapper" style="flex:1; min-width:140px;">
-            <label class="obrigatorio">Área:</label>
-            <input type="text" id="area" style="width:100%;" placeholder="Clique para selecionar..." 
-                   onclick="toggleAreaDropdown()" 
-                   oninput="filtrarAreas(this.value)" 
-                   autocomplete="off">
-            <div class="area-dropdown" id="area-dropdown"></div>
-          </div>
+
+        <div>
+          <label class="obrigatorio">Turno do Dia:</label>
+          <select id="turno-entrada" style="width:100%;" onchange="onCampoAlterado()">
+            <option value="">Selecione...</option>
+            <option value="06:00 ÀS 12:00">06:00 ÀS 12:00</option>
+            <option value="12:00 ÀS 18:00">12:00 ÀS 18:00</option>
+            <option value="18:00 ÀS 00:00">18:00 ÀS 00:00</option>
+            <option value="00:00 ÀS 06:00">00:00 ÀS 06:00</option>
+          </select>
         </div>
       </div>
+
+      <label class="obrigatorio">Operador Atual:</label>
+      <input type="text" id="operador" style="width:100%;"
+             placeholder="SEU NOME"
+             oninput="formatarOperador(this); onCampoAlterado()">
+
+      <div class="row-inline">
+        <div>
+          <label class="obrigatorio">Região:</label>
+          <select id="regiao" style="width:100%;" onchange="atualizarAreas(); onCampoAlterado()">
+            <option value="">Selecione...</option>
+            <option value="DEMEM">DEMEM</option>
+            <option value="DEMEF">DEMEF</option>
+          </select>
+        </div>
+
+        <div class="autocomplete-wrapper" style="flex:1; min-width:140px;">
+          <label class="obrigatorio">Área:</label>
+          <input type="text" id="area" style="width:100%;" placeholder="Clique para selecionar..."
+                 onclick="toggleAreaDropdown()"
+                 oninput="filtrarAreas(this.value)"
+                 autocomplete="off">
+          <div class="area-dropdown" id="area-dropdown"></div>
+        </div>
+      </div>
+
     </div>
+  </div>
+
+
+
+  <!-- ========================= -->
+  <!--       FOLHA AJUSTADA      -->
+  <!-- ========================= -->
+  <div style="
+      width:167px;
+      background:white;
+      padding:14px 20px;
+      border-radius:12px;
+
+      /* BORDA CINZA LEVE */
+      border:1px solid #d0d0d0;
+
+      /* Sombreamento suave interno */
+      box-shadow:
+        inset 0 0 12px rgba(255, 120, 120, 0.25),
+        0 2px 6px rgba(0,0,0,0.12);
+
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+
+      /* Alinhamento com o bloco do turno */
+      align-self:center;
+  ">
+
+    <!-- FURINHOS AJUSTADOS (ALINHADOS) -->
+    <div style="
+        position:absolute;
+        left:-5px;
+        top:46px;
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+    ">
+      <div style="width:10px; height:10px; background:#d0d0d0; border-radius:50%;"></div>
+      <div style="width:10px; height:10px; background:#d0d0d0; border-radius:50%;"></div>
+      <div style="width:10px; height:10px; background:#d0d0d0; border-radius:50%;"></div>
+      <div style="width:10px; height:10px; background:#d0d0d0; border-radius:50%;"></div>
+    </div>
+
+    <!-- 4 LINHAS DE TEXTO DENTRO DA FOLHA -->
+    <div style="margin-top:-8px;">
+      <div style="border-top:1px solid #d0d0d0; margin-top:8px;"></div>
+      <div style="border-top:1px solid #d0d0d0; margin-top:8px;"></div>
+      <div style="border-top:1px solid #d0d0d0; margin-top:8px;"></div>
+      <div style="border-top:1px solid #d0d0d0; margin-top:8px;"></div>
+    </div>
+
+    <!-- AVISO IMPORTAÇÃO -->
+    <div id="aviso-importacao" style="
+        display:none;
+        margin-bottom:12px;
+        font-size:13px;
+        padding:10px;
+        border-radius:8px;
+        background:#fff5f5;
+        box-shadow:inset 0 0 6px rgba(255, 120, 120, 0.25);
+    ">
+      <strong style="color:#c2492d;">⚠️ SESSÃO IMPORTADA</strong>
+      <p style="margin:4px 0 0 0; font-size:11px;">
+        Operador Anterior: <strong id="nome-anterior-aviso"></strong>
+      </p>
+    </div>
+
+    <!-- OPERADOR ANTERIOR -->
+    <div id="operador-anterior-box" style="
+        display:none;
+        font-size:12px;
+        background:#f8f8f8;
+        padding:8px 10px;
+        border-radius:8px;
+        box-shadow:inset 0 0 6px rgba(0,0,0,0.10);
+    ">
+      📋 <strong>Relatório recebido de:</strong><br>
+      <span id="operador-anterior-nome"></span>
+    </div>
+
+  </div>
+
+</div>
+
+
     
     <!-- CONTAGEM -->
-    <div class="section section-contagem" id="section-contagem">
-      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>📊 CONTAGEM DE "F" + INCIDÊNCIAS</span><span class="section-toggle">▼</span></div>
-      <div class="section-content">
-        <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-          <div><label class="obrigatorio">F Recebidos:</label><input type="number" id="f-recebidos" min="0" placeholder="0" style="width:80px;" onchange="onCampoAlterado()"></div>
-          <div><label class="obrigatorio">F Pendentes:</label><input type="number" id="f-pendentes" min="0" placeholder="0" style="width:80px;" onchange="onCampoAlterado()"></div>
-          <div><label class="obrigatorio">📺 Incidências:</label><input type="number" id="incidencias-tela-qtd" min="0" placeholder="0" style="width:80px;" onchange="onCampoAlterado()"></div>
-        </div>
+<div class="section section-contagem" id="section-contagem">
+  <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar">
+    <span>CONTAGEM DE BAIXAS E INCIDÊNCIAS EM TELA</span><span class="section-toggle">▼</span>
+  </div>
+
+  <div class="section-content">
+    <div style="
+      display:flex; 
+      gap:20px; 
+      justify-content:center; 
+      align-items:center; 
+      flex-wrap:wrap; 
+      margin-top:10px;
+    ">
+      <div>
+        <label class="obrigatorio">F Recebidos:</label>
+        <input 
+          type="number" 
+          id="f-recebidos" 
+          min="0" 
+          placeholder="0" 
+          onchange="onCampoAlterado()"
+          style="width:90px; box-shadow:0 2px 6px rgba(0,0,0,0.25); border-radius:6px; padding:4px;"
+        >
+      </div>
+
+      <div>
+        <label class="obrigatorio">F Pendentes:</label>
+        <input 
+          type="number" 
+          id="f-pendentes" 
+          min="0" 
+          placeholder="0" 
+          onchange="onCampoAlterado()"
+          style="width:90px; box-shadow:0 2px 6px rgba(0,0,0,0.25); border-radius:6px; padding:4px;"
+        >
+      </div>
+
+      <div>
+        <label class="obrigatorio">Incidências em tela:</label>
+        <input 
+          type="number" 
+          id="incidencias-tela-qtd" 
+          min="0" 
+          placeholder="0" 
+          onchange="onCampoAlterado()"
+          style="width:90px; box-shadow:0 2px 6px rgba(0,0,0,0.25); border-radius:6px; padding:4px;"
+        >
       </div>
     </div>
+  </div>
+</div>
+
     
     <!-- EQUIPES ATIVAS -->
     <div class="section section-equipes" id="section-equipes">
-      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>👥 EQUIPES ATIVAS (<span id="equipes-count">0</span>)</span><span class="section-toggle">▼</span></div>
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span> EQUIPES ATIVAS (<span id="equipes-count">0</span>)</span><span class="section-toggle">▼</span></div>
       <div class="section-content">
         <div id="equipes-container"></div>
         <div style="text-align: center; margin-top: 8px;">
@@ -406,7 +555,7 @@
     
     <!-- SERVIÇOS -->
     <div class="section section-servicos" id="section-servicos">
-      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>📈 QTD. SERVIÇOS</span><span class="section-toggle">▼</span></div>
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>📈 QUANTIDADE DE SERVIÇOS EM TELA</span><span class="section-toggle">▼</span></div>
       <div class="section-content">
         <div class="item-box" id="box-clientes-vitais">
           <div class="item-header">
@@ -548,7 +697,7 @@
     
     <!-- PRÉ-VISUALIZAÇÃO -->
     <div class="section section-preview" id="section-preview">
-      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>👁️ PRÉ-VISUALIZAÇÃO</span><span class="section-toggle">▼</span></div>
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>RELATÓRIO DE PRÉ-VISUALIZAÇÃO</span><span class="section-toggle">▼</span></div>
       <div class="section-content">
         <div class="preview-header">
           <span style="font-size:11px; color:#666;">Clique na mensagem para navegar</span>
@@ -1372,7 +1521,8 @@ function gerarMensagem(validar = true) {
   
   msg += `---- *CONTAGEM DE "F" BAIXAS* ----\n`;
   msg += `*F RECEBIDOS TURNO ANTERIOR:* ${fr || '0'}\n`;
-  msg += `*F REPASSADOS PENDENTES:* ${fp || '0'}\n\n`;
+  msg += `*F REPASSADOS PENDENTES:* ${fp || '0'}\n`;
+  msg += `*TOTAL INCIDÊNCIAS EM TELA:* ${ic || '0'}\n\n`;
   
   const eq = coletarEquipes();
   if (eq.length > 0) {
@@ -1405,7 +1555,7 @@ function gerarMensagem(validar = true) {
       }
     }
   });
-  if (pn) msg += `------ *PENDÊNCIAS* ------\n${pn}\n`;
+  if (pn) msg += `------ 📌 *PENDÊNCIAS* 📌 ------\n${pn}\n`;
   
   let sv = '';
   ['clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas'].forEach(id => {
@@ -1422,9 +1572,6 @@ function gerarMensagem(validar = true) {
       }
     }
   });
-  if (sv) msg += `------ *QTD. SERVIÇOS* ------\n${sv}`;
-  msg += `----------------------------\n`;
-  msg += `*INCIDÊNCIAS EM TELA:* ${ic || '0'}\n\n`;
   
   let oc = '';
   ['religador','poste-mt','poste-bt'].forEach(id => {
