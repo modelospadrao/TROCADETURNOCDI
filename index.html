@@ -86,9 +86,9 @@
     
     .equipe-linha { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 6px 8px; background: #f9fff9; border: 1px solid #4caf50; border-radius: 4px; margin: 4px 0; position: relative; }
     .equipe-linha input { margin: 0; font-size: 11px; padding: 5px; }
-    .equipe-linha .lead-input { width: 100px; font-family: monospace; text-transform: uppercase; }
-    .equipe-linha .tel-input { width: 110px; }
-    .equipe-linha .local-input { width: 110px; font-size: 10px; cursor: pointer; }
+    .equipe-linha .lead-input { width: 77px; font-family: monospace; text-transform: uppercase; }
+    .equipe-linha .tel-input { width: 87px; }
+    .equipe-linha .local-input { width: 115px; font-size: 10px; cursor: pointer; }
     .equipe-linha .equipe-remove { background: #f44336; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; }
     
     .autocomplete-wrapper { position: relative; display: inline-block; }
@@ -1247,7 +1247,7 @@ function gerarCaixasDinamicas(id) {
     const d = document.createElement('div');
     d.className = 'caixa-item';
     d.id = `${id}-item-${i}`;
-    d.innerHTML = `<label>#${i}:</label><input type="text" class="codigo-input" id="${id}-codigo-${i}" placeholder="Código (10 dig)" maxlength="10" oninput="formatarCodigo(this)" onchange="onCampoAlterado()"><input type="text" class="descricao-input" id="${id}-desc-${i}" placeholder="Observação" onchange="onCampoAlterado()"><button class="btn-remove-item" onclick="removerItemCaixa('${id}', ${i})">✕</button>`;
+    d.innerHTML = `<label>#${i}:</label><input type="text" class="codigo-input" id="${id}-codigo-${i}" placeholder="Ocorrência" maxlength="10" oninput="formatarCodigo(this)" onchange="onCampoAlterado()"><input type="text" class="descricao-input" id="${id}-desc-${i}" placeholder="Observação" onchange="onCampoAlterado()"><button class="btn-remove-item" onclick="removerItemCaixa('${id}', ${i})">✕</button>`;
     c.appendChild(d);
   }
   c.classList.add('visible');
@@ -1336,7 +1336,14 @@ function adicionarEquipe() {
   d.className = 'equipe-linha';
   d.id = 'equipe-' + equipeCount;
   d.innerHTML = `
-    <input type="text" class="lead-input" id="equipe-${equipeCount}-lead" placeholder="XXX-XX-XXX" maxlength="11" oninput="aplicarMascaraLead(this)" onchange="onCampoAlterado()">
+    <input type="text"
+       class="lead-input"
+       id="equipe-${equipeCount}-lead"
+       placeholder="XXX-XX-XXX"
+       minlength="11"
+       maxlength="11"
+       oninput="aplicarMascaraLead(this)"
+       onchange="onCampoAlterado()">
     <input type="tel" class="tel-input" id="equipe-${equipeCount}-telefone" placeholder="85 00000-0000" maxlength="13" oninput="formatarTelefone(this)" onchange="onCampoAlterado()">
     <div class="autocomplete-wrapper">
       <input type="text" class="local-input" id="equipe-${equipeCount}-local1" placeholder="Local 1" onclick="toggleLocalDropdown('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')" oninput="filtrarLocal('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')" autocomplete="off">
@@ -1364,25 +1371,61 @@ function adicionarEquipeComDados(dados) {
   d.className = 'equipe-linha';
   d.id = 'equipe-' + equipeCount;
   d.innerHTML = `
-    <input type="text" class="lead-input" id="equipe-${equipeCount}-lead" value="${dados.lead || ''}" placeholder="XXX-XX-XXX" maxlength="11" oninput="aplicarMascaraLead(this)" onchange="onCampoAlterado()">
-    <input type="tel" class="tel-input" id="equipe-${equipeCount}-telefone" value="${dados.telefone || ''}" placeholder="85 00000-0000" maxlength="13" oninput="formatarTelefone(this)" onchange="onCampoAlterado()">
+    <input type="text"
+           class="lead-input"
+           id="equipe-${equipeCount}-lead"
+           value="${dados.lead || ''}"
+           placeholder="XXX-XX-XXX"
+           minlength="11"
+           maxlength="11"
+           oninput="aplicarMascaraLead(this)"
+           onchange="onCampoAlterado()">
+           
+    <input type="tel"
+           class="tel-input"
+           id="equipe-${equipeCount}-telefone"
+           value="${dados.telefone || ''}"
+           placeholder="85 00000-0000"
+           maxlength="13"
+           oninput="formatarTelefone(this)"
+           onchange="onCampoAlterado()">
+
     <div class="autocomplete-wrapper">
-      <input type="text" class="local-input" id="equipe-${equipeCount}-local1" value="${dados.local1 || dados.localidade || ''}" placeholder="Local 1" onclick="toggleLocalDropdown('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')" oninput="filtrarLocal('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')" autocomplete="off">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local1"
+             value="${dados.local1 || dados.localidade || ''}"
+             placeholder="Local 1"
+             onclick="toggleLocalDropdown('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')"
+             oninput="filtrarLocal('equipe-${equipeCount}-local1', 'dropdown-${equipeCount}-1')"
+             autocomplete="off">
       <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-1"></div>
     </div>
+
     <div class="autocomplete-wrapper">
-      <input type="text" class="local-input" id="equipe-${equipeCount}-local2" value="${dados.local2 || ''}" placeholder="Local 2" onclick="toggleLocalDropdown('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')" oninput="filtrarLocal('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')" autocomplete="off">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local2"
+             value="${dados.local2 || ''}"
+             placeholder="Local 2"
+             onclick="toggleLocalDropdown('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')"
+             oninput="filtrarLocal('equipe-${equipeCount}-local2', 'dropdown-${equipeCount}-2')"
+             autocomplete="off">
       <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-2"></div>
     </div>
+
     <div class="autocomplete-wrapper">
-      <input type="text" class="local-input" id="equipe-${equipeCount}-local3" value="${dados.local3 || ''}" placeholder="Local 3" onclick="toggleLocalDropdown('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')" oninput="filtrarLocal('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')" autocomplete="off">
+      <input type="text" class="local-input" id="equipe-${equipeCount}-local3"
+             value="${dados.local3 || ''}"
+             placeholder="Local 3"
+             onclick="toggleLocalDropdown('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')"
+             oninput="filtrarLocal('equipe-${equipeCount}-local3', 'dropdown-${equipeCount}-3')"
+             autocomplete="off">
       <div class="autocomplete-dropdown" id="dropdown-${equipeCount}-3"></div>
     </div>
+
     <button class="equipe-remove" onclick="removerEquipe(${equipeCount})">✕</button>
   `;
   c.appendChild(d);
   atualizarContadorEquipes();
 }
+
 
 function removerEquipe(id) { const e = document.getElementById('equipe-' + id); if (e) { e.remove(); atualizarContadorEquipes(); onCampoAlterado(); } }
 function removerUltimaEquipe() { const c = document.getElementById('equipes-container'); if (c.lastChild) { c.removeChild(c.lastChild); atualizarContadorEquipes(); onCampoAlterado(); } }
