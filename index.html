@@ -1615,6 +1615,7 @@ function gerarMensagem(validar = true) {
       }
     }
   });
+  if (sv) msg += `------ *QTD. SERVIÇOS* ------\n${sv}\n`;
   
   let oc = '';
   ['religador','poste-mt','poste-bt'].forEach(id => {
@@ -1724,13 +1725,15 @@ function finalizarTurno() {
   mostrarNotificacao('⏳ Gerando arquivos...');
   
   const c = document.getElementById('main-container');
-  const op = document.getElementById('operador').value.trim() || 'OP';
-  const rg = document.getElementById('regiao').value || 'REG';
+  const op = document.getElementById('operador').value.trim() || 'OPERADOR';
   const ar = document.getElementById('area').value || 'AREA';
-  const ds = document.getElementById('turno-data').value.replace(/-/g, '_');
+  const rg = document.getElementById('regiao').value || 'REGIAO';
   const ag = new Date();
+  const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const dataExtenso = `${ag.getDate()} de ${meses[ag.getMonth()]} de ${ag.getFullYear()}`;
   const hr = `${ag.getHours().toString().padStart(2,'0')}h${ag.getMinutes().toString().padStart(2,'0')}m`;
-  const bn = `TROCA_TURNO_${op.replace(/\s+/g,'_')}_${rg}_${ar}_${ds}_${hr}`;
+  const opAnteriorPart = operadorAnterior ? ` OP ANTERIOR_ ${operadorAnterior.replace(/\s+/g,'_')}` : '';
+  const bn = `${ar} - ${rg} - OP ${op.replace(/\s+/g,'_')} - ${dataExtenso} às ${hr}${opAnteriorPart} (TROCA TURNO)`;
   
   html2pdf().set({
     margin: 3,
