@@ -770,14 +770,16 @@ function confirmarImportacao() {
   document.getElementById('f-pendentes').classList.add('campo-obrigatorio-import');
   document.getElementById('incidencias-tela-qtd').classList.add('campo-obrigatorio-import');
   
+  // F Pendentes fica vazio (você preenche na sua troca)
   document.getElementById('f-pendentes').value = '';
-  document.getElementById('incidencias-tela-qtd').value = '';
+  // Incidências JÁ vem preenchida do carregarDadosImportados (valor do anterior)
   
   const h = new Date();
   document.getElementById('turno-data').value = new Date(h.getTime() - (h.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
   
   iniciarAutoSave();
   salvarSessaoAuto();
+  atualizarPreview();
   mostrarNotificacao('📥 Importado! Atualize os campos obrigatórios.');
 }
 
@@ -785,11 +787,22 @@ function carregarDadosImportados(d) {
   document.getElementById('regiao').value = d.regiao || '';
   document.getElementById('area').value = d.area || '';
   areaSelecionada = d.area || '';
+  // F Pendentes do anterior vira F Recebidos
   document.getElementById('f-recebidos').value = d.fPendentes || d.fRecebidos || '';
-  if (d.estados) { estados = d.estados; restaurarEstadosBotoes(); }
-  if (d.equipes) d.equipes.forEach(eq => adicionarEquipeComDados(eq));
-  if (d.detalhesPendentes) detalhesPendentes = d.detalhesPendentes;
+  // Incidências vem preenchida com valor do anterior (obrigatório atualizar)
+  document.getElementById('incidencias-tela-qtd').value = d.incidenciasTelaQtd || '';
   
+  // Carregar estados dos botões PRIMEIRO
+  if (d.estados) { 
+    estados = JSON.parse(JSON.stringify(d.estados)); 
+    restaurarEstadosBotoes(); 
+  }
+  if (d.detalhesPendentes) detalhesPendentes = JSON.parse(JSON.stringify(d.detalhesPendentes));
+  
+  // Carregar equipes
+  if (d.equipes) d.equipes.forEach(eq => adicionarEquipeComDados(eq));
+  
+  // Carregar quantidades e observações
   ['manobra','pesada','pesada-afetacao','linha-viva','religador','poste-mt','poste-bt'].forEach(id => {
     const q = document.getElementById(id + '-qtd'), o = document.getElementById(id + '-obs');
     if (q && d[id + 'Qtd']) q.value = d[id + 'Qtd'];
@@ -800,7 +813,15 @@ function carregarDadosImportados(d) {
     if (q && d[id.replace(/-/g, '') + 'Qtd']) q.value = d[id.replace(/-/g, '') + 'Qtd'];
   });
   if (d.sobreavisoObs) document.getElementById('sobreaviso-obs').value = d.sobreavisoObs;
-  setTimeout(() => { if (d.caixasDinamicas) restaurarCaixas(d.caixasDinamicas); }, 100);
+  
+  // Restaurar caixas dinâmicas e depois atualizar preview
+  setTimeout(() => { 
+    if (d.caixasDinamicas) restaurarCaixas(d.caixasDinamicas);
+    // Atualizar preview após mais um tempo para garantir que tudo foi renderizado
+    setTimeout(() => {
+      atualizarPreview();
+    }, 150);
+  }, 100);
 }
 
 function carregarDadosCompletos(d) {
@@ -820,10 +841,14 @@ function carregarDadosCompletos(d) {
     document.getElementById('operador-anterior-nome').textContent = operadorAnterior;
   }
   
-  if (d.estados) { estados = d.estados; restaurarEstadosBotoes(); }
-  if (d.equipes) d.equipes.forEach(eq => adicionarEquipeComDados(eq));
-  if (d.detalhesPendentes) detalhesPendentes = d.detalhesPendentes;
+  // Carregar estados dos botões PRIMEIRO
+  if (d.estados) { estados = JSON.parse(JSON.stringify(d.estados)); restaurarEstadosBotoes(); }
+  if (d.detalhesPendentes) detalhesPendentes = JSON.parse(JSON.stringify(d.detalhesPendentes));
   
+  // Carregar equipes
+  if (d.equipes) d.equipes.forEach(eq => adicionarEquipeComDados(eq));
+  
+  // Carregar quantidades e observações
   ['manobra','pesada','pesada-afetacao','linha-viva','religador','poste-mt','poste-bt'].forEach(id => {
     const q = document.getElementById(id + '-qtd'), o = document.getElementById(id + '-obs');
     if (q && d[id + 'Qtd']) q.value = d[id + 'Qtd'];
@@ -837,7 +862,15 @@ function carregarDadosCompletos(d) {
   if (d.sobreavisoObs) document.getElementById('sobreaviso-obs').value = d.sobreavisoObs;
   
   equipeCount = d.equipeCount || 0;
-  setTimeout(() => { if (d.caixasDinamicas) restaurarCaixas(d.caixasDinamicas); }, 100);
+  
+  // Restaurar caixas dinâmicas e depois atualizar preview
+  setTimeout(() => { 
+    if (d.caixasDinamicas) restaurarCaixas(d.caixasDinamicas);
+    // Atualizar preview após mais um tempo para garantir que tudo foi renderizado
+    setTimeout(() => {
+      atualizarPreview();
+    }, 150);
+  }, 100);
   
   const o = document.getElementById('operador').value.trim();
   if (o) {
@@ -1228,8 +1261,8 @@ function salvarSessaoAuto() {
   d.timerStart = globalTimerStart;
   d.equipeCount = equipeCount;
   d.operadorAnterior = operadorAnterior;
-  d.estados = estados;
-  d.detalhesPendentes = detalhesPendentes;
+  d.estados = JSON.parse(JSON.stringify(estados));
+  d.detalhesPendentes = JSON.parse(JSON.stringify(detalhesPendentes));
   localStorage.setItem('troca_turno_sessao', JSON.stringify(d));
   
   const o = document.getElementById('operador').value.trim();
@@ -1252,7 +1285,10 @@ function coletarTodosDados() {
     incidenciasantigasQtd: document.getElementById('incidencias-antigas-qtd')?.value || '',
     sobreavisoObs: document.getElementById('sobreaviso-obs')?.value || '',
     equipes: coletarEquipes(),
-    caixasDinamicas: coletarCaixas()
+    caixasDinamicas: coletarCaixas(),
+    estados: JSON.parse(JSON.stringify(estados)),
+    detalhesPendentes: JSON.parse(JSON.stringify(detalhesPendentes)),
+    operadorAnterior: operadorAnterior
   };
   ['manobra','pesada','pesada-afetacao','linha-viva','religador','poste-mt','poste-bt'].forEach(id => {
     d[id + 'Qtd'] = document.getElementById(id + '-qtd')?.value || '';
