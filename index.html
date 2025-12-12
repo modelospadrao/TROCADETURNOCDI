@@ -441,7 +441,7 @@
     <!-- CONTAGEM -->
 <div class="section section-contagem" id="section-contagem">
   <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar">
-    <span>CONTAGEM DE BAIXAS E INCIDÊNCIAS EM TELA</span><span class="section-toggle">▼</span>
+    <span>💡CONTAGEM DE BAIXAS E INCIDÊNCIAS EM TELA</span><span class="section-toggle">▼</span>
   </div>
 
   <div class="section-content">
@@ -495,7 +495,7 @@
     
     <!-- EQUIPES ATIVAS -->
     <div class="section section-equipes" id="section-equipes">
-      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span> EQUIPES ATIVAS (<span id="equipes-count">0</span>)</span><span class="section-toggle">▼</span></div>
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>🚗 EQUIPES ATIVAS (<span id="equipes-count">0</span>)</span><span class="section-toggle">▼</span></div>
       <div class="section-content">
         <div id="equipes-container"></div>
         <div style="text-align: center; margin-top: 8px;">
@@ -1689,18 +1689,52 @@ function navegarPorClique(event) {
   
   const t = clickedText.toUpperCase();
   let section = null;
+  let inputId = null;
   
-  if (t.includes('DADOS DO TURNO') || t.includes('DATA:') || t.includes('OPERADOR') || t.includes('REGIÃO') || t.includes('ÁREA')) {
-    section = 'section-dados';
-  } else if (t.includes('CONTAGEM') || t.includes('F RECEBIDOS') || t.includes('F PENDENTES') || t.includes('F REPASSADOS')) {
-    section = 'section-contagem';
+  // Mapeia texto para seção E campo específico
+  if (t.includes('DATA:')) {
+    section = 'section-dados'; inputId = 'turno-data';
+  } else if (t.includes('TURNO DO DIA')) {
+    section = 'section-dados'; inputId = 'turno-entrada';
+  } else if (t.includes('OPERADOR')) {
+    section = 'section-dados'; inputId = 'operador';
+  } else if (t.includes('REGIÃO')) {
+    section = 'section-dados'; inputId = 'regiao';
+  } else if (t.includes('ÁREA')) {
+    section = 'section-dados'; inputId = 'area';
+  } else if (t.includes('DADOS DO TURNO')) {
+    section = 'section-dados'; inputId = 'turno-data';
+  } else if (t.includes('F RECEBIDOS')) {
+    section = 'section-contagem'; inputId = 'f-recebidos';
+  } else if (t.includes('F PENDENTES') || t.includes('F REPASSADOS')) {
+    section = 'section-contagem'; inputId = 'f-pendentes';
+  } else if (t.includes('INCIDÊNCIAS EM TELA') || t.includes('CONTAGEM')) {
+    section = 'section-contagem'; inputId = 'incidencias-tela-qtd';
   } else if (t.includes('EQUIPES')) {
     section = 'section-equipes';
-  } else if (t.includes('PENDÊNCIAS') || t.includes('MANOBRA') || t.includes('PESADA') || t.includes('LINHA VIVA')) {
+  } else if (t.includes('MANOBRA')) {
+    section = 'section-pendencias'; inputId = 'manobra-qtd';
+  } else if (t.includes('PESADA')) {
+    section = 'section-pendencias'; inputId = 'pesada-qtd';
+  } else if (t.includes('LINHA VIVA')) {
+    section = 'section-pendencias'; inputId = 'linha-viva-qtd';
+  } else if (t.includes('PENDÊNCIAS')) {
     section = 'section-pendencias';
-  } else if (t.includes('SERVIÇOS') || t.includes('CLIENTES') || t.includes('CABO PARTIDO') || t.includes('FALTA') || t.includes('INCIDÊNCIAS ANTIGAS')) {
+  } else if (t.includes('CLIENTES-VITAIS') || t.includes('CLIENTES VITAIS')) {
+    section = 'section-servicos'; inputId = 'clientes-vitais-qtd';
+  } else if (t.includes('CABO PARTIDO')) {
+    section = 'section-servicos'; inputId = 'cabo-partido-qtd';
+  } else if (t.includes('FALTA')) {
+    section = 'section-servicos'; inputId = 'falta-varios-qtd';
+  } else if (t.includes('SERVIÇOS')) {
     section = 'section-servicos';
-  } else if (t.includes('OCORRÊNCIAS') || t.includes('RELIGADOR') || t.includes('POSTE') || t.includes('SOBREAVISO')) {
+  } else if (t.includes('RELIGADOR')) {
+    section = 'section-ocorrencias'; inputId = 'religador-qtd';
+  } else if (t.includes('POSTE')) {
+    section = 'section-ocorrencias'; inputId = 'poste-mt-qtd';
+  } else if (t.includes('SOBREAVISO')) {
+    section = 'section-ocorrencias'; inputId = 'sobreaviso-obs';
+  } else if (t.includes('OCORRÊNCIAS')) {
     section = 'section-ocorrencias';
   }
   
@@ -1710,10 +1744,25 @@ function navegarPorClique(event) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       el.classList.add('highlight-section');
       setTimeout(() => el.classList.remove('highlight-section'), 1500);
+      
+      // Foca no campo e pisca a janela principal (box)
+      if (inputId) {
+        setTimeout(() => {
+          const input = document.getElementById(inputId);
+          if (input) {
+            input.focus();
+            // Encontra o box pai (item-box) e pisca ele
+            const box = input.closest('.item-box') || input.closest('.section-content');
+            if (box) {
+              box.classList.add('campo-obrigatorio-import');
+              setTimeout(() => box.classList.remove('campo-obrigatorio-import'), 5000);
+            }
+          }
+        }, 300);
+      }
     }
   }
 }
-
 // ============================================
 // COPIAR MENSAGEM
 // ============================================
