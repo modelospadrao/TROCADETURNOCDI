@@ -1594,7 +1594,7 @@ function gerarMensagem(validar = true) {
         msg += e.lead;
         if (e.telefone) msg += ` - ${e.telefone}`;
         const ls = [e.local1, e.local2, e.local3].filter(l => l);
-        if (ls.length > 0) msg += ` | ${ls.join(' / ')}`;
+        if (ls.length > 0) msg += ` | ${ls.join(' | ')}`;
         msg += '\n';
       }
     });
