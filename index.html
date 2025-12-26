@@ -5,20 +5,119 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TROCA DE TURNO</title>
   <link rel="icon" href="turno.png" type="image/png">
+  <script src="usuarios.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
   <style>
     :root {
       --cor-dados: #0053bf;
       --cor-contagem: #0053bf;
       --cor-equipes: #0053bf;
-      --cor-pendencias: #f46336;
-      --cor-servicos: #607d8b;
-      --cor-ocorrencias: #e91e63;
+      --cor-pendencias: #0053bf;
+      --cor-servicos: #0053bf;
+      --cor-ocorrencias: #0053bf;
       --cor-preview: #000000;
     }
     html, body { overscroll-behavior-y: none; margin: 0; padding: 0; }
     body { font-family: Cambria, Cochin, Georgia, Times, sans-serif; background-color: #f5f5f5; font-size: 14px; }
     .container { width: 95%; margin: 10px auto; background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    
+    /* LOGIN POPUP */
+    #login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #login-popup {
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      max-width: 320px;
+      width: 90%;
+    }
+    #login-popup h2 {
+      margin: 0 0 5px 0;
+      color: #333;
+      font-size: 22px;
+    }
+    #login-popup .login-subtitle {
+      color: #666;
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+    #login-popup .login-field {
+      margin: 15px 0;
+      text-align: left;
+    }
+    #login-popup .login-field label {
+      display: block;
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    #login-popup .login-field input {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 20px;
+      letter-spacing: 8px;
+      text-align: center;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-family: monospace;
+    }
+    #login-popup .login-field input:focus {
+      border-color: #0053bf;
+      outline: none;
+    }
+    #login-popup .login-error {
+      color: #f44336;
+      font-size: 12px;
+      margin: 10px 0;
+      display: none;
+    }
+    #login-popup .login-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      background: #0053bf;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: background 0.2s;
+    }
+    #login-popup .login-btn:hover {
+      background: #003d99;
+    }
+    #login-popup .login-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #login-usuario-logado {
+      position: fixed;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: #fff;
+      background: #4caf50;
+      padding: 4px 12px;
+      border-radius: 15px;
+      z-index: 1001;
+      display: none;
+    }
     
     #global-clock { position: fixed; top: 8px; left: 8px; font-size: 15px; font-family: 'Courier New', monospace; color: #fff; background: #000; padding: 5px 10px; border-radius: 8px; z-index: 1001; display: none; }
     #auto-save-indicator { position: fixed; top: 40px; left: 8px; font-size: 10px; color: #4caf50; background: rgba(0,0,0,0.8); padding: 3px 8px; border-radius: 4px; z-index: 1001; display: none; }
@@ -41,6 +140,41 @@
     
     .section-contagem { border-color: var(--cor-contagem); }
     .section-contagem .section-header { background: var(--cor-contagem); }
+    
+    /* Container dos botões de contagem RECEBIDOS */
+    .count-buttons-container {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: 10px 0;
+    }
+    /* Cada botão de contagem */
+    .count-button {
+      flex: 1;
+      background-color: #000000;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: center;
+      cursor: default;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.1s;
+    }
+    .count-button:hover {
+      transform: translateY(-2px);
+    }
+    .count-button .label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .count-button .value {
+      display: block;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    
     .section-pendencias { border-color: var(--cor-pendencias); }
     .section-pendencias .section-header { background: var(--cor-pendencias); }
     .section-ocorrencias { border-color: var(--cor-ocorrencias); }
@@ -172,6 +306,47 @@
   </style>
 </head>
 <body>
+  
+  <!-- LOGIN OVERLAY -->
+  <div id="login-overlay">
+    <div id="login-popup">
+      <h2>🔐 ACESSO AO SISTEMA</h2>
+      <p class="login-subtitle">Digite suas credenciais para continuar</p>
+      
+      <div class="login-field">
+        <label>👤 USUÁRIO (4 dígitos)</label>
+        <input 
+          type="password" 
+          id="login-usuario" 
+          maxlength="4" 
+          placeholder="••••"
+          oninput="this.value=this.value.replace(/\D/g,''); verificarCamposLogin();"
+          onkeypress="if(event.key==='Enter') tentarLogin();"
+        >
+      </div>
+      
+      <div class="login-field">
+        <label>🔑 SENHA (4 dígitos)</label>
+        <input 
+          type="password" 
+          id="login-senha" 
+          maxlength="4" 
+          placeholder="••••"
+          oninput="this.value=this.value.replace(/\D/g,''); verificarCamposLogin();"
+          onkeypress="if(event.key==='Enter') tentarLogin();"
+        >
+      </div>
+      
+      <p id="login-error" class="login-error">❌ Usuário ou senha incorretos!</p>
+      
+      <button id="login-btn" class="login-btn" onclick="tentarLogin()" disabled>
+        ENTRAR
+      </button>
+    </div>
+  </div>
+  
+  <!-- INDICADOR DE USUÁRIO LOGADO -->
+  <div id="login-usuario-logado">👤 <span id="nome-usuario-logado"></span></div>
   
   <div id="reset-popup" class="popup">
     <p style="font-size: 18px;">⚠️ <strong>ATENÇÃO!</strong></p>
@@ -441,56 +616,51 @@
     <!-- CONTAGEM -->
 <div class="section section-contagem" id="section-contagem">
   <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar">
-    <span>💡CONTAGEM DE BAIXAS E INCIDÊNCIAS EM TELA</span><span class="section-toggle">▼</span>
+    <span>💡RESUMO (ENTRADA E SAÍDA DE OCORRENCIAS)</span><span class="section-toggle">▼</span>
   </div>
 
   <div class="section-content">
-    <div style="
-      display:flex; 
-      gap:20px; 
-      justify-content:center; 
-      align-items:center; 
-      flex-wrap:wrap; 
-      margin-top:10px;
-    ">
-      <div>
-        <label class="obrigatorio">F Recebidos:</label>
-        <input 
-          type="number" 
-          id="f-recebidos" 
-          min="0" 
-          placeholder="0" 
-          onchange="onCampoAlterado()"
-          style="width:90px; box-shadow:0 2px 6px rgba(0,0,0,0.25); border-radius:6px; padding:4px;"
-        >
+    <!-- Linha 1: Campos RECEBIDOS (somente leitura - caixas pretas) -->
+    <div class="count-buttons-container">
+      <div class="count-button">
+        <span class="label">📥 QTD. "F" RECEBIDOS</span>
+        <span id="f-recebidos-display" class="value">0</span>
+        <input type="hidden" id="f-recebidos" value="0">
       </div>
-
-      <div>
-        <label class="obrigatorio">F Pendentes:</label>
-        <input 
-          type="number" 
-          id="f-pendentes" 
-          min="0" 
-          placeholder="0" 
-          onchange="onCampoAlterado()"
-          style="width:90px; box-shadow:0 2px 6px rgba(0,0,0,0.25); border-radius:6px; padding:4px;"
-        >
-      </div>
-
-      <div>
-        <label class="obrigatorio">Incidências em tela:</label>
-        <input 
-          type="number" 
-          id="incidencias-tela-qtd" 
-          min="0" 
-          placeholder="0" 
-          onchange="onCampoAlterado()"
-          style="width:90px; box-shadow:0 2px 6px rgba(0,0,0,0.25); border-radius:6px; padding:4px;"
-        >
+      <div class="count-button">
+        <span class="label">📥 QTD. "INC." RECEBIDAS</span>
+        <span id="incidencias-recebidas-display" class="value">0</span>
+        <input type="hidden" id="incidencias-recebidas" value="0">
       </div>
     </div>
-  </div>
-</div>
+    
+    <!-- Linha 2: Campos REPASSADOS (uma caixa só) -->
+    <div class="count-buttons-container">
+      <div class="count-button" style="background-color:#e07b39; display:flex; justify-content:center; gap:50px; padding:15px 20px;">
+        <div style="text-align:center;">
+          <span class="label">📤 TOTAL "F" REPASSADOS</span>
+          <input 
+            type="number" 
+            id="f-pendentes" 
+            min="0" 
+            placeholder="0" 
+            onchange="onCampoAlterado()"
+            style="width:80px; font-size:22px; font-weight:bold; text-align:center; border:none; border-radius:6px; background:#fff; color:#000; display:block; margin:5px auto 0 auto;"
+          >
+        </div>
+        <div style="text-align:center;">
+          <span class="label">📤 TOTAL "INC." REPASSADAS</span>
+          <input 
+            type="number" 
+            id="incidencias-tela-qtd" 
+            min="0" 
+            placeholder="0" 
+            onchange="onCampoAlterado()"
+            style="width:80px; font-size:22px; font-weight:bold; text-align:center; border:none; border-radius:6px; background:#fff; color:#000; display:block; margin:5px auto 0 auto;"
+          >
+        </div>
+      </div>
+    </div>
 
     
     <!-- EQUIPES ATIVAS -->
@@ -574,7 +744,7 @@
     
     <!-- SERVIÇOS -->
     <div class="section section-servicos" id="section-servicos">
-      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>📈 QUANTIDADE DE SERVIÇOS EM TELA</span><span class="section-toggle">▼</span></div>
+      <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>📈 DETALHES INCIDÊNCIAS</span><span class="section-toggle">▼</span></div>
       <div class="section-content">
         <div class="item-box" id="box-clientes-vitais">
           <div class="item-header">
@@ -745,6 +915,64 @@
 
 <script>
 // ============================================
+// SISTEMA DE LOGIN
+// ============================================
+let usuarioLogado = null;
+
+function verificarCamposLogin() {
+  const usuario = document.getElementById('login-usuario').value;
+  const senha = document.getElementById('login-senha').value;
+  const btn = document.getElementById('login-btn');
+  btn.disabled = !(usuario.length === 4 && senha.length === 4);
+}
+
+function tentarLogin() {
+  const usuario = document.getElementById('login-usuario').value;
+  const senha = document.getElementById('login-senha').value;
+  const errorEl = document.getElementById('login-error');
+  
+  // Verifica se a função validarLogin existe (do arquivo externo)
+  if (typeof validarLogin === 'function') {
+    usuarioLogado = validarLogin(usuario, senha);
+  } else {
+    // Fallback caso o arquivo externo não carregue
+    if (usuario === '0000' && senha === '0000') {
+      usuarioLogado = { usuario: '0000', senha: '0000', nome: 'ADMINISTRADOR' };
+    }
+  }
+  
+  if (usuarioLogado) {
+    // Login bem-sucedido
+    document.getElementById('login-overlay').style.display = 'none';
+    document.getElementById('login-usuario-logado').style.display = 'block';
+    document.getElementById('nome-usuario-logado').textContent = usuarioLogado.nome;
+    
+    // Agora verifica se tem sessão salva e mostra as opções
+    iniciarSistemaAposLogin();
+  } else {
+    // Login falhou
+    errorEl.style.display = 'block';
+    document.getElementById('login-usuario').value = '';
+    document.getElementById('login-senha').value = '';
+    document.getElementById('login-usuario').focus();
+    verificarCamposLogin();
+    
+    // Esconder erro após 3 segundos
+    setTimeout(() => { errorEl.style.display = 'none'; }, 3000);
+  }
+}
+
+function iniciarSistemaAposLogin() {
+  carregarConfiguracoes();
+  const sessaoSalva = localStorage.getItem('troca_turno_sessao');
+  if (sessaoSalva) {
+    document.getElementById('restore-popup').style.display = 'block';
+  } else {
+    document.getElementById('inicio-popup').style.display = 'block';
+  }
+}
+
+// ============================================
 // DADOS - Estrutura: REGIÃO > ÁREA > LOCALIDADES
 // ============================================
 let DADOS_REGIOES = {
@@ -781,18 +1009,13 @@ let areaSelecionada = '', navegacaoAtiva = true;
 // ============================================
 window.onload = async function() {
   await carregarDadosExternos();
-  carregarConfiguracoes();
   
-  const sessaoSalva = localStorage.getItem('troca_turno_sessao');
-  if (sessaoSalva) {
-    disableAllInteractive();
-    document.getElementById('clickOverlay').style.display = 'block';
-    document.getElementById('restore-popup').style.display = 'block';
-  } else {
-    disableAllInteractive();
-    document.getElementById('clickOverlay').style.display = 'block';
-    document.getElementById('inicio-popup').style.display = 'block';
-  }
+  // Bloqueia tudo até fazer login
+  disableAllInteractive();
+  document.getElementById('clickOverlay').style.display = 'block';
+  
+  // Foca no campo de usuário
+  document.getElementById('login-usuario').focus();
   
   document.addEventListener('click', function(e) {
     if (!e.target.closest('.autocomplete-wrapper') && !e.target.closest('.equipe-linha')) {
@@ -807,14 +1030,14 @@ function fecharTodosDropdowns() {
 
 function disableAllInteractive() {
   document.querySelectorAll('input, button, select, textarea').forEach(e => {
-    if (e.closest('.popup') || e.id === 'reset-button' || e.id === 'importarArquivo' || e.id === 'btn-config') return;
+    if (e.closest('.popup') || e.closest('#login-overlay') || e.id === 'reset-button' || e.id === 'importarArquivo' || e.id === 'btn-config') return;
     e.disabled = true;
   });
 }
 
 function enableAllInteractive() {
   document.querySelectorAll('input, button, select, textarea').forEach(e => {
-    if (e.closest('.popup')) return;
+    if (e.closest('.popup') || e.closest('#login-overlay')) return;
     e.disabled = false;
   });
 }
@@ -955,10 +1178,20 @@ function carregarDadosImportados(d) {
   document.getElementById('regiao').value = d.regiao || '';
   document.getElementById('area').value = d.area || '';
   areaSelecionada = d.area || '';
-  // F Pendentes do anterior vira F Recebidos
-  document.getElementById('f-recebidos').value = d.fPendentes || d.fRecebidos || '';
-  // Incidências vem preenchida com valor do anterior (obrigatório atualizar)
-  document.getElementById('incidencias-tela-qtd').value = d.incidenciasTelaQtd || '';
+  
+  // F Pendentes do anterior vira F Recebidos (caixa preta somente leitura)
+  const fRecebidosVal = d.fPendentes || d.fRecebidos || '0';
+  document.getElementById('f-recebidos').value = fRecebidosVal;
+  document.getElementById('f-recebidos-display').textContent = fRecebidosVal;
+  
+  // Incidências do anterior vira Incidências Recebidas (caixa preta somente leitura)
+  const incRecebidosVal = d.incidenciasTelaQtd || d.incidenciasRecebidas || '0';
+  document.getElementById('incidencias-recebidas').value = incRecebidosVal;
+  document.getElementById('incidencias-recebidas-display').textContent = incRecebidosVal;
+  
+  // Campos para o usuário atual preencher (limpos)
+  document.getElementById('f-pendentes').value = '';
+  document.getElementById('incidencias-tela-qtd').value = '';
   
   // Carregar estados dos botões PRIMEIRO
   if (d.estados) { 
@@ -999,8 +1232,18 @@ function carregarDadosCompletos(d) {
   document.getElementById('regiao').value = d.regiao || '';
   document.getElementById('area').value = d.area || '';
   areaSelecionada = d.area || '';
-  document.getElementById('f-recebidos').value = d.fRecebidos || '';
+  
+  // Atualizar valores e displays das caixas pretas
+  const fRecVal = d.fRecebidos || '0';
+  document.getElementById('f-recebidos').value = fRecVal;
+  document.getElementById('f-recebidos-display').textContent = fRecVal;
+  
   document.getElementById('f-pendentes').value = d.fPendentes || '';
+  
+  const incRecVal = d.incidenciasRecebidas || '0';
+  document.getElementById('incidencias-recebidas').value = incRecVal;
+  document.getElementById('incidencias-recebidas-display').textContent = incRecVal;
+  
   document.getElementById('incidencias-tela-qtd').value = d.incidenciasTelaQtd || '';
   
   if (d.operadorAnterior) {
@@ -1492,6 +1735,7 @@ function coletarTodosDados() {
     area: document.getElementById('area').value,
     fRecebidos: document.getElementById('f-recebidos').value,
     fPendentes: document.getElementById('f-pendentes').value,
+    incidenciasRecebidas: document.getElementById('incidencias-recebidas').value,
     incidenciasTelaQtd: document.getElementById('incidencias-tela-qtd').value,
     incidenciasantigasQtd: document.getElementById('incidencias-antigas-qtd')?.value || '',
     sobreavisoObs: document.getElementById('sobreaviso-obs')?.value || '',
@@ -1537,9 +1781,8 @@ function verificarCamposObrigatorios() {
   if (!document.getElementById('operador').value.trim()) m.push('👤 Operador');
   if (!document.getElementById('regiao').value) m.push('🗺️ Região');
   if (!document.getElementById('area').value) m.push('📍 Área');
-  if (!document.getElementById('f-recebidos').value) m.push('📊 F Recebidos');
-  if (!document.getElementById('f-pendentes').value) m.push('📊 F Pendentes');
-  if (!document.getElementById('incidencias-tela-qtd').value) m.push('📺 Incidências');
+  if (!document.getElementById('f-pendentes').value) m.push('📤 F Pendentes (Repassar)');
+  if (!document.getElementById('incidencias-tela-qtd').value) m.push('📤 Incidências (Repassar)');
   for (let id in estados) {
     if (estados[id] === 'sim') {
       const q = document.getElementById(id + '-qtd');
@@ -1567,6 +1810,7 @@ function gerarMensagem(validar = true) {
   const ar = document.getElementById('area').value;
   const fr = document.getElementById('f-recebidos').value;
   const fp = document.getElementById('f-pendentes').value;
+  const ir = document.getElementById('incidencias-recebidas').value;
   const ic = document.getElementById('incidencias-tela-qtd').value;
   
   let df = '';
@@ -1574,17 +1818,19 @@ function gerarMensagem(validar = true) {
   
   let msg = '';
   
-  msg += `------ *DADOS DO TURNO* ------\n\n`;
+  msg += `------ *DADOS DO TURNO* ------\n`;
   msg += `*DATA:* ${df}\n`;
   msg += `*TURNO DO DIA:* ${td}\n`;
   msg += `*OPERADOR ATUAL:* ${op}\n`;
   msg += `*REGIÃO:* ${rg}\n`;
   msg += `*ÁREA:* ${ar}\n\n`;
   
-  msg += `---- *CONTAGEM DE "F" BAIXAS* ----\n`;
-  msg += `*F RECEBIDOS TURNO ANTERIOR:* ${fr || '0'}\n`;
-  msg += `*F REPASSADOS PENDENTES:* ${fp || '0'}\n`;
-  msg += `*TOTAL INCIDÊNCIAS EM TELA:* ${ic || '0'}\n\n`;
+  msg += `---- *RESUMO* ----\n`;
+  msg += `*QTD. "F" RECEBIDOS:* ${fr || '0'}\n`;
+  msg += `*QTD. "INC." RECEBIDAS:* ${ir || '0'}\n`;
+  msg += `-----------\n`;
+  msg += `*TOTAL "F" REPASSADOS:* ${fp || '0'}\n`;
+  msg += `*TOTAL "INC." REPASSADAS:* ${ic || '0'}\n\n`;
   
   const eq = coletarEquipes();
   if (eq.length > 0) {
@@ -1617,7 +1863,7 @@ function gerarMensagem(validar = true) {
       }
     }
   });
-  if (pn) msg += `------ 📌 *PENDÊNCIAS* 📌 ------\n${pn}\n`;
+  msg += `---- *PENDÊNCIAS* ----\n${pn}\n`;
   
   let sv = '';
   ['clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas'].forEach(id => {
@@ -1634,7 +1880,7 @@ function gerarMensagem(validar = true) {
       }
     }
   });
-  if (sv) msg += `------ *QTD. SERVIÇOS* ------\n${sv}\n`;
+  msg += `---- *DETALHES INCIDENCIAS* ----\n${sv}\n`;
   
   let oc = '';
   ['religador','poste-mt','poste-bt'].forEach(id => {
@@ -1653,7 +1899,7 @@ function gerarMensagem(validar = true) {
     }
   });
   if (estados['sobreaviso'] === 'sim') oc += `• SOBREAVISO: ${document.getElementById('sobreaviso-obs').value || '-'}\n`;
-  if (oc) msg += `----- *OCORRÊNCIAS BT/MT* -----\n${oc}\n`;
+  msg += `---- *OCORRÊNCIAS BT/MT* ----\n${oc}\n`;
   
   if (operadorAnterior) {
     msg += `----------------------------\n`;
@@ -1708,6 +1954,10 @@ function navegarPorClique(event) {
     section = 'section-contagem'; inputId = 'f-recebidos';
   } else if (t.includes('F PENDENTES') || t.includes('F REPASSADOS')) {
     section = 'section-contagem'; inputId = 'f-pendentes';
+  } else if (t.includes('INCIDÊNCIAS') && t.includes('RECEBIDAS')) {
+    section = 'section-contagem'; inputId = 'incidencias-recebidas';
+  } else if (t.includes('INCIDÊNCIAS') && t.includes('REPASSADAS')) {
+    section = 'section-contagem'; inputId = 'incidencias-tela-qtd';
   } else if (t.includes('INCIDÊNCIAS EM TELA') || t.includes('CONTAGEM')) {
     section = 'section-contagem'; inputId = 'incidencias-tela-qtd';
   } else if (t.includes('EQUIPES')) {
