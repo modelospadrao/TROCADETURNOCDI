@@ -212,11 +212,23 @@
     
     .caixas-dinamicas { display: none; margin-top: 8px; padding: 8px; background: #f0f0f0; border-radius: 4px; border-left: 3px solid #9c27b0; }
     .caixas-dinamicas.visible { display: block; }
-    .caixa-item { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
-    .caixa-item label { margin: 0; font-size: 10px; min-width: 40px; }
-    .caixa-item input.codigo-input { width: 100px; font-family: monospace; font-size: 12px; }
-    .caixa-item input.descricao-input { flex: 1; min-width: 150px; font-size: 12px; }
-    .caixa-item .btn-remove-item { background: #f44336; color: #fff; border: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; font-size: 10px; }
+    .caixa-item { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; padding: 6px; background: #fff; border-radius: 4px; border: 1px solid #ddd; }
+    .caixa-item.resolvido { background: #e8f5e9; border-color: #4caf50; opacity: 0.7; }
+    .caixa-item.pendente { background: #fff3e0; border-color: #ff9800; }
+    .caixa-item.nao-revisado { background: #ffebee; border-color: #f44336; animation: pulseRevisar 1.5s infinite; }
+    @keyframes pulseRevisar { 0%, 100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); } 50% { box-shadow: 0 0 8px 2px rgba(244, 67, 54, 0.6); } }
+    .caixa-item label { margin: 0; font-size: 10px; min-width: 30px; }
+    .caixa-item input.codigo-input { width: 90px; font-family: monospace; font-size: 12px; }
+    .caixa-item input.descricao-input { flex: 1; min-width: 120px; font-size: 12px; }
+    .caixa-item .btn-status { padding: 4px; font-size: 9px; border: 2px solid; border-radius: 4px; cursor: pointer; font-weight: bold; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+    .caixa-item .btn-pendente { background: #fff; border-color: #ff9800; color: #ff9800; }
+    .caixa-item .btn-pendente:hover { background: #fff3e0; }
+    .caixa-item .btn-pendente.ativo { background: #ff9800; color: #fff; }
+    .caixa-item .btn-resolvido { background: #fff; border-color: #4caf50; color: #4caf50; }
+    .caixa-item .btn-resolvido:hover { background: #e8f5e9; }
+    .caixa-item .btn-resolvido.ativo { background: #4caf50; color: #fff; }
+    .caixa-item .btn-status img { width: 18px; height: 18px; }
+    .caixa-item .btn-remove-item { background: #f44336; color: #fff; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 12px; }
     
     .equipe-linha { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 6px 8px; background: #f9fff9; border: 1px solid #4caf50; border-radius: 4px; margin: 4px 0; position: relative; }
     .equipe-linha input { margin: 0; font-size: 11px; padding: 5px; }
@@ -689,7 +701,7 @@
             </div>
             <div class="campos-inline" id="campos-manobra">
               <label>Qtd:</label><input type="number" id="manobra-qtd" min="0" placeholder="0" onchange="verificarQuantidade('manobra'); onCampoAlterado()">
-              <label>Obs:</label><input type="text" id="manobra-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+              <input type="hidden" id="manobra-obs" value="">
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-manobra"></div>
@@ -704,7 +716,7 @@
             </div>
             <div class="campos-inline" id="campos-pesada">
               <label>Qtd:</label><input type="number" id="pesada-qtd" min="0" placeholder="0" onchange="verificarQuantidade('pesada'); onCampoAlterado()">
-              <label>Obs:</label><input type="text" id="pesada-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+              <input type="hidden" id="pesada-obs" value="">
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-pesada"></div>
@@ -719,7 +731,7 @@
             </div>
             <div class="campos-inline" id="campos-pesada-afetacao">
               <label>Qtd:</label><input type="number" id="pesada-afetacao-qtd" min="0" placeholder="0" onchange="verificarQuantidade('pesada-afetacao'); onCampoAlterado()">
-              <label>Obs:</label><input type="text" id="pesada-afetacao-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+              <input type="hidden" id="pesada-afetacao-obs" value="">
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-pesada-afetacao"></div>
@@ -734,7 +746,7 @@
             </div>
             <div class="campos-inline" id="campos-linha-viva">
               <label>Qtd:</label><input type="number" id="linha-viva-qtd" min="0" placeholder="0" onchange="verificarQuantidade('linha-viva'); onCampoAlterado()">
-              <label>Obs:</label><input type="text" id="linha-viva-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+              <input type="hidden" id="linha-viva-obs" value="">
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-linha-viva"></div>
@@ -833,7 +845,7 @@
             </div>
             <div class="campos-inline" id="campos-religador">
               <label>Qtd:</label><input type="number" id="religador-qtd" min="0" placeholder="0" onchange="verificarQuantidade('religador'); onCampoAlterado()">
-              <label>Obs:</label><input type="text" id="religador-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+              <input type="hidden" id="religador-obs" value="">
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-religador"></div>
@@ -848,7 +860,7 @@
             </div>
             <div class="campos-inline" id="campos-poste-mt">
               <label>Qtd:</label><input type="number" id="poste-mt-qtd" min="0" placeholder="0" onchange="verificarQuantidade('poste-mt'); onCampoAlterado()">
-              <label>Obs:</label><input type="text" id="poste-mt-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+              <input type="hidden" id="poste-mt-obs" value="">
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-poste-mt"></div>
@@ -863,7 +875,7 @@
             </div>
             <div class="campos-inline" id="campos-poste-bt">
               <label>Qtd:</label><input type="number" id="poste-bt-qtd" min="0" placeholder="0" onchange="verificarQuantidade('poste-bt'); onCampoAlterado()">
-              <label>Obs:</label><input type="text" id="poste-bt-obs" class="obs-input" placeholder="Observação" onchange="onCampoAlterado()">
+              <input type="hidden" id="poste-bt-obs" value="">
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-poste-bt"></div>
@@ -1215,9 +1227,9 @@ function carregarDadosImportados(d) {
   });
   if (d.sobreavisoObs) document.getElementById('sobreaviso-obs').value = d.sobreavisoObs;
   
-  // Restaurar caixas dinâmicas e depois atualizar preview
+  // Restaurar caixas dinâmicas MARCANDO COMO NÃO REVISADO (importação)
   setTimeout(() => { 
-    if (d.caixasDinamicas) restaurarCaixas(d.caixasDinamicas);
+    if (d.caixasDinamicas) restaurarCaixas(d.caixasDinamicas, true);
     // Atualizar preview após mais um tempo para garantir que tudo foi renderizado
     setTimeout(() => {
       atualizarPreview();
@@ -1507,17 +1519,74 @@ function gerarCaixasDinamicas(id) {
   if (q <= 0) { c.classList.remove('visible'); return; }
   for (let i = 1; i <= q; i++) {
     const d = document.createElement('div');
-    d.className = 'caixa-item';
+    d.className = 'caixa-item pendente';
     d.id = `${id}-item-${i}`;
-    d.innerHTML = `<label>#${i}:</label><input type="text" class="codigo-input" id="${id}-codigo-${i}" placeholder="Ocorrência" maxlength="10" oninput="formatarCodigo(this)" onchange="onCampoAlterado()"><input type="text" class="descricao-input" id="${id}-desc-${i}" placeholder="Observação" onchange="onCampoAlterado()"><button class="btn-remove-item" onclick="removerItemCaixa('${id}', ${i})">✕</button>`;
+    d.dataset.status = 'pendente';
+    d.innerHTML = `
+      <label>#${i}:</label>
+      <input type="text" class="codigo-input" id="${id}-codigo-${i}" placeholder="Código" maxlength="10" oninput="formatarCodigo(this)" onchange="onCampoAlterado()">
+      <input type="text" class="descricao-input" id="${id}-desc-${i}" placeholder="Observação" onchange="onCampoAlterado()">
+      <button class="btn-status btn-pendente ativo" onclick="marcarStatusItem('${id}', ${i}, 'pendente')" title="Ainda Pendente">
+        <img src="pendente.png" alt="P" onerror="this.style.display='none'; this.parentElement.innerHTML='⏳';">
+      </button>
+      <button class="btn-status btn-resolvido" onclick="marcarStatusItem('${id}', ${i}, 'resolvido')" title="Resolvido">
+        <img src="resolvido.png" alt="R" onerror="this.style.display='none'; this.parentElement.innerHTML='✅';">
+      </button>
+      <button class="btn-remove-item" onclick="removerItemCaixa('${id}', ${i})" title="Remover">✕</button>
+    `;
     c.appendChild(d);
   }
   c.classList.add('visible');
 }
 
+function marcarStatusItem(id, num, status) {
+  const item = document.getElementById(`${id}-item-${num}`);
+  if (!item) return;
+  
+  // Remove classes anteriores
+  item.classList.remove('pendente', 'resolvido', 'nao-revisado');
+  item.classList.add(status);
+  item.dataset.status = status;
+  
+  // Atualiza botões
+  const btnPendente = item.querySelector('.btn-pendente');
+  const btnResolvido = item.querySelector('.btn-resolvido');
+  
+  btnPendente.classList.remove('ativo');
+  btnResolvido.classList.remove('ativo');
+  
+  if (status === 'pendente') {
+    btnPendente.classList.add('ativo');
+  } else {
+    btnResolvido.classList.add('ativo');
+  }
+  
+  atualizarContagemPendentes(id);
+  onCampoAlterado();
+}
+
+function atualizarContagemPendentes(id) {
+  const container = document.getElementById('caixas-' + id);
+  if (!container) return;
+  
+  let pendentes = 0;
+  container.querySelectorAll('.caixa-item').forEach(item => {
+    if (item.dataset.status === 'pendente') pendentes++;
+  });
+  
+  // Atualiza o campo de quantidade para refletir só pendentes
+  const qtdField = document.getElementById(id + '-qtd');
+  if (qtdField) {
+    qtdField.value = pendentes;
+  }
+  
+  atualizarPreview();
+}
+
 function removerItemCaixa(id, num) {
   const item = document.getElementById(`${id}-item-${num}`);
   if (item) item.remove();
+  atualizarContagemPendentes(id);
   onCampoAlterado();
 }
 
@@ -1574,15 +1643,33 @@ function restaurarEstadosBotoes() {
   }
 }
 
-function restaurarCaixas(data) {
+function restaurarCaixas(data, marcarNaoRevisado = false) {
   ['manobra','pesada','pesada-afetacao','linha-viva','clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas','religador','poste-mt','poste-bt'].forEach(id => {
     const q = parseInt(document.getElementById(id + '-qtd')?.value) || 0;
     if (q > 0 && data[id] && data[id].length > 0) {
       gerarCaixasDinamicas(id);
       data[id].forEach((it, i) => {
-        const cd = document.getElementById(id + '-codigo-' + (i + 1)), ds = document.getElementById(id + '-desc-' + (i + 1));
+        const itemEl = document.getElementById(`${id}-item-${i + 1}`);
+        const cd = document.getElementById(id + '-codigo-' + (i + 1));
+        const ds = document.getElementById(id + '-desc-' + (i + 1));
         if (cd) cd.value = it.codigo || '';
         if (ds) ds.value = it.desc || '';
+        
+        // Restaura status ou marca como não revisado se for importação
+        if (itemEl) {
+          if (marcarNaoRevisado) {
+            // Importação: marca como não revisado para forçar revisão
+            itemEl.classList.remove('pendente', 'resolvido');
+            itemEl.classList.add('nao-revisado');
+            itemEl.dataset.status = 'nao-revisado';
+            // Remove classe ativo dos botões
+            itemEl.querySelector('.btn-pendente')?.classList.remove('ativo');
+            itemEl.querySelector('.btn-resolvido')?.classList.remove('ativo');
+          } else if (it.status) {
+            // Restauração normal: restaura o status salvo
+            marcarStatusItem(id, i + 1, it.status);
+          }
+        }
       });
     }
   });
@@ -1755,6 +1842,47 @@ function coletarTodosDados() {
   return d;
 }
 
+// Coleta dados para exportação - SÓ PENDENTES vão para o próximo turno
+function coletarDadosParaExportacao() {
+  const d = {
+    turnoData: document.getElementById('turno-data').value,
+    turnoEntrada: document.getElementById('turno-entrada').value,
+    operador: document.getElementById('operador').value,
+    regiao: document.getElementById('regiao').value,
+    area: document.getElementById('area').value,
+    fRecebidos: document.getElementById('f-recebidos').value,
+    fPendentes: document.getElementById('f-pendentes').value,
+    incidenciasRecebidas: document.getElementById('incidencias-recebidas').value,
+    incidenciasTelaQtd: document.getElementById('incidencias-tela-qtd').value,
+    incidenciasantigasQtd: document.getElementById('incidencias-antigas-qtd')?.value || '',
+    sobreavisoObs: document.getElementById('sobreaviso-obs')?.value || '',
+    equipes: coletarEquipes(),
+    caixasDinamicas: coletarCaixasPendentes(), // SÓ PENDENTES!
+    estados: JSON.parse(JSON.stringify(estados)),
+    detalhesPendentes: JSON.parse(JSON.stringify(detalhesPendentes)),
+    operadorAnterior: operadorAnterior
+  };
+  ['manobra','pesada','pesada-afetacao','linha-viva','religador','poste-mt','poste-bt'].forEach(id => {
+    d[id + 'Qtd'] = contarPendentes(id);
+    d[id + 'Obs'] = document.getElementById(id + '-obs')?.value || '';
+  });
+  ['clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas'].forEach(id => {
+    d[id.replace(/-/g, '') + 'Qtd'] = contarPendentes(id);
+  });
+  return d;
+}
+
+// Conta quantos itens pendentes tem em uma categoria
+function contarPendentes(id) {
+  const container = document.getElementById('caixas-' + id);
+  if (!container) return '0';
+  let count = 0;
+  container.querySelectorAll('.caixa-item').forEach(item => {
+    if (item.dataset.status === 'pendente') count++;
+  });
+  return count.toString();
+}
+
 function coletarCaixas() {
   const r = {};
   ['manobra','pesada','pesada-afetacao','linha-viva','clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas','religador','poste-mt','poste-bt'].forEach(id => {
@@ -1764,11 +1892,48 @@ function coletarCaixas() {
       container.querySelectorAll('.caixa-item').forEach(item => {
         const cod = item.querySelector('.codigo-input')?.value || '';
         const desc = item.querySelector('.descricao-input')?.value || '';
-        if (cod || desc) r[id].push({ codigo: cod, desc: desc });
+        const status = item.dataset.status || 'pendente';
+        if (cod || desc) r[id].push({ codigo: cod, desc: desc, status: status });
       });
     }
   });
   return r;
+}
+
+// Coleta só os PENDENTES para exportação
+function coletarCaixasPendentes() {
+  const r = {};
+  ['manobra','pesada','pesada-afetacao','linha-viva','clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas','religador','poste-mt','poste-bt'].forEach(id => {
+    r[id] = [];
+    const container = document.getElementById('caixas-' + id);
+    if (container) {
+      container.querySelectorAll('.caixa-item').forEach(item => {
+        const cod = item.querySelector('.codigo-input')?.value || '';
+        const desc = item.querySelector('.descricao-input')?.value || '';
+        const status = item.dataset.status || 'pendente';
+        // Só inclui se for pendente
+        if ((cod || desc) && status === 'pendente') {
+          r[id].push({ codigo: cod, desc: desc, status: status });
+        }
+      });
+    }
+  });
+  return r;
+}
+
+// Verifica se todos os itens importados foram revisados
+function verificarItensRevisados() {
+  const naoRevisados = [];
+  ['manobra','pesada','pesada-afetacao','linha-viva','clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas','religador','poste-mt','poste-bt'].forEach(id => {
+    const container = document.getElementById('caixas-' + id);
+    if (container) {
+      container.querySelectorAll('.caixa-item.nao-revisado').forEach(item => {
+        const cod = item.querySelector('.codigo-input')?.value || '';
+        if (cod) naoRevisados.push(`${id.toUpperCase()}: ${cod}`);
+      });
+    }
+  });
+  return naoRevisados;
 }
 
 // ============================================
@@ -1783,12 +1948,37 @@ function verificarCamposObrigatorios() {
   if (!document.getElementById('area').value) m.push('📍 Área');
   if (!document.getElementById('f-pendentes').value) m.push('📤 F Pendentes (Repassar)');
   if (!document.getElementById('incidencias-tela-qtd').value) m.push('📤 Incidências (Repassar)');
-  for (let id in estados) {
-    if (estados[id] === 'sim') {
-      const q = document.getElementById(id + '-qtd');
-      if (q && !q.value && id !== 'sobreaviso') m.push('⚠️ ' + id.toUpperCase() + ' (qtd)');
+  
+  // Lista de TODOS os itens que precisam ter SIM ou NÃO marcado
+  const todosItens = [
+    'manobra', 'pesada', 'pesada-afetacao', 'linha-viva',
+    'clientes-vitais', 'cabo-partido', 'falta-varios', 'clientes-m1', 'incidencias-antigas',
+    'religador', 'poste-mt', 'poste-bt', 'sobreaviso'
+  ];
+  
+  // Verificar se todos os itens têm SIM ou NÃO marcado
+  const semResposta = [];
+  todosItens.forEach(id => {
+    if (!estados[id]) {
+      // Pega o nome amigável do item
+      const titleEl = document.querySelector(`#box-${id} .item-title`);
+      const nome = titleEl ? titleEl.textContent : id.toUpperCase();
+      semResposta.push(nome);
     }
+  });
+  
+  if (semResposta.length > 0) {
+    m.push('<br>⚠️ <strong>MARQUE SIM OU NÃO:</strong>');
+    semResposta.forEach(item => m.push('🔘 ' + item));
   }
+  
+  // Verificar itens não revisados (só para os que estão como SIM)
+  const naoRevisados = verificarItensRevisados();
+  if (naoRevisados.length > 0) {
+    m.push('<br>⚠️ <strong>ITENS NÃO REVISADOS:</strong>');
+    naoRevisados.forEach(item => m.push('🔴 ' + item));
+  }
+  
   if (m.length > 0) {
     document.getElementById('obrigatorio-text').innerHTML = '🚨 CAMPOS OBRIGATÓRIOS:<br><br>' + m.join('<br>');
     document.getElementById('obrigatorio-popup').style.display = 'block';
@@ -1850,16 +2040,27 @@ function gerarMensagem(validar = true) {
   let pn = '';
   ['manobra','pesada','pesada-afetacao','linha-viva'].forEach(id => {
     if (estados[id] === 'sim') {
-      const q = document.getElementById(id + '-qtd').value || '0';
       const o = document.getElementById(id + '-obs').value || '-';
-      pn += `• ${id.toUpperCase()}: ${q} — ${o}\n`;
       const caixas = document.getElementById('caixas-' + id);
+      let pendentesCount = 0;
+      let pendentesTexto = '';
       if (caixas) {
         caixas.querySelectorAll('.caixa-item').forEach(item => {
-          const cod = item.querySelector('.codigo-input')?.value;
-          const desc = item.querySelector('.descricao-input')?.value;
-          if (cod || desc) pn += `  → ${cod || ''} - ${desc || ''}\n`;
+          const status = item.dataset.status;
+          // Só mostra se for PENDENTE
+          if (status === 'pendente') {
+            const cod = item.querySelector('.codigo-input')?.value;
+            const desc = item.querySelector('.descricao-input')?.value;
+            if (cod || desc) {
+              pendentesTexto += `  → ${cod || ''} - ${desc || ''}\n`;
+              pendentesCount++;
+            }
+          }
         });
+      }
+      if (pendentesCount > 0) {
+        pn += `• ${id.toUpperCase()}: ${pendentesCount} — ${o}\n`;
+        pn += pendentesTexto;
       }
     }
   });
@@ -1868,15 +2069,26 @@ function gerarMensagem(validar = true) {
   let sv = '';
   ['clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas'].forEach(id => {
     if (estados[id] === 'sim') {
-      const q = document.getElementById(id + '-qtd').value || '0';
-      sv += `• ${id.toUpperCase()}: ${q}\n`;
       const caixas = document.getElementById('caixas-' + id);
+      let pendentesCount = 0;
+      let pendentesTexto = '';
       if (caixas) {
         caixas.querySelectorAll('.caixa-item').forEach(item => {
-          const cod = item.querySelector('.codigo-input')?.value;
-          const desc = item.querySelector('.descricao-input')?.value;
-          if (cod || desc) sv += `  → ${cod || ''} - ${desc || ''}\n`;
+          const status = item.dataset.status;
+          // Só mostra se for PENDENTE
+          if (status === 'pendente') {
+            const cod = item.querySelector('.codigo-input')?.value;
+            const desc = item.querySelector('.descricao-input')?.value;
+            if (cod || desc) {
+              pendentesTexto += `  → ${cod || ''} - ${desc || ''}\n`;
+              pendentesCount++;
+            }
+          }
         });
+      }
+      if (pendentesCount > 0) {
+        sv += `• ${id.toUpperCase()}: ${pendentesCount}\n`;
+        sv += pendentesTexto;
       }
     }
   });
@@ -1885,16 +2097,27 @@ function gerarMensagem(validar = true) {
   let oc = '';
   ['religador','poste-mt','poste-bt'].forEach(id => {
     if (estados[id] === 'sim') {
-      const q = document.getElementById(id + '-qtd').value || '0';
       const o = document.getElementById(id + '-obs').value || '-';
-      oc += `• ${id.toUpperCase()}: ${q} — ${o}\n`;
       const caixas = document.getElementById('caixas-' + id);
+      let pendentesCount = 0;
+      let pendentesTexto = '';
       if (caixas) {
         caixas.querySelectorAll('.caixa-item').forEach(item => {
-          const cod = item.querySelector('.codigo-input')?.value;
-          const desc = item.querySelector('.descricao-input')?.value;
-          if (cod || desc) oc += `  → ${cod || ''} - ${desc || ''}\n`;
+          const status = item.dataset.status;
+          // Só mostra se for PENDENTE
+          if (status === 'pendente') {
+            const cod = item.querySelector('.codigo-input')?.value;
+            const desc = item.querySelector('.descricao-input')?.value;
+            if (cod || desc) {
+              pendentesTexto += `  → ${cod || ''} - ${desc || ''}\n`;
+              pendentesCount++;
+            }
+          }
         });
+      }
+      if (pendentesCount > 0) {
+        oc += `• ${id.toUpperCase()}: ${pendentesCount} — ${o}\n`;
+        oc += pendentesTexto;
       }
     }
   });
@@ -2063,7 +2286,7 @@ function finalizarTurno() {
   }).from(c).save();
   
   setTimeout(() => {
-    const d = coletarTodosDados();
+    const d = coletarDadosParaExportacao(); // SÓ PENDENTES vão para exportação
     const b = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
     const u = URL.createObjectURL(b);
     const a = document.createElement('a');
