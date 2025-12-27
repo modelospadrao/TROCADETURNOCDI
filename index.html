@@ -209,26 +209,51 @@
     .campos-inline label { margin: 0; font-size: 11px; white-space: nowrap; }
     .campos-inline input { width: 50px; margin: 0; }
     .campos-inline input.obs-input { width: 180px; }
+    .campos-inline input.qtd-readonly { width: 40px; text-align: center; font-weight: bold; background: #f5f5f5; cursor: default; }
+    
+    /* Botões de ação do cabeçalho */
+    .btn-remover-todas { background: #333; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+    .btn-remover-todas:hover { background: #555; }
+    .btn-adicionar-item { background: #4caf50; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+    .btn-adicionar-item:hover { background: #45a049; }
     
     .caixas-dinamicas { display: none; margin-top: 8px; padding: 8px; background: #f0f0f0; border-radius: 4px; border-left: 3px solid #9c27b0; }
     .caixas-dinamicas.visible { display: block; }
-    .caixa-item { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; padding: 6px; background: #fff; border-radius: 4px; border: 1px solid #ddd; }
-    .caixa-item.resolvido { background: #e8f5e9; border-color: #4caf50; opacity: 0.7; }
+    .caixa-item-wrapper { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+    .caixa-item { display: flex; align-items: center; gap: 8px; flex: 1; padding: 8px 10px; background: #fff; border-radius: 6px; border: 2px solid #ddd; }
+    .caixa-item.resolvido { background: #e8f5e9; border-color: #4caf50; }
     .caixa-item.pendente { background: #fff3e0; border-color: #ff9800; }
     .caixa-item.nao-revisado { background: #ffebee; border-color: #f44336; animation: pulseRevisar 1.5s infinite; }
     @keyframes pulseRevisar { 0%, 100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); } 50% { box-shadow: 0 0 8px 2px rgba(244, 67, 54, 0.6); } }
-    .caixa-item label { margin: 0; font-size: 10px; min-width: 30px; }
-    .caixa-item input.codigo-input { width: 90px; font-family: monospace; font-size: 12px; }
-    .caixa-item input.descricao-input { flex: 1; min-width: 120px; font-size: 12px; }
-    .caixa-item .btn-status { padding: 4px; font-size: 9px; border: 2px solid; border-radius: 4px; cursor: pointer; font-weight: bold; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
-    .caixa-item .btn-pendente { background: #fff; border-color: #ff9800; color: #ff9800; }
-    .caixa-item .btn-pendente:hover { background: #fff3e0; }
-    .caixa-item .btn-pendente.ativo { background: #ff9800; color: #fff; }
-    .caixa-item .btn-resolvido { background: #fff; border-color: #4caf50; color: #4caf50; }
-    .caixa-item .btn-resolvido:hover { background: #e8f5e9; }
-    .caixa-item .btn-resolvido.ativo { background: #4caf50; color: #fff; }
-    .caixa-item .btn-status img { width: 18px; height: 18px; }
-    .caixa-item .btn-remove-item { background: #f44336; color: #fff; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 12px; }
+    .caixa-item label { margin: 0; font-size: 11px; min-width: 25px; font-weight: bold; color: #666; }
+    .caixa-item input.codigo-input { width: 100px; font-family: monospace; font-size: 13px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .caixa-item input.descricao-input { flex: 1; min-width: 150px; font-size: 13px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+    
+    /* Input com erro - fundo vermelho claro pulsando */
+    .caixa-item input.input-erro { background: #ffcdd2; border-color: #f44336; animation: pulseInputErro 1s infinite; }
+    @keyframes pulseInputErro { 0%, 100% { background: #ffcdd2; } 50% { background: #ffebee; } }
+    
+    .btn-remove-item-ext { background: #f44336; color: #fff; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .btn-remove-item-ext:hover { background: #d32f2f; }
+    
+    /* Botão toggle PENDENTE/RESOLVIDO */
+    .btn-toggle-status { padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; min-width: 90px; transition: all 0.2s; }
+    .btn-toggle-status.pendente { background: #ff9800; color: #fff; }
+    .btn-toggle-status.pendente:hover { background: #f57c00; }
+    .btn-toggle-status.resolvido { background: #4caf50; color: #fff; }
+    .btn-toggle-status.resolvido:hover { background: #43a047; }
+    .btn-toggle-status.nao-revisado { background: #f44336; color: #fff; animation: pulseBtn 1.5s infinite; }
+    .btn-toggle-status.nao-revisado:hover { background: #d32f2f; }
+    @keyframes pulseBtn { 0%, 100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); } 50% { box-shadow: 0 0 8px 4px rgba(244, 67, 54, 0.6); } }
+    
+    /* Popup de quantidade */
+    #qtd-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; display: none; justify-content: center; align-items: center; }
+    #qtd-popup-content { background: #fff; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+    #qtd-popup-content h3 { margin: 0 0 15px 0; color: #333; }
+    #qtd-popup-content input { width: 80px; font-size: 24px; text-align: center; padding: 10px; border: 2px solid #ddd; border-radius: 8px; }
+    #qtd-popup-content button { margin: 15px 5px 0 5px; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    #qtd-popup-ok { background: #4caf50; color: #fff; }
+    #qtd-popup-cancel { background: #f44336; color: #fff; }
     
     .equipe-linha { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 6px 8px; background: #f9fff9; border: 1px solid #4caf50; border-radius: 4px; margin: 4px 0; position: relative; }
     .equipe-linha input { margin: 0; font-size: 11px; padding: 5px; }
@@ -277,7 +302,7 @@
     .preview-box.navegavel { cursor: pointer; }
     .preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
     
-    .popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; background: rgba(0,0,0,0.95); color: #fff; font-size: 14px; border-radius: 12px; z-index: 10000; box-shadow: 0 5px 30px rgba(0,0,0,0.5); text-align: center; max-width: 90%; }
+    .popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; width: 534px; max-width: 90vw;background: rgba(0,0,0,0.95); color: #fff; font-size: 19px; border-radius: 12px; z-index: 10000; box-shadow: 0 5px 30px rgba(0,0,0,0.5);   text-align: left; max-width: 90%; }
     .popup-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 15px; flex-wrap: wrap; }
     .popup-buttons button { padding: 10px 25px; font-size: 13px; border-radius: 6px; cursor: pointer; border: none; font-weight: bold; }
     .popup .yes-button { background: #4CAF50; color: #fff; }
@@ -409,6 +434,18 @@
     <p style="color: #ffc107; font-size: 12px;">Preencha: OPERADOR, TURNO, F PENDENTES e INCIDÊNCIAS!</p>
     <div class="popup-buttons">
       <button class="yes-button" onclick="confirmarImportacao()">✓ ENTENDI</button>
+    </div>
+  </div>
+  
+  <!-- POPUP DE QUANTIDADE INICIAL -->
+  <div id="qtd-popup">
+    <div id="qtd-popup-content">
+      <h3 id="qtd-popup-titulo">📝 Quantas pendências?</h3>
+      <input type="number" id="qtd-popup-input" min="1" max="50" value="1">
+      <div>
+        <button id="qtd-popup-ok" onclick="confirmarQtdPopup()">CONFIRMAR</button>
+        <button id="qtd-popup-cancel" onclick="cancelarQtdPopup()">CANCELAR</button>
+      </div>
     </div>
   </div>
   
@@ -635,12 +672,12 @@
     <!-- Linha 1: Campos RECEBIDOS (somente leitura - caixas pretas) -->
     <div class="count-buttons-container">
       <div class="count-button">
-        <span class="label">📥 QTD. "F" RECEBIDOS</span>
+        <span class="label">📥 "F" RECEBIDOS</span>
         <span id="f-recebidos-display" class="value">0</span>
         <input type="hidden" id="f-recebidos" value="0">
       </div>
       <div class="count-button">
-        <span class="label">📥 QTD. "INC." RECEBIDAS</span>
+        <span class="label">📥 "INC." RECEBIDAS</span>
         <span id="incidencias-recebidas-display" class="value">0</span>
         <input type="hidden" id="incidencias-recebidas" value="0">
       </div>
@@ -673,8 +710,8 @@
         </div>
       </div>
     </div>
-
-    
+  </div>
+</div>    
     <!-- EQUIPES ATIVAS -->
     <div class="section section-equipes" id="section-equipes">
       <div class="section-header" onclick="toggleSection(this)" data-tooltip="Clique para ocultar/mostrar"><span>🚗 EQUIPES ATIVAS (<span id="equipes-count">0</span>)</span><span class="section-toggle">▼</span></div>
@@ -695,12 +732,14 @@
           <div class="item-header">
             <span class="item-title">Pendências de Manobra</span>
             <div class="btn-group" id="btns-manobra">
-              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('manobra', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('manobra', 'nao', this)">NÃO</button>
+              <button class="btn-resposta btn-sim" onclick="abrirPopupQtd('manobra', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarNao('manobra', this)">NÃO</button>
               <button class="btn-desfazer" id="desfazer-manobra" onclick="desfazerItem('manobra')">✕</button>
             </div>
             <div class="campos-inline" id="campos-manobra">
-              <label>Qtd:</label><input type="number" id="manobra-qtd" min="0" placeholder="0" onchange="verificarQuantidade('manobra'); onCampoAlterado()">
+              <button class="btn-remover-todas" onclick="removerTodasPendencias('manobra')">REMOVER TODAS</button>
+              <button class="btn-adicionar-item" onclick="adicionarPendencia('manobra')">+ADD</button>
+              <input type="text" id="manobra-qtd" class="qtd-readonly" value="0" readonly>
               <input type="hidden" id="manobra-obs" value="">
             </div>
           </div>
@@ -710,12 +749,14 @@
           <div class="item-header">
             <span class="item-title">Pendências de Pesada</span>
             <div class="btn-group" id="btns-pesada">
-              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('pesada', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('pesada', 'nao', this)">NÃO</button>
+              <button class="btn-resposta btn-sim" onclick="abrirPopupQtd('pesada', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarNao('pesada', this)">NÃO</button>
               <button class="btn-desfazer" id="desfazer-pesada" onclick="desfazerItem('pesada')">✕</button>
             </div>
             <div class="campos-inline" id="campos-pesada">
-              <label>Qtd:</label><input type="number" id="pesada-qtd" min="0" placeholder="0" onchange="verificarQuantidade('pesada'); onCampoAlterado()">
+              <button class="btn-remover-todas" onclick="removerTodasPendencias('pesada')">REMOVER TODAS</button>
+              <button class="btn-adicionar-item" onclick="adicionarPendencia('pesada')">+ADD</button>
+              <input type="text" id="pesada-qtd" class="qtd-readonly" value="0" readonly>
               <input type="hidden" id="pesada-obs" value="">
             </div>
           </div>
@@ -725,12 +766,14 @@
           <div class="item-header">
             <span class="item-title">Pesada c/ Afetação</span>
             <div class="btn-group" id="btns-pesada-afetacao">
-              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('pesada-afetacao', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('pesada-afetacao', 'nao', this)">NÃO</button>
+              <button class="btn-resposta btn-sim" onclick="abrirPopupQtd('pesada-afetacao', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarNao('pesada-afetacao', this)">NÃO</button>
               <button class="btn-desfazer" id="desfazer-pesada-afetacao" onclick="desfazerItem('pesada-afetacao')">✕</button>
             </div>
             <div class="campos-inline" id="campos-pesada-afetacao">
-              <label>Qtd:</label><input type="number" id="pesada-afetacao-qtd" min="0" placeholder="0" onchange="verificarQuantidade('pesada-afetacao'); onCampoAlterado()">
+              <button class="btn-remover-todas" onclick="removerTodasPendencias('pesada-afetacao')">REMOVER TODAS</button>
+              <button class="btn-adicionar-item" onclick="adicionarPendencia('pesada-afetacao')">+ADD</button>
+              <input type="text" id="pesada-afetacao-qtd" class="qtd-readonly" value="0" readonly>
               <input type="hidden" id="pesada-afetacao-obs" value="">
             </div>
           </div>
@@ -740,12 +783,14 @@
           <div class="item-header">
             <span class="item-title">Pendências Linha Viva</span>
             <div class="btn-group" id="btns-linha-viva">
-              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('linha-viva', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('linha-viva', 'nao', this)">NÃO</button>
+              <button class="btn-resposta btn-sim" onclick="abrirPopupQtd('linha-viva', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarNao('linha-viva', this)">NÃO</button>
               <button class="btn-desfazer" id="desfazer-linha-viva" onclick="desfazerItem('linha-viva')">✕</button>
             </div>
             <div class="campos-inline" id="campos-linha-viva">
-              <label>Qtd:</label><input type="number" id="linha-viva-qtd" min="0" placeholder="0" onchange="verificarQuantidade('linha-viva'); onCampoAlterado()">
+              <button class="btn-remover-todas" onclick="removerTodasPendencias('linha-viva')">REMOVER TODAS</button>
+              <button class="btn-adicionar-item" onclick="adicionarPendencia('linha-viva')">+ADD</button>
+              <input type="text" id="linha-viva-qtd" class="qtd-readonly" value="0" readonly>
               <input type="hidden" id="linha-viva-obs" value="">
             </div>
           </div>
@@ -762,12 +807,14 @@
           <div class="item-header">
             <span class="item-title">Clientes Vitais</span>
             <div class="btn-group" id="btns-clientes-vitais">
-              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('clientes-vitais', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('clientes-vitais', 'nao', this)">NÃO</button>
+              <button class="btn-resposta btn-sim" onclick="abrirPopupQtd('clientes-vitais', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarNao('clientes-vitais', this)">NÃO</button>
               <button class="btn-desfazer" id="desfazer-clientes-vitais" onclick="desfazerItem('clientes-vitais')">✕</button>
             </div>
             <div class="campos-inline" id="campos-clientes-vitais">
-              <label>Qtd:</label><input type="number" id="clientes-vitais-qtd" min="0" placeholder="0" onchange="verificarQuantidade('clientes-vitais'); onCampoAlterado()">
+              <button class="btn-remover-todas" onclick="removerTodasPendencias('clientes-vitais')">REMOVER TODAS</button>
+              <button class="btn-adicionar-item" onclick="adicionarPendencia('clientes-vitais')">+ADD</button>
+              <input type="text" id="clientes-vitais-qtd" class="qtd-readonly" value="0" readonly>
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-clientes-vitais"></div>
@@ -776,12 +823,14 @@
           <div class="item-header">
             <span class="item-title">Cabo Partido</span>
             <div class="btn-group" id="btns-cabo-partido">
-              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('cabo-partido', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('cabo-partido', 'nao', this)">NÃO</button>
+              <button class="btn-resposta btn-sim" onclick="abrirPopupQtd('cabo-partido', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarNao('cabo-partido', this)">NÃO</button>
               <button class="btn-desfazer" id="desfazer-cabo-partido" onclick="desfazerItem('cabo-partido')">✕</button>
             </div>
             <div class="campos-inline" id="campos-cabo-partido">
-              <label>Qtd:</label><input type="number" id="cabo-partido-qtd" min="0" placeholder="0" onchange="verificarQuantidade('cabo-partido'); onCampoAlterado()">
+              <button class="btn-remover-todas" onclick="removerTodasPendencias('cabo-partido')">REMOVER TODAS</button>
+              <button class="btn-adicionar-item" onclick="adicionarPendencia('cabo-partido')">+ADD</button>
+              <input type="text" id="cabo-partido-qtd" class="qtd-readonly" value="0" readonly>
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-cabo-partido"></div>
@@ -790,12 +839,14 @@
           <div class="item-header">
             <span class="item-title">Falta em Vários</span>
             <div class="btn-group" id="btns-falta-varios">
-              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('falta-varios', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('falta-varios', 'nao', this)">NÃO</button>
+              <button class="btn-resposta btn-sim" onclick="abrirPopupQtd('falta-varios', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarNao('falta-varios', this)">NÃO</button>
               <button class="btn-desfazer" id="desfazer-falta-varios" onclick="desfazerItem('falta-varios')">✕</button>
             </div>
             <div class="campos-inline" id="campos-falta-varios">
-              <label>Qtd:</label><input type="number" id="falta-varios-qtd" min="0" placeholder="0" onchange="verificarQuantidade('falta-varios'); onCampoAlterado()">
+              <button class="btn-remover-todas" onclick="removerTodasPendencias('falta-varios')">REMOVER TODAS</button>
+              <button class="btn-adicionar-item" onclick="adicionarPendencia('falta-varios')">+ADD</button>
+              <input type="text" id="falta-varios-qtd" class="qtd-readonly" value="0" readonly>
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-falta-varios"></div>
@@ -804,12 +855,14 @@
           <div class="item-header">
             <span class="item-title">Clientes M.1</span>
             <div class="btn-group" id="btns-clientes-m1">
-              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('clientes-m1', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('clientes-m1', 'nao', this)">NÃO</button>
+              <button class="btn-resposta btn-sim" onclick="abrirPopupQtd('clientes-m1', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarNao('clientes-m1', this)">NÃO</button>
               <button class="btn-desfazer" id="desfazer-clientes-m1" onclick="desfazerItem('clientes-m1')">✕</button>
             </div>
             <div class="campos-inline" id="campos-clientes-m1">
-              <label>Qtd:</label><input type="number" id="clientes-m1-qtd" min="0" placeholder="0" onchange="verificarQuantidade('clientes-m1'); onCampoAlterado()">
+              <button class="btn-remover-todas" onclick="removerTodasPendencias('clientes-m1')">REMOVER TODAS</button>
+              <button class="btn-adicionar-item" onclick="adicionarPendencia('clientes-m1')">+ADD</button>
+              <input type="text" id="clientes-m1-qtd" class="qtd-readonly" value="0" readonly>
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-clientes-m1"></div>
@@ -818,12 +871,14 @@
           <div class="item-header">
             <span class="item-title">Incidências Antigas</span>
             <div class="btn-group" id="btns-incidencias-antigas">
-              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('incidencias-antigas', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('incidencias-antigas', 'nao', this)">NÃO</button>
+              <button class="btn-resposta btn-sim" onclick="abrirPopupQtd('incidencias-antigas', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarNao('incidencias-antigas', this)">NÃO</button>
               <button class="btn-desfazer" id="desfazer-incidencias-antigas" onclick="desfazerItem('incidencias-antigas')">✕</button>
             </div>
             <div class="campos-inline" id="campos-incidencias-antigas">
-              <label>Qtd:</label><input type="number" id="incidencias-antigas-qtd" min="0" placeholder="0" onchange="verificarQuantidade('incidencias-antigas'); onCampoAlterado()">
+              <button class="btn-remover-todas" onclick="removerTodasPendencias('incidencias-antigas')">REMOVER TODAS</button>
+              <button class="btn-adicionar-item" onclick="adicionarPendencia('incidencias-antigas')">+ADD</button>
+              <input type="text" id="incidencias-antigas-qtd" class="qtd-readonly" value="0" readonly>
             </div>
           </div>
           <div class="caixas-dinamicas" id="caixas-incidencias-antigas"></div>
@@ -839,12 +894,14 @@
           <div class="item-header">
             <span class="item-title">Religador Fora</span>
             <div class="btn-group" id="btns-religador">
-              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('religador', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('religador', 'nao', this)">NÃO</button>
+              <button class="btn-resposta btn-sim" onclick="abrirPopupQtd('religador', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarNao('religador', this)">NÃO</button>
               <button class="btn-desfazer" id="desfazer-religador" onclick="desfazerItem('religador')">✕</button>
             </div>
             <div class="campos-inline" id="campos-religador">
-              <label>Qtd:</label><input type="number" id="religador-qtd" min="0" placeholder="0" onchange="verificarQuantidade('religador'); onCampoAlterado()">
+              <button class="btn-remover-todas" onclick="removerTodasPendencias('religador')">REMOVER TODAS</button>
+              <button class="btn-adicionar-item" onclick="adicionarPendencia('religador')">+ADD</button>
+              <input type="text" id="religador-qtd" class="qtd-readonly" value="0" readonly>
               <input type="hidden" id="religador-obs" value="">
             </div>
           </div>
@@ -854,12 +911,14 @@
           <div class="item-header">
             <span class="item-title">Poste MT Abalroado</span>
             <div class="btn-group" id="btns-poste-mt">
-              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('poste-mt', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('poste-mt', 'nao', this)">NÃO</button>
+              <button class="btn-resposta btn-sim" onclick="abrirPopupQtd('poste-mt', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarNao('poste-mt', this)">NÃO</button>
               <button class="btn-desfazer" id="desfazer-poste-mt" onclick="desfazerItem('poste-mt')">✕</button>
             </div>
             <div class="campos-inline" id="campos-poste-mt">
-              <label>Qtd:</label><input type="number" id="poste-mt-qtd" min="0" placeholder="0" onchange="verificarQuantidade('poste-mt'); onCampoAlterado()">
+              <button class="btn-remover-todas" onclick="removerTodasPendencias('poste-mt')">REMOVER TODAS</button>
+              <button class="btn-adicionar-item" onclick="adicionarPendencia('poste-mt')">+ADD</button>
+              <input type="text" id="poste-mt-qtd" class="qtd-readonly" value="0" readonly>
               <input type="hidden" id="poste-mt-obs" value="">
             </div>
           </div>
@@ -869,12 +928,14 @@
           <div class="item-header">
             <span class="item-title">Poste BT Abalroado</span>
             <div class="btn-group" id="btns-poste-bt">
-              <button class="btn-resposta btn-sim" onclick="selecionarComDetalhes('poste-bt', 'sim', this)">SIM</button>
-              <button class="btn-resposta btn-nao" onclick="selecionarComDetalhes('poste-bt', 'nao', this)">NÃO</button>
+              <button class="btn-resposta btn-sim" onclick="abrirPopupQtd('poste-bt', this)">SIM</button>
+              <button class="btn-resposta btn-nao" onclick="selecionarNao('poste-bt', this)">NÃO</button>
               <button class="btn-desfazer" id="desfazer-poste-bt" onclick="desfazerItem('poste-bt')">✕</button>
             </div>
             <div class="campos-inline" id="campos-poste-bt">
-              <label>Qtd:</label><input type="number" id="poste-bt-qtd" min="0" placeholder="0" onchange="verificarQuantidade('poste-bt'); onCampoAlterado()">
+              <button class="btn-remover-todas" onclick="removerTodasPendencias('poste-bt')">REMOVER TODAS</button>
+              <button class="btn-adicionar-item" onclick="adicionarPendencia('poste-bt')">+ADD</button>
+              <input type="text" id="poste-bt-qtd" class="qtd-readonly" value="0" readonly>
               <input type="hidden" id="poste-bt-obs" value="">
             </div>
           </div>
@@ -1115,9 +1176,50 @@ function iniciarDoZero() {
   const h = new Date();
   document.getElementById('turno-data').value = new Date(h.getTime() - (h.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
   sessaoImportada = false;
+  
+  // Reseta todos os itens ao estado inicial
+  resetarTodosItensParaPadrao();
+  
   iniciarAutoSave();
   salvarSessaoAuto();
   mostrarNotificacao('✅ Sessão iniciada!');
+}
+
+// Reseta TODOS os itens para o estado padrão (SIM/NÃO visíveis)
+function resetarTodosItensParaPadrao() {
+  const todosItens = [
+    'manobra', 'pesada', 'pesada-afetacao', 'linha-viva',
+    'clientes-vitais', 'cabo-partido', 'falta-varios', 'clientes-m1', 'incidencias-antigas',
+    'religador', 'poste-mt', 'poste-bt'
+  ];
+  
+  todosItens.forEach(id => {
+    const bs = document.getElementById('btns-' + id)?.querySelectorAll('.btn-resposta');
+    const c = document.getElementById('campos-' + id);
+    const d = document.getElementById('desfazer-' + id);
+    const cx = document.getElementById('caixas-' + id);
+    const q = document.getElementById(id + '-qtd');
+    
+    // Mostra SIM e NÃO, remove seleção
+    if (bs) bs.forEach(x => { x.style.display = ''; x.classList.remove('selecionado'); });
+    
+    // Oculta campos-inline
+    if (c) c.classList.remove('visible');
+    
+    // Oculta X (desfazer)
+    if (d) d.classList.remove('visible');
+    
+    // Limpa caixas
+    if (cx) { cx.innerHTML = ''; cx.classList.remove('visible'); }
+    
+    // Reseta quantidade
+    if (q) q.value = '0';
+    
+    // Limpa estado
+    delete estados[id];
+    delete detalhesPendentes[id];
+    contadorItens[id] = 0;
+  });
 }
 
 function abrirImportacao() {
@@ -1187,6 +1289,9 @@ function confirmarImportacao() {
 }
 
 function carregarDadosImportados(d) {
+  // Reseta todos os itens primeiro
+  resetarTodosItensParaPadrao();
+  
   document.getElementById('regiao').value = d.regiao || '';
   document.getElementById('area').value = d.area || '';
   areaSelecionada = d.area || '';
@@ -1227,9 +1332,9 @@ function carregarDadosImportados(d) {
   });
   if (d.sobreavisoObs) document.getElementById('sobreaviso-obs').value = d.sobreavisoObs;
   
-  // Restaurar caixas dinâmicas MARCANDO COMO NÃO REVISADO (importação)
+  // Restaurar caixas dinâmicas - MARCA COMO NÃO REVISADO para forçar revisão
   setTimeout(() => { 
-    if (d.caixasDinamicas) restaurarCaixas(d.caixasDinamicas, true);
+    if (d.caixasDinamicas) restaurarCaixas(d.caixasDinamicas, true); // true = forçar revisão
     // Atualizar preview após mais um tempo para garantir que tudo foi renderizado
     setTimeout(() => {
       atualizarPreview();
@@ -1238,6 +1343,9 @@ function carregarDadosImportados(d) {
 }
 
 function carregarDadosCompletos(d) {
+  // Reseta todos os itens primeiro
+  resetarTodosItensParaPadrao();
+  
   document.getElementById('turno-data').value = d.turnoData || '';
   document.getElementById('turno-entrada').value = d.turnoEntrada || '';
   document.getElementById('operador').value = d.operador || '';
@@ -1478,116 +1586,300 @@ function onCampoAlterado() {
 function toggleModoNoturno() { modoNoturno = !modoNoturno; document.getElementById('previewBox').classList.toggle('modo-noturno', modoNoturno); }
 
 // ============================================
-// SELEÇÃO DE ITENS
+// POPUP DE QUANTIDADE
 // ============================================
-function selecionarComDetalhes(id, v, b) {
-  const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta');
-  const c = document.getElementById('campos-' + id);
-  const d = document.getElementById('desfazer-' + id);
-  bs.forEach(x => { if (x !== b) x.style.display = 'none'; else x.classList.add('selecionado'); });
-  d.classList.add('visible');
-  if (v === 'sim') c.classList.add('visible');
-  else { c.classList.remove('visible'); const cx = document.getElementById('caixas-' + id); if (cx) cx.classList.remove('visible'); }
-  estados[id] = v;
+let popupIdAtual = null;
+let popupBtnAtual = null;
+
+function abrirPopupQtd(id, btn) {
+  popupIdAtual = id;
+  popupBtnAtual = btn;
+  const titleEl = document.querySelector(`#box-${id} .item-title`);
+  const nome = titleEl ? titleEl.textContent : id;
+  document.getElementById('qtd-popup-titulo').textContent = `📝 Quantas ${nome}?`;
+  document.getElementById('qtd-popup-input').value = 1;
+  document.getElementById('qtd-popup').style.display = 'flex';
+  document.getElementById('qtd-popup-input').focus();
+}
+
+function confirmarQtdPopup() {
+  const qtd = parseInt(document.getElementById('qtd-popup-input').value) || 1;
+  document.getElementById('qtd-popup').style.display = 'none';
+  
+  if (popupIdAtual && popupBtnAtual) {
+    // Oculta TODOS os botões SIM e NÃO (não precisa mostrar nada)
+    const bs = document.getElementById('btns-' + popupIdAtual).querySelectorAll('.btn-resposta');
+    const c = document.getElementById('campos-' + popupIdAtual);
+    const d = document.getElementById('desfazer-' + popupIdAtual);
+    
+    // Oculta todos os botões de resposta
+    bs.forEach(x => x.style.display = 'none');
+    
+    // NÃO mostra o botão desfazer (X) - removido
+    // d.classList.add('visible'); // REMOVIDO
+    
+    c.classList.add('visible');
+    estados[popupIdAtual] = 'sim';
+    
+    // Gera as caixas
+    gerarCaixasComQtd(popupIdAtual, qtd);
+  }
+  
+  popupIdAtual = null;
+  popupBtnAtual = null;
   onCampoAlterado();
 }
 
-function verificarQuantidade(id) {
-  const q = parseInt(document.getElementById(id + '-qtd').value) || 0;
-  if (q > 0 && !detalhesPendentes[id]) {
-    itemAtualDetalhe = id;
-    document.getElementById('detalhe-popup-texto').textContent = `Deseja observar as ${q} ocorrência(s)?`;
-    document.getElementById('detalhe-popup').style.display = 'block';
+function cancelarQtdPopup() {
+  document.getElementById('qtd-popup').style.display = 'none';
+  popupIdAtual = null;
+  popupBtnAtual = null;
+}
+
+// ============================================
+// SELEÇÃO DE ITENS
+// ============================================
+function selecionarNao(id, btn) {
+  const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta');
+  const c = document.getElementById('campos-' + id);
+  const d = document.getElementById('desfazer-' + id);
+  const cx = document.getElementById('caixas-' + id);
+  
+  // Oculta todos os botões exceto NÃO que fica selecionado
+  bs.forEach(x => { if (x !== btn) x.style.display = 'none'; else x.classList.add('selecionado'); });
+  
+  // Mostra o desfazer só para NÃO (para poder voltar)
+  d.classList.add('visible');
+  
+  c.classList.remove('visible');
+  if (cx) { cx.innerHTML = ''; cx.classList.remove('visible'); }
+  
+  estados[id] = 'nao';
+  document.getElementById(id + '-qtd').value = '0';
+  contadorItens[id] = 0;
+  onCampoAlterado();
+}
+
+function selecionarComDetalhes(id, v, b) {
+  if (v === 'sim') {
+    abrirPopupQtd(id, b);
+  } else {
+    selecionarNao(id, b);
   }
+}
+
+function verificarQuantidade(id) {
+  // Função mantida para compatibilidade
 }
 
 function confirmarDetalhes(s) {
   document.getElementById('detalhe-popup').style.display = 'none';
   if (itemAtualDetalhe) {
     detalhesPendentes[itemAtualDetalhe] = true;
-    if (s) gerarCaixasDinamicas(itemAtualDetalhe);
     itemAtualDetalhe = null;
   }
   onCampoAlterado();
 }
 
-function gerarCaixasDinamicas(id) {
-  const q = parseInt(document.getElementById(id + '-qtd').value) || 0;
+// ============================================
+// CAIXAS DINÂMICAS - NOVO SISTEMA
+// ============================================
+let contadorItens = {};
+
+function gerarCaixasComQtd(id, qtd) {
   const c = document.getElementById('caixas-' + id);
   if (!c) return;
   c.innerHTML = '';
-  if (q <= 0) { c.classList.remove('visible'); return; }
-  for (let i = 1; i <= q; i++) {
-    const d = document.createElement('div');
-    d.className = 'caixa-item pendente';
-    d.id = `${id}-item-${i}`;
-    d.dataset.status = 'pendente';
-    d.innerHTML = `
-      <label>#${i}:</label>
-      <input type="text" class="codigo-input" id="${id}-codigo-${i}" placeholder="Código" maxlength="10" oninput="formatarCodigo(this)" onchange="onCampoAlterado()">
-      <input type="text" class="descricao-input" id="${id}-desc-${i}" placeholder="Observação" onchange="onCampoAlterado()">
-      <button class="btn-status btn-pendente ativo" onclick="marcarStatusItem('${id}', ${i}, 'pendente')" title="Ainda Pendente">
-        <img src="pendente.png" alt="P" onerror="this.style.display='none'; this.parentElement.innerHTML='⏳';">
-      </button>
-      <button class="btn-status btn-resolvido" onclick="marcarStatusItem('${id}', ${i}, 'resolvido')" title="Resolvido">
-        <img src="resolvido.png" alt="R" onerror="this.style.display='none'; this.parentElement.innerHTML='✅';">
-      </button>
-      <button class="btn-remove-item" onclick="removerItemCaixa('${id}', ${i})" title="Remover">✕</button>
-    `;
-    c.appendChild(d);
+  contadorItens[id] = 0;
+  
+  if (qtd <= 0) { 
+    c.classList.remove('visible'); 
+    atualizarContadorPendentes(id);
+    return; 
+  }
+  
+  for (let i = 0; i < qtd; i++) {
+    adicionarItemCaixa(id, c);
   }
   c.classList.add('visible');
+  atualizarContadorPendentes(id);
+}
+
+function gerarCaixasDinamicas(id) {
+  const q = parseInt(document.getElementById(id + '-qtd').value) || 0;
+  gerarCaixasComQtd(id, q);
+}
+
+function adicionarItemCaixa(id, container) {
+  if (!contadorItens[id]) contadorItens[id] = 0;
+  contadorItens[id]++;
+  const num = contadorItens[id];
+  
+  const wrapper = document.createElement('div');
+  wrapper.className = 'caixa-item-wrapper';
+  wrapper.id = `${id}-wrapper-${num}`;
+  
+  wrapper.innerHTML = `
+    <div class="caixa-item pendente" id="${id}-item-${num}" data-status="pendente">
+      <label>#${num}:</label>
+      <input type="text" class="codigo-input" id="${id}-codigo-${num}" placeholder="OCORRÊNCIA" maxlength="10" oninput="formatarCodigo(this); this.classList.remove('input-erro');" onchange="onCampoAlterado()">
+      <input type="text" class="descricao-input" id="${id}-desc-${num}" placeholder="OBSERVAÇÃO" oninput="this.classList.remove('input-erro');" onchange="onCampoAlterado()">
+      <button class="btn-toggle-status pendente" onclick="toggleStatusItem('${id}', ${num})" title="Clique para alternar status">PENDENTE</button>
+    </div>
+    <button class="btn-remove-item-ext" onclick="removerItemCaixa('${id}', ${num})" title="Remover este item">✕</button>
+  `;
+  container.appendChild(wrapper);
+}
+
+function adicionarPendencia(id) {
+  const c = document.getElementById('caixas-' + id);
+  if (!c) return;
+  
+  adicionarItemCaixa(id, c);
+  c.classList.add('visible');
+  atualizarContadorPendentes(id);
+  onCampoAlterado();
+}
+
+function removerTodasPendencias(id) {
+  const c = document.getElementById('caixas-' + id);
+  const campos = document.getElementById('campos-' + id);
+  const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta');
+  const d = document.getElementById('desfazer-' + id);
+  
+  // Limpa as caixas
+  if (c) {
+    c.innerHTML = '';
+    c.classList.remove('visible');
+  }
+  
+  // Oculta os campos (REMOVER TODAS, +ADD)
+  if (campos) campos.classList.remove('visible');
+  
+  // Volta a mostrar SIM e NÃO
+  bs.forEach(x => { 
+    x.style.display = ''; 
+    x.classList.remove('selecionado'); 
+  });
+  
+  // Oculta o X
+  if (d) d.classList.remove('visible');
+  
+  // Reseta estado
+  contadorItens[id] = 0;
+  document.getElementById(id + '-qtd').value = '0';
+  delete estados[id];
+  delete detalhesPendentes[id];
+  
+  onCampoAlterado();
+}
+
+function removerItemCaixa(id, num) {
+  const wrapper = document.getElementById(`${id}-wrapper-${num}`);
+  if (wrapper) wrapper.remove();
+  
+  // Verifica se ficou vazio - se sim, reseta para mostrar SIM/NÃO
+  const container = document.getElementById('caixas-' + id);
+  if (container && container.querySelectorAll('.caixa-item-wrapper').length === 0) {
+    // Não tem mais itens, resetar para estado inicial
+    const campos = document.getElementById('campos-' + id);
+    const bs = document.getElementById('btns-' + id).querySelectorAll('.btn-resposta');
+    const d = document.getElementById('desfazer-' + id);
+    
+    // Oculta os campos (REMOVER TODAS, +ADD)
+    if (campos) campos.classList.remove('visible');
+    
+    // Oculta container de caixas
+    container.classList.remove('visible');
+    
+    // Volta a mostrar SIM e NÃO
+    bs.forEach(x => { 
+      x.style.display = ''; 
+      x.classList.remove('selecionado'); 
+    });
+    
+    // Oculta o X
+    if (d) d.classList.remove('visible');
+    
+    // Reseta estado
+    contadorItens[id] = 0;
+    document.getElementById(id + '-qtd').value = '0';
+    delete estados[id];
+    delete detalhesPendentes[id];
+  } else {
+    atualizarContadorPendentes(id);
+  }
+  
+  onCampoAlterado();
+}
+
+function toggleStatusItem(id, num) {
+  const item = document.getElementById(`${id}-item-${num}`);
+  if (!item) return;
+  
+  const btn = item.querySelector('.btn-toggle-status');
+  const statusAtual = item.dataset.status;
+  
+  // Se for NÃO REVISADO, primeiro clique vai para PENDENTE
+  // Se for PENDENTE, vai para RESOLVIDO
+  // Se for RESOLVIDO, volta para PENDENTE
+  if (statusAtual === 'nao-revisado' || statusAtual === 'resolvido') {
+    item.dataset.status = 'pendente';
+    item.classList.remove('resolvido', 'nao-revisado');
+    item.classList.add('pendente');
+    btn.textContent = 'PENDENTE';
+    btn.classList.remove('resolvido', 'nao-revisado');
+    btn.classList.add('pendente');
+  } else {
+    item.dataset.status = 'resolvido';
+    item.classList.remove('pendente', 'nao-revisado');
+    item.classList.add('resolvido');
+    btn.textContent = 'RESOLVIDO';
+    btn.classList.remove('pendente', 'nao-revisado');
+    btn.classList.add('resolvido');
+  }
+  
+  atualizarContadorPendentes(id);
+  onCampoAlterado();
 }
 
 function marcarStatusItem(id, num, status) {
   const item = document.getElementById(`${id}-item-${num}`);
   if (!item) return;
   
-  // Remove classes anteriores
   item.classList.remove('pendente', 'resolvido', 'nao-revisado');
   item.classList.add(status);
   item.dataset.status = status;
   
-  // Atualiza botões
-  const btnPendente = item.querySelector('.btn-pendente');
-  const btnResolvido = item.querySelector('.btn-resolvido');
-  
-  btnPendente.classList.remove('ativo');
-  btnResolvido.classList.remove('ativo');
-  
-  if (status === 'pendente') {
-    btnPendente.classList.add('ativo');
-  } else {
-    btnResolvido.classList.add('ativo');
+  const btn = item.querySelector('.btn-toggle-status');
+  if (btn) {
+    btn.classList.remove('pendente', 'resolvido', 'nao-revisado');
+    btn.classList.add(status);
+    if (status === 'resolvido') btn.textContent = 'RESOLVIDO';
+    else if (status === 'nao-revisado') btn.textContent = 'REVISAR';
+    else btn.textContent = 'PENDENTE';
   }
   
-  atualizarContagemPendentes(id);
+  atualizarContadorPendentes(id);
   onCampoAlterado();
 }
 
-function atualizarContagemPendentes(id) {
+function atualizarContadorPendentes(id) {
   const container = document.getElementById('caixas-' + id);
-  if (!container) return;
+  const qtdField = document.getElementById(id + '-qtd');
+  if (!container || !qtdField) return;
   
   let pendentes = 0;
   container.querySelectorAll('.caixa-item').forEach(item => {
     if (item.dataset.status === 'pendente') pendentes++;
   });
   
-  // Atualiza o campo de quantidade para refletir só pendentes
-  const qtdField = document.getElementById(id + '-qtd');
-  if (qtdField) {
-    qtdField.value = pendentes;
-  }
-  
+  qtdField.value = pendentes;
   atualizarPreview();
 }
 
-function removerItemCaixa(id, num) {
-  const item = document.getElementById(`${id}-item-${num}`);
-  if (item) item.remove();
-  atualizarContagemPendentes(id);
-  onCampoAlterado();
+function atualizarContagemPendentes(id) {
+  atualizarContadorPendentes(id);
 }
 
 function desfazerItem(id) {
@@ -1600,8 +1892,9 @@ function desfazerItem(id) {
   c.classList.remove('visible');
   if (cx) { cx.innerHTML = ''; cx.classList.remove('visible'); }
   const q = document.getElementById(id + '-qtd'), o = document.getElementById(id + '-obs');
-  if (q) q.value = '';
+  if (q) q.value = '0';
   if (o) o.value = '';
+  contadorItens[id] = 0;
   delete estados[id];
   delete detalhesPendentes[id];
   onCampoAlterado();
@@ -1636,41 +1929,58 @@ function restaurarEstadosBotoes() {
     if (!bc) continue;
     bc.querySelectorAll('.btn-resposta').forEach(b => {
       if ((b.classList.contains('btn-sim') && v === 'sim') || (b.classList.contains('btn-nao') && v === 'nao')) b.classList.add('selecionado');
-      else b.style.display = 'none';
+      b.style.display = 'none'; // Oculta todos os botões
     });
-    if (d) d.classList.add('visible');
+    // Só mostra desfazer se for NÃO
+    if (d && v === 'nao') d.classList.add('visible');
     if (c && v === 'sim') c.classList.add('visible');
   }
 }
 
 function restaurarCaixas(data, marcarNaoRevisado = false) {
   ['manobra','pesada','pesada-afetacao','linha-viva','clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas','religador','poste-mt','poste-bt'].forEach(id => {
-    const q = parseInt(document.getElementById(id + '-qtd')?.value) || 0;
-    if (q > 0 && data[id] && data[id].length > 0) {
-      gerarCaixasDinamicas(id);
-      data[id].forEach((it, i) => {
-        const itemEl = document.getElementById(`${id}-item-${i + 1}`);
-        const cd = document.getElementById(id + '-codigo-' + (i + 1));
-        const ds = document.getElementById(id + '-desc-' + (i + 1));
-        if (cd) cd.value = it.codigo || '';
-        if (ds) ds.value = it.desc || '';
+    if (data[id] && data[id].length > 0) {
+      const c = document.getElementById('caixas-' + id);
+      if (!c) return;
+      
+      c.innerHTML = '';
+      contadorItens[id] = 0;
+      
+      data[id].forEach((it) => {
+        contadorItens[id]++;
+        const num = contadorItens[id];
         
-        // Restaura status ou marca como não revisado se for importação
-        if (itemEl) {
-          if (marcarNaoRevisado) {
-            // Importação: marca como não revisado para forçar revisão
-            itemEl.classList.remove('pendente', 'resolvido');
-            itemEl.classList.add('nao-revisado');
-            itemEl.dataset.status = 'nao-revisado';
-            // Remove classe ativo dos botões
-            itemEl.querySelector('.btn-pendente')?.classList.remove('ativo');
-            itemEl.querySelector('.btn-resolvido')?.classList.remove('ativo');
-          } else if (it.status) {
-            // Restauração normal: restaura o status salvo
-            marcarStatusItem(id, i + 1, it.status);
-          }
+        // Se for importação, marca como NÃO REVISADO para forçar revisão
+        // Se for restauração normal (localStorage), mantém status original
+        let status, statusClass, statusText;
+        if (marcarNaoRevisado) {
+          status = 'nao-revisado';
+          statusClass = 'nao-revisado';
+          statusText = 'REVISAR';
+        } else {
+          status = it.status || 'pendente';
+          statusClass = status;
+          statusText = status === 'resolvido' ? 'RESOLVIDO' : (status === 'nao-revisado' ? 'REVISAR' : 'PENDENTE');
         }
+        
+        const wrapper = document.createElement('div');
+        wrapper.className = 'caixa-item-wrapper';
+        wrapper.id = `${id}-wrapper-${num}`;
+        
+        wrapper.innerHTML = `
+          <div class="caixa-item ${statusClass}" id="${id}-item-${num}" data-status="${status}">
+            <label>#${num}:</label>
+            <input type="text" class="codigo-input" id="${id}-codigo-${num}" value="${it.codigo || ''}" placeholder="OCORRÊNCIA" maxlength="10" oninput="formatarCodigo(this); this.classList.remove('input-erro');" onchange="onCampoAlterado()">
+            <input type="text" class="descricao-input" id="${id}-desc-${num}" value="${it.desc || ''}" placeholder="OBSERVAÇÃO" oninput="this.classList.remove('input-erro');" onchange="onCampoAlterado()">
+            <button class="btn-toggle-status ${statusClass}" onclick="toggleStatusItem('${id}', ${num})" title="Clique para alternar status">${statusText}</button>
+          </div>
+          <button class="btn-remove-item-ext" onclick="removerItemCaixa('${id}', ${num})" title="Remover este item">✕</button>
+        `;
+        c.appendChild(wrapper);
       });
+      
+      c.classList.add('visible');
+      atualizarContadorPendentes(id);
     }
   });
 }
@@ -1928,8 +2238,10 @@ function verificarItensRevisados() {
     const container = document.getElementById('caixas-' + id);
     if (container) {
       container.querySelectorAll('.caixa-item.nao-revisado').forEach(item => {
-        const cod = item.querySelector('.codigo-input')?.value || '';
-        if (cod) naoRevisados.push(`${id.toUpperCase()}: ${cod}`);
+        const cod = item.querySelector('.codigo-input')?.value || 'SEM OCORRÊNCIA';
+        const titleEl = document.querySelector(`#box-${id} .item-title`);
+        const nome = titleEl ? titleEl.textContent : id.toUpperCase();
+        naoRevisados.push(`${nome}: ${cod}`);
       });
     }
   });
@@ -1979,12 +2291,57 @@ function verificarCamposObrigatorios() {
     naoRevisados.forEach(item => m.push('🔴 ' + item));
   }
   
+  // Verificar itens incompletos (Ocorrência deve ter 10 chars, Observação deve ter pelo menos 1)
+  const qtdIncompletos = verificarItensIncompletos();
+  if (qtdIncompletos > 0) {
+    m.push('<br>⚠️ <strong>CORRIGIR ITENS REALCADOS</strong>');
+    m.push('🔴 Incidência Mínimo 10 caracteres');
+    m.push('🔴 Descrever observação Mínimo 1 caracteres');
+  }
+  
   if (m.length > 0) {
-    document.getElementById('obrigatorio-text').innerHTML = '🚨 CAMPOS OBRIGATÓRIOS:<br><br>' + m.join('<br>');
+    document.getElementById('obrigatorio-text').innerHTML = '🚨 CAMPOS OBRIGATÓRIOS:<br>' + m.join('<br>');
     document.getElementById('obrigatorio-popup').style.display = 'block';
     return false;
   }
   return true;
+}
+
+// Verifica se os itens têm Ocorrência (10 chars) e Observação (1+ char) preenchidos
+// Marca inputs incompletos com classe 'input-erro' para ficar pulsando
+function verificarItensIncompletos() {
+  let qtdErros = 0;
+  const todosIds = ['manobra','pesada','pesada-afetacao','linha-viva','clientes-vitais','cabo-partido','falta-varios','clientes-m1','incidencias-antigas','religador','poste-mt','poste-bt'];
+  
+  todosIds.forEach(id => {
+    const container = document.getElementById('caixas-' + id);
+    if (container) {
+      container.querySelectorAll('.caixa-item').forEach(item => {
+        const codInput = item.querySelector('.codigo-input');
+        const descInput = item.querySelector('.descricao-input');
+        const cod = codInput?.value || '';
+        const desc = descInput?.value || '';
+        
+        // Verifica Ocorrência (deve ter exatamente 10 caracteres)
+        if (estados[id] === 'sim' && cod.length !== 10) {
+          codInput?.classList.add('input-erro');
+          qtdErros++;
+        } else {
+          codInput?.classList.remove('input-erro');
+        }
+        
+        // Verifica Observação (deve ter pelo menos 1 caractere)
+        if (estados[id] === 'sim' && desc.trim().length === 0) {
+          descInput?.classList.add('input-erro');
+          qtdErros++;
+        } else {
+          descInput?.classList.remove('input-erro');
+        }
+      });
+    }
+  });
+  
+  return qtdErros;
 }
 
 // ============================================
@@ -2018,7 +2375,6 @@ function gerarMensagem(validar = true) {
   msg += `---- *RESUMO* ----\n`;
   msg += `*QTD. "F" RECEBIDOS:* ${fr || '0'}\n`;
   msg += `*QTD. "INC." RECEBIDAS:* ${ir || '0'}\n`;
-  msg += `-----------\n`;
   msg += `*TOTAL "F" REPASSADOS:* ${fp || '0'}\n`;
   msg += `*TOTAL "INC." REPASSADAS:* ${ic || '0'}\n\n`;
   
@@ -2040,7 +2396,6 @@ function gerarMensagem(validar = true) {
   let pn = '';
   ['manobra','pesada','pesada-afetacao','linha-viva'].forEach(id => {
     if (estados[id] === 'sim') {
-      const o = document.getElementById(id + '-obs').value || '-';
       const caixas = document.getElementById('caixas-' + id);
       let pendentesCount = 0;
       let pendentesTexto = '';
@@ -2059,7 +2414,7 @@ function gerarMensagem(validar = true) {
         });
       }
       if (pendentesCount > 0) {
-        pn += `• ${id.toUpperCase()}: ${pendentesCount} — ${o}\n`;
+        pn += `• ${id.toUpperCase()}: (${pendentesCount})\n`;
         pn += pendentesTexto;
       }
     }
@@ -2087,7 +2442,7 @@ function gerarMensagem(validar = true) {
         });
       }
       if (pendentesCount > 0) {
-        sv += `• ${id.toUpperCase()}: ${pendentesCount}\n`;
+        sv += `• ${id.toUpperCase()}: (${pendentesCount})\n`;
         sv += pendentesTexto;
       }
     }
@@ -2097,7 +2452,6 @@ function gerarMensagem(validar = true) {
   let oc = '';
   ['religador','poste-mt','poste-bt'].forEach(id => {
     if (estados[id] === 'sim') {
-      const o = document.getElementById(id + '-obs').value || '-';
       const caixas = document.getElementById('caixas-' + id);
       let pendentesCount = 0;
       let pendentesTexto = '';
@@ -2116,7 +2470,7 @@ function gerarMensagem(validar = true) {
         });
       }
       if (pendentesCount > 0) {
-        oc += `• ${id.toUpperCase()}: ${pendentesCount} — ${o}\n`;
+        oc += `• ${id.toUpperCase()}: (${pendentesCount})\n`;
         oc += pendentesTexto;
       }
     }
