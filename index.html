@@ -2475,13 +2475,16 @@ function gerarMensagem(validar = true) {
       }
     }
   });
-  if (estados['sobreaviso'] === 'sim') oc += `• SOBREAVISO: ${document.getElementById('sobreaviso-obs').value || '-'}\n`;
   msg += `---- *OCORRÊNCIAS BT/MT* ----\n${oc}\n`;
-  
+
+  if (estados['sobreaviso'] === 'sim') {
+    msg += `---- *SOBREAVISO* ----\n`;
+    msg += `${document.getElementById('sobreaviso-obs').value || '-'}\n\n`;
+  }
+
   if (operadorAnterior) {
     msg += `----------------------------\n`;
-    msg += `*OPERADOR ANTERIOR: *${operadorAnterior}\n\n`;
-    msg += `----------------------------\n\n`;
+    msg += `*OPERADOR ANTERIOR:* ${operadorAnterior}\n\n`;
   }
   
   if (globalTimerStart) {
