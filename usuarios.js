@@ -15,6 +15,8 @@ const USUARIOS_SISTEMA = [
   // Adicione novos usuários abaixo:
   // { usuario: '1234', senha: '5678', nome: 'JOÃO SILVA' },
   // { usuario: '1111', senha: '2222', nome: 'MARIA SANTOS' },
+  // { usuario: '9354', senha: '9354', nome: 'Yasmin' },
+  // { usuario: '0262', senha: '0262', nome: 'Diana' },
 ];
 
 // Função para validar login (não modificar)
