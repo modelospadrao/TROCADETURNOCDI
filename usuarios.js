@@ -28,7 +28,9 @@ const USUARIOS_SISTEMA = [
   { usuario: '3179', senha: '3179', nome: 'Geovani' },
   { usuario: '9342', senha: '9342', nome: 'Essan' },
   { usuario: '9011', senha: '9011', nome: 'Anderson' },
-  { usuario: '0457', senha: '0457', nome: 'Lucas' }
+  { usuario: '0457', senha: '0457', nome: 'Lucas' },
+  { usuario: '4308', senha: '4308', nome: 'Alessandra' },
+  { usuario: '9001', senha: '9001', nome: 'Kellyo' }
 ];
 
 // Função para validar login (não modificar)
