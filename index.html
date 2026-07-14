@@ -6936,13 +6936,17 @@ function gerarMensagem(validar = true) {
   const ultimasLinhas = linhas.slice(-3);
   let resto = linhas.slice(0, -3).join('\n').toUpperCase();
   
-  // Restaura observações com case original (apenas títulos em uppercase)
-  if (observacoesOriginal) {
-    resto = resto.replace('{{OBS_PLACEHOLDER}}', observacoesOriginal);
-  }
-  
   // Salva mensagem completa (com símbolos) para copiar
   mensagemCompleta = resto + '\n' + ultimasLinhas.join('\n');
+  
+  // Restaura observações com case original (apenas títulos em uppercase)
+  // IMPORTANTE: a substituição precisa ocorrer na mensagem JÁ UNIDA (resto + últimas linhas),
+  // pois quando não há "OPERADOR ANTERIOR" nem cronômetro ativo, o placeholder acaba caindo
+  // dentro das 3 últimas linhas (ultimasLinhas) e não dentro de "resto" — se o replace for
+  // feito só em "resto" nesse caso, o {{OBS_PLACEHOLDER}} fica sem substituir na mensagem final.
+  if (observacoesOriginal) {
+    mensagemCompleta = mensagemCompleta.replace('{{OBS_PLACEHOLDER}}', observacoesOriginal);
+  }
   
   // Remove * e _ para exibir no preview (versão limpa)
   let previewLimpo = mensagemCompleta.replace(/\*/g, '').replace(/_/g, '');
