@@ -3334,6 +3334,7 @@ function carregarDadosImportados(d) {
   if (d.obsRepassarObservacoes) document.getElementById('obs-recebido-observacoes').value = d.obsRepassarObservacoes;
   if (d.obsRepassarProblemas) document.getElementById('obs-recebido-problemas').value = d.obsRepassarProblemas;
   if (d.obsRepassarSugestoes) document.getElementById('obs-recebido-sugestoes').value = d.obsRepassarSugestoes;
+  ajustarAlturaObsTextareas();
   
   // Restaurar caixas dinâmicas - MARCA COMO NÃO REVISADO para forçar revisão (só para SIM)
   setTimeout(() => { 
@@ -3588,6 +3589,7 @@ function carregarDadosCompletos(d) {
   if (d.obsRepassarObservacoes) document.getElementById('obs-repassar-observacoes').value = d.obsRepassarObservacoes;
   if (d.obsRepassarProblemas) document.getElementById('obs-repassar-problemas').value = d.obsRepassarProblemas;
   if (d.obsRepassarSugestoes) document.getElementById('obs-repassar-sugestoes').value = d.obsRepassarSugestoes;
+  ajustarAlturaObsTextareas();
   
   equipeCount = d.equipeCount || 0;
   
@@ -4198,6 +4200,14 @@ function initAutoGrowTextareas() {
     if (textarea.value) {
       autoGrowTextarea(textarea);
     }
+  });
+}
+
+// Reajusta a altura de TODAS as textareas de observações (uso após preencher .value via JS,
+// já que nesses casos o evento 'input' não dispara sozinho e a caixa fica cortada)
+function ajustarAlturaObsTextareas() {
+  document.querySelectorAll('.obs-turno-textarea').forEach(textarea => {
+    autoGrowTextarea(textarea);
   });
 }
 
@@ -6963,7 +6973,9 @@ function gerarMensagem(validar = true) {
   
   document.getElementById('previewBox').innerHTML = previewLimpo;
   
-  return msg;
+  // Retorna a mensagem final já com {{OBS_PLACEHOLDER}} substituído pelo conteúdo real
+  // (usar "msg" aqui reproduzia o bug do placeholder aparecendo literalmente na mensagem)
+  return mensagemCompleta;
 }
 
 // ============================================
@@ -7191,6 +7203,9 @@ function finalizarTurno() {
   
   const msg = gerarMensagem(true);
   mostrarNotificacao('⏳ Gerando arquivos...');
+  
+  // Garante que as caixas de observações estejam totalmente expandidas antes do print (PDF)
+  ajustarAlturaObsTextareas();
   
   const c = document.getElementById('main-container');
   
